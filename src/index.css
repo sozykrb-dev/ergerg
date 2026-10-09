@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+/* ========================================================================== */
+/* MOLFET FOR FASHON — Brand Identity (from brand guidelines PDF)             */
+/* Logo: "MOLFET FOR FASHON" — Tagline: "Style Without Limits"               */
+/* Italian mindset meets Egyptian craftsmanship                              */
+/* ========================================================================== */
+:root {
+  --molfet-main: #4F2C0A;      /* Main Color  — RGB 79 44 10  / CMYK 25 75 100 60 */
+  --molfet-secondary: #F0E8D4; /* Secondary   — RGB 240 232 212 / CMYK 5 6 17 0    */
+  --molfet-contrast: #6A7743;  /* Contrast    — RGB 106 119 67 / CMYK 70 50 100 0  */
+}
+

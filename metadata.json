@@ -1,0 +1,6 @@
+{
+  "name": "MOLFET FOR FASHON",
+  "description": "متجر MOLFET FOR FASHON — Style Without Limits. عقلية إيطالية بحرفية مصرية، مع نظام إشعارات فوري للطلبات ولوحة تحكم شاملة",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

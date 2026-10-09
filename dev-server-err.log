@@ -1,0 +1,18 @@
+[31mWebSocket server error: Port undefined is already in use[39m
+220 |     app.get('*', (req, res) => {
+221 |       res.sendFile(path.join(distPath, 'index.html'));
+222 |     });
+223 |   }
+224 | 
+225 |   app.listen(PORT, '0.0.0.0', () => {
+            ^
+error: Failed to start server. Is port 3000 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at <anonymous> (node:_http_server:359:39)
+      at <anonymous> (node:_http_server:332:33)
+      at startServer (C:\Users\Elbelgiky\Downloads\ergerg-main\ergerg-main\server.ts:225:7)
+
+Bun v1.4.2 (Windows x64)
