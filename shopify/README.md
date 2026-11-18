@@ -39,6 +39,7 @@ shopify/
 │  ├─ footer.liquid            cream lockup on dark brown
 │  ├─ main-product.liquid      gallery + Lens + hotspots + size guide + Mix it + sticky ATC
 │  ├─ main-collection.liquid   Search & Discovery filters, framed cards
+│  ├─ cart-drawer.liquid       section wrapper: ?sections=cart-drawer refresh
 │  ├─ main-cart.liquid         drawer alternative page
 │  ├─ main-mix.liquid          the Limitless Mix studio
 │  ├─ main-about.liquid
@@ -81,15 +82,17 @@ shopify theme check                                  # lint (should be clean)
    PNG, transparent background). Paste the slogan (default `Style Without Limits`).
 3. **Theme settings → Concept** — the Lens is on by default. Set the lens diameter,
    the frame opening and the frame-break distance.
-4. **Theme settings → Cart and shipping** — free-shipping threshold and the
+4. **Theme settings → Colour schemes** — three schemes named Cream, Maroon and
+   Brown. Every section picks one; the values are the three brand colours.
+5. **Theme settings → Cart and shipping** — free-shipping threshold and the
    automatic look discount percentage (create the actual discount under
    **Discounts → Automatic**).
-5. **Theme settings → Contact** — the WhatsApp number and its default message.
-6. **Pages** — create `Limitless Mix` (template `page.limitless-mix`) and
+6. **Theme settings → Contact** — the WhatsApp number and its default message.
+7. **Pages** — create `Limitless Mix` (template `page.limitless-mix`) and
    `The Brand` (template `page.about`).
-7. **Languages** — add Arabic, then edit strings with *Translate & Adapt*.
-8. **Currency** — EGP as the store currency.
-9. **Collections** — four collections for the Mix rows (Tops, Bottoms,
+8. **Languages** — add Arabic, then edit strings with *Translate & Adapt*.
+9. **Currency** — EGP as the store currency.
+10. **Collections** — four collections for the Mix rows (Tops, Bottoms,
    Outerwear, Accessories) and pick them in the *Limitless Mix* section.
 
 ---
@@ -150,7 +153,11 @@ the back-to-top button.
 
 ## 5. QA checklist
 
-- [ ] Theme Check reports no errors (`shopify theme check`).
+- [ ] Theme Check reports no errors (`shopify theme check`). If the CLI cannot be
+      installed (no network), `python3 scripts/check-shopify-theme.py` from the
+      repo root runs the offline gate: 33 Liquid files, 11 JSON templates, every
+      `render`/`section` target, every `settings.*` key, every `{% schema %}` and
+      every template section type is verified. It does not replace Theme Check.
 - [ ] Header shows the wordmark; on scroll it collapses to the brush circle.
 - [ ] Frame gap is bottom-right at 360px, 768px, 1440px **and** in Arabic.
 - [ ] Hero subject crosses the frame line; hover moves it 8–16px (CSS transform).

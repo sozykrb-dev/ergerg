@@ -77,7 +77,7 @@ export const Header: React.FC = () => {
       <header
         className={`sticky top-0 z-40 border-b transition-[background-color,border-color,backdrop-filter] duration-500 ${
           scrolled
-            ? 'border-[var(--mf-hairline)] bg-[color-mix(in_srgb,var(--molfet-cream)_58%,var(--molfet-cream))]/95 backdrop-blur-md'
+            ? 'border-[var(--mf-hairline)] bg-[var(--mf-surface)]/95 backdrop-blur-md'
             : 'border-transparent bg-[var(--mf-surface)]'
         }`}
       >
