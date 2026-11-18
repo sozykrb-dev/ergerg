@@ -1,0 +1,173 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "MOLFET — Break the Frame",
+    "theme_version": "1.0.0",
+    "theme_author": "MOLFET",
+    "theme_documentation_url": "https://example.com/molfet",
+    "theme_support_url": "https://example.com/molfet/support"
+  },
+  {
+    "name": "Brand",
+    "settings": [
+      {
+        "type": "text",
+        "id": "slogan",
+        "label": "Slogan",
+        "default": "Style Without Limits",
+        "info": "Exactly these words, title case. Set in light weight with 0.25em letter spacing."
+      },
+      {
+        "type": "text",
+        "id": "brand_name",
+        "label": "Brand name",
+        "default": "MOLFET",
+        "info": "Always in capitals."
+      },
+      {
+        "type": "header",
+        "content": "Brand colours — the only colours allowed"
+      },
+      {
+        "type": "color",
+        "id": "color_maroon",
+        "label": "Maroon (main, 30%)",
+        "default": "#711518"
+      },
+      {
+        "type": "color",
+        "id": "color_cream",
+        "label": "Cream (secondary, 60%)",
+        "default": "#FAED99"
+      },
+      {
+        "type": "color",
+        "id": "color_brown",
+        "label": "Dark brown (contrast, 10%)",
+        "default": "#321E19"
+      },
+      {
+        "type": "paragraph",
+        "content": "The three colour pickers above are locked to the brand values. All other shades are produced with color-mix() in assets/molfet.css. Never place maroon text on brown (contrast ≈ 1.4:1)."
+      },
+      {
+        "type": "image_picker",
+        "id": "wordmark_on_cream",
+        "label": "Lockup 1 — maroon wordmark on cream (SVG or PNG)"
+      },
+      {
+        "type": "image_picker",
+        "id": "wordmark_on_brown",
+        "label": "Lockup 2 — cream wordmark on dark brown (SVG or PNG)"
+      },
+      {
+        "type": "image_picker",
+        "id": "icon_on_maroon",
+        "label": "Lockup 3 — cream brush-circle icon on maroon"
+      },
+      {
+        "type": "image_picker",
+        "id": "icon_on_cream",
+        "label": "Lockup 4 — maroon brush-circle icon on cream"
+      }
+    ]
+  },
+  {
+    "name": "Concept — Break the Frame",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "lens_enabled",
+        "label": "Enable the Lens",
+        "default": true,
+        "info": "Cursor becomes the brush circle; over a product it opens to 160px and reveals the Italian sketch and the macro fabric."
+      },
+      {
+        "type": "range",
+        "id": "lens_size",
+        "label": "Lens diameter",
+        "min": 120,
+        "max": 220,
+        "step": 10,
+        "unit": "px",
+        "default": 160
+      },
+      {
+        "type": "range",
+        "id": "frame_break_px",
+        "label": "How far the subject crosses the frame",
+        "min": 8,
+        "max": 16,
+        "step": 2,
+        "unit": "px",
+        "default": 12
+      },
+      {
+        "type": "range",
+        "id": "frame_gap_px",
+        "label": "Frame opening (bottom-right)",
+        "min": 18,
+        "max": 56,
+        "step": 2,
+        "unit": "px",
+        "default": 30
+      },
+      {
+        "type": "text",
+        "id": "lens_caption",
+        "label": "Lens caption",
+        "default": "Italian mindset. Egyptian hands."
+      }
+    ]
+  },
+  {
+    "name": "Cart and shipping",
+    "settings": [
+      {
+        "type": "number",
+        "id": "free_shipping_threshold",
+        "label": "Free-shipping threshold (EGP)",
+        "default": 2900
+      },
+      {
+        "type": "number",
+        "id": "look_discount_percent",
+        "label": "Automatic discount for looks of 3+ pieces (%)",
+        "default": 10,
+        "info": "The discount itself is configured in Shopify (Discounts → Automatic). This number only drives the message."
+      },
+      {
+        "type": "checkbox",
+        "id": "sticky_atc",
+        "label": "Sticky add-to-cart on mobile",
+        "default": true
+      }
+    ]
+  },
+  {
+    "name": "Contact",
+    "settings": [
+      {
+        "type": "text",
+        "id": "whatsapp_number",
+        "label": "WhatsApp number (digits, with country code)",
+        "default": "201012345678"
+      },
+      {
+        "type": "text",
+        "id": "whatsapp_message",
+        "label": "Default WhatsApp order message",
+        "default": "Hello MOLFET, I would like to order:"
+      }
+    ]
+  },
+  {
+    "name": "Typography",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Jost (headings, 500–600; slogan, 300) and Jost/Inter for body are loaded from Google Fonts with font-display: swap; the heading face is preloaded in layout/theme.liquid. Arabic uses Cairo or Tajawal with matching weights."
+      }
+    ]
+  }
+]

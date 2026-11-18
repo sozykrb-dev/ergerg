@@ -31,12 +31,12 @@ export const Footer: React.FC = () => {
   };
 
   return (
-    <footer className="bg-[#4F2C0A] border-t border-[#3A1F06] text-white">
+    <footer className="bg-[var(--molfet-maroon)] border-t border-[var(--molfet-brown)] text-white">
       <div className="max-w-[1500px] mx-auto px-4 sm:px-8 py-16">
         <div className="max-w-2xl mx-auto text-center space-y-6">
           {/* Newsletter Section */}
           <div className="space-y-2">
-            <h3 className="text-xl sm:text-2xl font-bold tracking-[0.18em] uppercase text-[#F0E8D4]">
+            <h3 className="text-xl sm:text-2xl font-bold tracking-[0.18em] uppercase text-[var(--molfet-cream)]">
               MOLFET — Style Without Limits
             </h3>
             <p className="text-xs sm:text-sm text-zinc-400">
@@ -116,7 +116,7 @@ export const Footer: React.FC = () => {
                   href={link.url}
                   target={link.openInNewTab !== false ? '_blank' : '_self'}
                   rel="noreferrer"
-                  className="w-11 h-11 rounded-full bg-[#3A1F06]/60 border border-[#6A7743]/50 text-[#F0E8D4] hover:text-white hover:border-[#F0E8D4] hover:bg-[#6A7743]/60 transition-all transform hover:scale-110 flex items-center justify-center group shadow-xs"
+                  className="w-11 h-11 rounded-full bg-[var(--molfet-brown)]/60 border border-[var(--mf-brown-soft)]/50 text-[var(--molfet-cream)] hover:text-white hover:border-[var(--molfet-cream)] hover:bg-[var(--mf-brown-soft)]/60 transition-all transform hover:scale-110 flex items-center justify-center group shadow-xs"
                   aria-label={link.title || link.platform}
                   title={link.title || link.platform}
                 >

@@ -1,0 +1,32 @@
+{%- comment -%}
+  Split section "Italian mindset | Egyptian craftsmanship" in maroon and cream
+  panels, using the brand statement.
+{%- endcomment -%}
+<section class="mf-split">
+  <article class="mf-split__panel mf-split__panel--maroon" data-tone="dark">
+    <p class="mf-eyebrow">{{ section.settings.left_eyebrow }}</p>
+    <h2>{{ section.settings.left_heading }}</h2>
+    <p>{{ section.settings.left_body }}</p>
+  </article>
+  <article class="mf-split__panel mf-split__panel--cream" data-tone="light">
+    <p class="mf-eyebrow">{{ section.settings.right_eyebrow }}</p>
+    <h2>{{ section.settings.right_heading }}</h2>
+    <p>{{ section.settings.right_body }}</p>
+    <span class="mf-badge-outline">{{ 'brand.made_badge' | t }}</span>
+  </article>
+</section>
+
+{% schema %}
+{
+  "name": "Statement split",
+  "settings": [
+    { "type": "text", "id": "left_eyebrow", "label": "Left eyebrow", "default": "Italian mindset" },
+    { "type": "text", "id": "left_heading", "label": "Left heading", "default": "Elegance lives in the details." },
+    { "type": "textarea", "id": "left_body", "label": "Left body", "default": "The sketch comes first. A geometric line, a clean shoulder, a collar that holds." },
+    { "type": "text", "id": "right_eyebrow", "label": "Right eyebrow", "default": "Egyptian craftsmanship" },
+    { "type": "text", "id": "right_heading", "label": "Right heading", "default": "Made by hands that know fabric." },
+    { "type": "textarea", "id": "right_body", "label": "Right body", "default": "Long-staple cotton, local expertise and the finest fabrics." }
+  ],
+  "presets": [{ "name": "Statement split" }]
+}
+{% endschema %}

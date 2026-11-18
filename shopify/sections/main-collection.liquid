@@ -1,0 +1,74 @@
+{%- comment -%}
+  Collection: filters with Shopify Search & Discovery, framed product cards.
+{%- endcomment -%}
+<section class="mf-collection">
+  <header class="mf-collection__head">
+    <nav class="mf-breadcrumb" aria-label="{{ 'accessibility.breadcrumb' | t }}">
+      <a href="{{ routes.root_url }}">{{ 'general.home' | t }}</a><span>/</span><span>{{ collection.title }}</span>
+    </nav>
+    <h1>{{ collection.title }}</h1>
+    <p class="mf-collection__count">{{ collection.products_count }} {{ 'collections.pieces' | t }}</p>
+    {%- if collection.description != blank -%}<div class="mf-collection__desc">{{ collection.description }}</div>{%- endif -%}
+  </header>
+
+  <div class="mf-collection__layout {% if section.settings.enable_filtering %}has-filters{% endif %}">
+    {%- if section.settings.enable_filtering -%}
+      <aside class="mf-filters" aria-label="{{ 'collections.filters' | t }}">
+        <form id="FacetFiltersForm">
+          {%- for filter in collection.filters -%}
+            <details class="mf-filter" open>
+              <summary>{{ filter.label }}</summary>
+              <div class="mf-filter__body">
+                {%- case filter.type -%}
+                  {%- when 'boolean', 'list' -%}
+                    {%- for value in filter.values -%}
+                      <label class="mf-filter__option">
+                        <input type="checkbox" name="{{ value.param_name }}" value="{{ value.value }}"
+                          {% if value.active %}checked{% endif %} {% if value.count == 0 and value.active == false %}disabled{% endif %}>
+                        <span>{{ value.label }}</span>
+                        <em>{{ value.count }}</em>
+                      </label>
+                    {%- endfor -%}
+                  {%- when 'price_range' -%}
+                    <div class="mf-filter__price">
+                      <input type="number" name="{{ filter.min_value.param_name }}" value="{{ filter.min_value.value | money_without_currency | replace: ',', '' }}" placeholder="{{ 'collections.from' | t }}">
+                      <input type="number" name="{{ filter.max_value.param_name }}" value="{{ filter.max_value.value | money_without_currency | replace: ',', '' }}" placeholder="{{ 'collections.to' | t }}">
+                    </div>
+                {%- endcase -%}
+              </div>
+            </details>
+          {%- endfor -%}
+          <noscript><button type="submit" class="mf-btn">{{ 'collections.apply' | t }}</button></noscript>
+        </form>
+      </aside>
+    {%- endif -%}
+
+    <div class="mf-collection__results">
+      {%- paginate collection.products by section.settings.products_per_page -%}
+        <div class="mf-product-grid">
+          {%- for product in collection.products -%}
+            {% render 'molfet-product-card', product: product %}
+          {%- else -%}
+            <p class="mf-collection__empty">{{ 'collections.empty' | t }}</p>
+          {%- endfor -%}
+        </div>
+
+        {%- if paginate.pages > 1 -%}
+          <nav class="mf-pagination" aria-label="{{ 'accessibility.pagination' | t }}">
+            {{ paginate | default_pagination }}
+          </nav>
+        {%- endif -%}
+      {%- endpaginate -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Collection",
+  "settings": [
+    { "type": "range", "id": "products_per_page", "label": "Products per page", "min": 8, "max": 32, "step": 4, "default": 16 },
+    { "type": "checkbox", "id": "enable_filtering", "label": "Enable filtering (Search & Discovery)", "default": true }
+  ]
+}
+{% endschema %}

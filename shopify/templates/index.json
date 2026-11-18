@@ -1,0 +1,14 @@
+{
+  "sections": {
+    "announcement": { "type": "announcement-bar" },
+    "header": { "type": "header" },
+    "hero": { "type": "hero-frame" },
+    "statement": { "type": "statement-split" },
+    "mix_teaser": { "type": "mix-teaser" },
+    "featured": { "type": "featured-collection" },
+    "details": { "type": "details-strip" },
+    "newsletter": { "type": "newsletter" },
+    "footer": { "type": "footer" }
+  },
+  "order": ["announcement", "header", "hero", "statement", "mix_teaser", "featured", "details", "newsletter", "footer"]
+}

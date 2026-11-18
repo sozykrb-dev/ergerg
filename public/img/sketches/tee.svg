@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 380" fill="none" stroke="#FAED99" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round">
+  <path d="M116 44 L86 52 L44 74 L30 160 L62 170 L60 338 C60 344 64 348 70 348 L230 348 C236 348 240 344 240 338 L238 170 L270 160 L256 74 L214 52 L184 44"/>
+  <path d="M116 44 C124 60 134 66 150 66 C166 66 176 60 184 44"/>
+  <path d="M116 44 C120 34 130 28 150 28 C170 28 180 34 184 44"/>
+  <path d="M44 74 L74 112 M256 74 L226 112"/>
+  <path d="M60 170 L74 112 M240 170 L226 112"/>
+  <path d="M60 200 L60 338 M240 200 L240 338" stroke-dasharray="3 5" stroke-width="1"/>
+  <path d="M74 112 L74 300 M226 112 L226 300" stroke-dasharray="3 5" stroke-width="1"/>
+  <path d="M74 338 L74 348 M226 338 L226 348"/>
+  <path d="M70 348 L230 348" stroke-dasharray="3 5" stroke-width="1"/>
+  <text x="150" y="374" fill="#FAED99" stroke="none" font-family="Jost, sans-serif" font-size="8" letter-spacing="3" text-anchor="middle">TEE · OVERSIZED FLAT</text>
+</svg>

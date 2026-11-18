@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 380" fill="none" stroke="#FAED99" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round">
+  <path d="M118 40 L104 34 C88 30 74 34 62 44 L34 66 L26 92 L40 100 L52 92 L48 124 L52 320 C52 330 60 336 70 336 L230 336 C240 336 248 330 248 320 L252 124 L248 92 L260 100 L274 92 L266 66 L238 44 C226 34 212 30 196 34 L182 40"/>
+  <path d="M118 40 C124 56 132 64 150 64 C168 64 176 56 182 40"/>
+  <path d="M118 40 L132 28 L150 42 L168 28 L182 40"/>
+  <path d="M150 64 L150 336"/>
+  <path d="M138 64 L138 336" stroke-dasharray="3 6" stroke-width="1"/>
+  <path d="M52 124 L96 116 M248 124 L204 116"/>
+  <path d="M40 100 L52 92 M260 100 L248 92"/>
+  <path d="M84 178 C104 172 122 176 128 190 L128 244 C118 252 92 250 84 240 Z"/>
+  <circle cx="139" cy="110" r="3"/><circle cx="139" cy="152" r="3"/><circle cx="139" cy="196" r="3"/><circle cx="139" cy="240" r="3"/><circle cx="139" cy="284" r="3"/>
+  <path d="M104 336 L104 300 M122 336 L122 306" stroke-dasharray="3 5" stroke-width="1"/>
+  <path d="M242 154 C246 168 246 182 242 196" stroke-dasharray="3 5" stroke-width="1"/>
+  <path d="M58 158 C54 172 54 186 58 200" stroke-dasharray="3 5" stroke-width="1"/>
+  <text x="150" y="366" fill="#FAED99" stroke="none" font-family="Jost, sans-serif" font-size="8" letter-spacing="3" text-anchor="middle">POPLIN SHIRT · FLAT</text>
+</svg>

@@ -60,7 +60,7 @@ export const ProductDetailModal: React.FC = () => {
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 animate-in fade-in duration-200">
       <div 
-        className="relative w-full max-w-4xl bg-white border border-[#dfdfdf] rounded-2xl overflow-hidden shadow-2xl my-auto text-left text-black"
+        className="relative w-full max-w-4xl bg-white border border-[var(--mf-hairline)] rounded-2xl overflow-hidden shadow-2xl my-auto text-left text-black"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close Button */}
@@ -74,8 +74,8 @@ export const ProductDetailModal: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2">
           {/* Gallery Column */}
-          <div className="p-5 sm:p-8 bg-[#f9f9f9] flex flex-col items-center justify-between border-b md:border-b-0 md:border-r border-[#dfdfdf]">
-            <div className="relative w-full aspect-[2/3] rounded-xs overflow-hidden bg-[#efefef]">
+          <div className="p-5 sm:p-8 bg-[var(--mf-surface-soft)] flex flex-col items-center justify-between border-b md:border-b-0 md:border-r border-[var(--mf-hairline)]">
+            <div className="relative w-full aspect-[2/3] rounded-xs overflow-hidden bg-[var(--mf-surface-soft)]">
               <img
                 src={images[activeImageIndex] || images[0]}
                 alt={selectedProduct.titleEn}
@@ -119,7 +119,7 @@ export const ProductDetailModal: React.FC = () => {
           {/* Product Details Column */}
           <div className="p-6 sm:p-8 flex flex-col justify-between max-h-[85vh] overflow-y-auto space-y-6">
             <div>
-              <span className="text-[11px] font-semibold text-[#6A7743] uppercase tracking-widest block mb-1">
+              <span className="text-[11px] font-semibold text-[var(--mf-brown-soft)] uppercase tracking-widest block mb-1">
                 MOLFET FOR FASHON
               </span>
 

@@ -1,0 +1,28 @@
+{
+  "settings_schema": {
+    "Brand": "العلامة",
+    "Concept — Break the Frame": "المفهوم — اكسر الإطار",
+    "Cart and shipping": "السلة والشحن",
+    "Contact": "التواصل",
+    "Typography": "الخطوط",
+    "slogan": "الشعار",
+    "brand_name": "اسم العلامة",
+    "color_maroon": "المارون (الأساسي ٣٠٪)",
+    "color_cream": "الكريمي (الثانوي ٦٠٪)",
+    "color_brown": "البني الغامق (التباين ١٠٪)",
+    "wordmark_on_cream": "الشعار الكتابي المارون على الكريمي",
+    "wordmark_on_brown": "الشعار الكتابي الكريمي على البني",
+    "icon_on_maroon": "أيقونة الفرشاة الكريمي على المارون",
+    "icon_on_cream": "أيقونة الفرشاة المارون على الكريمي",
+    "lens_enabled": "تشغيل العدسة",
+    "lens_size": "قطر العدسة",
+    "frame_break_px": "مسافة خروج القطعة من الإطار",
+    "frame_gap_px": "فتحة الإطار (أسفل اليمين)",
+    "lens_caption": "نص العدسة",
+    "free_shipping_threshold": "حد الشحن المجاني (ج.م)",
+    "look_discount_percent": "خصم الإطلالة من ٣ قطع أو أكثر (%)",
+    "sticky_atc": "زر إضافة عائم على الموبايل",
+    "whatsapp_number": "رقم واتساب",
+    "whatsapp_message": "رسالة واتساب الافتراضية"
+  }
+}

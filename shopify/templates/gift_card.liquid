@@ -1,0 +1,22 @@
+{% layout none %}
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ shop.name }} — {{ 'gift_cards.issued.title' | t }}</title>
+    {{ 'molfet.css' | asset_url | stylesheet_tag }}
+  </head>
+  <body class="mf-body">
+    <main class="mf-page">
+      <p class="mf-slogan">{{ settings.slogan | default: 'Style Without Limits' }}</p>
+      <h1>{{ 'gift_cards.issued.title' | t }}</h1>
+      <p>{{ 'gift_cards.issued.subtext' | t }}</p>
+      <p class="mf-gift-card__code">{{ gift_card.code | format_code }}</p>
+      <p>{{ gift_card.balance | money }}</p>
+      {%- if gift_card.enabled == false or gift_card.expired -%}
+        <p class="mf-muted">{{ 'gift_cards.issued.expired' | t }}</p>
+      {%- endif -%}
+    </main>
+  </body>
+</html>

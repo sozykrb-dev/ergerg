@@ -1,0 +1,22 @@
+{%- comment -%}
+  Size guide modal — native <dialog>, fully keyboard operable.
+{%- endcomment -%}
+<dialog id="MolfetSizeGuide" class="mf-size-guide">
+  <div class="mf-size-guide__head">
+    <p class="mf-eyebrow">{{ 'products.product.size_guide' | t }}</p>
+    <button type="button" onclick="this.closest('dialog').close()" aria-label="{{ 'accessibility.close' | t }}">&times;</button>
+  </div>
+  <table class="mf-table">
+    <thead>
+      <tr><th>Size</th><th>Chest</th><th>Length</th><th>Weight</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>S</td><td>54–56 cm</td><td>70 cm</td><td>55–68 kg</td></tr>
+      <tr><td>M</td><td>57–59 cm</td><td>73 cm</td><td>69–78 kg</td></tr>
+      <tr><td>L</td><td>60–62 cm</td><td>76 cm</td><td>79–88 kg</td></tr>
+      <tr><td>XL</td><td>63–65 cm</td><td>78 cm</td><td>89–98 kg</td></tr>
+      <tr><td>2XL</td><td>66–69 cm</td><td>81 cm</td><td>99–115 kg</td></tr>
+    </tbody>
+  </table>
+  <p class="mf-muted">Relaxed silhouette. Choose your usual size for a standard fit, or one size down for a slimmer look.</p>
+</dialog>

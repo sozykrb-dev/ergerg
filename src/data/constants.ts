@@ -3,10 +3,12 @@ import { SOCIAL_LINKS_CONFIG } from './socialLinksConfig';
 
 export const CATEGORIES: Category[] = [
   { id: 'all', nameAr: 'جميع المنتجات', nameEn: 'Shop All', slug: 'all' },
-  { id: 'shirts', nameAr: 'قمصان', nameEn: 'SHIRTS', slug: 'shirts', image: 'https://sole-eg.net/cdn/shop/files/0B8448E8-CC72-40E2-B2E6-D4ACF518116D.png?v=1786064994&width=800' },
-  { id: 't-shirts', nameAr: 'تيشرتات', nameEn: 'T-Shirts', slug: 't-shirts', image: 'https://sole-eg.net/cdn/shop/files/7D24F74A-3C73-4FCF-9611-9D7E0EC24EEB.jpg?v=1786022054&width=800' },
-  { id: 'pants', nameAr: 'بناطيل', nameEn: 'PANTS', slug: 'pants', image: 'https://sole-eg.net/cdn/shop/files/4BF0AAF0-AF40-4811-88F9-C81B83717C7C.png?v=1786063991&width=800' },
-  { id: 'sale', nameAr: 'تخفيضات', nameEn: 'Sale', slug: 'sale', image: 'https://sole-eg.net/cdn/shop/files/324EB0C2-E4F8-4E39-A39C-68AD6EB82411.png?v=1786018130&width=800' },
+  { id: 'shirts', nameAr: 'قمصان', nameEn: 'Shirts', slug: 'shirts', image: '/img/products/shirt-baby-blue.webp' },
+  { id: 't-shirts', nameAr: 'تيشرتات', nameEn: 'T-Shirts', slug: 't-shirts', image: '/img/products/tee-black.webp' },
+  { id: 'pants', nameAr: 'بناطيل', nameEn: 'Pants', slug: 'pants', image: '/img/products/pants-black.webp' },
+  { id: 'outerwear', nameAr: 'طبقات خارجية', nameEn: 'Outerwear', slug: 'outerwear', image: '/img/products/overshirt-maroon.webp' },
+  { id: 'accessories', nameAr: 'إكسسوارات', nameEn: 'Accessories', slug: 'accessories', image: '/img/products/tote-cream.webp' },
+  { id: 'sale', nameAr: 'تخفيضات', nameEn: 'Sale', slug: 'sale', image: '/img/products/shirt-black.webp' },
 ];
 
 export const EGYPT_GOVERNORATES: { name: string; region: 'cairo_giza' | 'alex' | 'delta' | 'canal' | 'upper_egypt' | 'frontier'; defaultFee: number }[] = [
@@ -41,14 +43,20 @@ export const EGYPT_GOVERNORATES: { name: string; region: 'cairo_giza' | 'alex' |
 
 export const DEFAULT_SOCIAL_LINKS: SocialLink[] = SOCIAL_LINKS_CONFIG;
 
+export const ANN_BAR = [
+  { en: 'Designed with an Italian mindset. Crafted in Egypt.', ar: 'عقلية إيطالية في التصميم. حرفية مصرية في التنفيذ.' },
+  { en: 'Style Without Limits', ar: 'أسلوب بلا حدود' },
+  { en: 'Free shipping from 2,900 EGP', ar: 'شحن مجاني من ٢٩٠٠ ج.م' },
+];
+
 export const BRAND_COLORS = {
-  main: '#4F2C0A',      // Main Color  — RGB 79 44 10 / CMYK 25 75 100 60
-  secondary: '#F0E8D4', // Secondary   — RGB 240 232 212 / CMYK 5 6 17 0
-  contrast: '#6A7743',  // Contrast    — RGB 106 119 67 / CMYK 70 50 100 0
+  maroon: '#711518', // main — headings, buttons, key shapes, hero blocks
+  cream: '#FAED99',  // secondary — page surfaces, text on maroon or brown
+  brown: '#321E19',  // contrast — body text on cream, footer, dark sections
 } as const;
 
 export const DEFAULT_STORE_SETTINGS: StoreSettings = {
-  storeName: 'MOLFET FOR FASHON',
+  storeName: 'MOLFET',
   tagline: 'Style Without Limits',
   phone: '+201012345678',
   whatsapp: '201012345678',
@@ -61,15 +69,15 @@ export const DEFAULT_STORE_SETTINGS: StoreSettings = {
   instapayPhone: '01012345678',
   vodafoneCashNumber: '01012345678',
   paymentInstructions: 'يرجى تحويل المبلغ الإجمالي إلى العنوان أو الرقم أعلاه ورفع سكرين شوت بالتحويل لتأكيد الطلب فوراً.',
-  announcementAr: 'توصيل سريع داخل الإسكندرية | شحن مجاني للطلبات فوق 2900 جنيه',
-  announcementEn: 'Style Without Limits • FREE SHIPPING FOR ORDERS OVER 2900 LE',
+  announcementAr: 'شحن مجاني للطلبات فوق 2900 جنيه · عقلية إيطالية وحرفية مصرية',
+  announcementEn: 'Style Without Limits · Free shipping from 2,900 EGP',
   announcements: [
-    'MOLFET FOR FASHON — Style Without Limits',
-    'FREE SHIPPING IN ALEXANDRIA FOR ORDERS OVER 2900 LE',
-    '20% Discount • توصيل فوري داخل الإسكندرية'
+    'Style Without Limits — MOLFET',
+    'Free shipping from 2,900 EGP',
+    'Designed with an Italian mindset. Crafted in Egypt.',
   ],
-  heroBannerImage: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=2100&auto=format&fit=crop',
-  heroButtonText: 'New Arrivals',
+  heroBannerImage: '/img/hero/model-hero.webp',
+  heroButtonText: 'Shop the collection',
   freeShippingThreshold: 2900,
   defaultShippingFee: 50,
   cairoGizaShipping: 50,
@@ -79,12 +87,15 @@ export const DEFAULT_STORE_SETTINGS: StoreSettings = {
   telegramBotToken: '8868983556:AAFkMd3AtUbBR8CX7LM7lb0mhQHymaAnKhc',
   telegramChatId: '7406265512',
   enableTelegramNotifications: true,
+  slogan: 'Style Without Limits',
+  lensEnabled: true,
+  lookDiscountPercent: 10,
 };
 
 export const ANNOUNCEMENT_SLIDES = [
-  'MOLFET FOR FASHON — Style Without Limits',
-  'FREE SHIPPING IN ALEXANDRIA FOR ORDERS OVER 2900 LE',
-  '20% Discount • توصيل فوري داخل الإسكندرية'
+  'Style Without Limits — MOLFET',
+  'Free shipping from 2,900 EGP',
+  'Designed with an Italian mindset. Crafted in Egypt.',
 ];
 
 export const INITIAL_COUPONS: Coupon[] = [
@@ -109,206 +120,290 @@ export const INITIAL_HERO_SLIDES: HeroSlide[] = [
   }
 ];
 
+/**
+ * The MOLFET catalogue.
+ * Each product carries the three layers "Break the Frame" needs:
+ *  - images[0]      the photo, on a solid brand surface
+ *  - cutoutUrl      the transparent cut-out that steps over the frame line
+ *  - sketchUrl      layer A of the Lens: the Italian technical flat
+ *  - macroUrl       layer B of the Lens: the Egyptian fabric up close
+ *  - details        up to three hotspots (Fabric, Cut, Finish)
+ */
+const detailPoints = (macro: string) => [
+  {
+    key: 'fabric' as const,
+    x: 34,
+    y: 38,
+    titleEn: 'Fabric',
+    titleAr: 'القماش',
+    textEn: 'Long-staple Egyptian cotton, combed and dyed in small batches.',
+    textAr: 'قطن مصري طويل التيلة، مُمشّط ومصبوغ على دفعات صغيرة.',
+    macro,
+  },
+  {
+    key: 'cut' as const,
+    x: 63,
+    y: 55,
+    titleEn: 'Cut',
+    titleAr: 'القصّة',
+    textEn: 'Drafted in Italy, cut on a relaxed line with a clean shoulder.',
+    textAr: 'مُصمّمة في إيطاليا، بقصّة مريحة وكتف نظيف.',
+    macro: '/img/detail/cut.webp',
+  },
+  {
+    key: 'finish' as const,
+    x: 46,
+    y: 76,
+    titleEn: 'Finish',
+    titleAr: 'التشطيب',
+    textEn: 'Hand-finished seams, mother-of-pearl buttons, pressed edge.',
+    textAr: 'حواف نهائية يدوية، أزرار صدف، وحاشية مكوّية.',
+    macro: '/img/detail/finish.webp',
+  },
+];
+
 export const INITIAL_PRODUCTS: Product[] = [
-  // 1. SHIRTS
   {
     id: 'molfet-p1',
-    titleAr: 'قميص بوبلين كلاسيك بيبي بلو',
+    titleAr: 'قميص بوبلين كلاسيك أزرق فاتح',
     titleEn: 'BABY BLUE CLASSIC POPLIN SHIRT',
     slug: 'baby-blue-classic-poplin-shirt',
     category: 'shirts',
+    slot: 'top',
     price: 650,
     compareAtPrice: 850,
     stock: 25,
     sku: 'MLFT-SHIRT-01',
-    descriptionAr: 'قميص بوبلين كلاسيك بقصة ريلاكسد مريحة وخامة قطن بوبلين فاخرة ناعمة وقابلة للتنفس. تصميم أنيق بأزرار متناسقة وجيب أمامي.',
-    descriptionEn: 'Crisp and breathable classic poplin shirt in baby blue. Tailored with a relaxed modern streetwear cut and tonal buttons.',
-    fabricDetails: '100% Cotton Poplin Premium Fabric - معالج ضد الانكماش',
+    descriptionAr: 'قميص بوبلين كلاسيك بقصة ريلاكسد مريحة وخامة قطن بوبلين فاخرة ناعمة وقابلة للتنفس. أزرار متناسقة وجيب أمامي، ورسم إيطالي على كتف نظيف.',
+    descriptionEn: 'A crisp, breathable poplin shirt in baby blue. Italian sketch, Egyptian cotton, a relaxed line that stays sharp all day.',
+    fabricDetails: '100% long-staple Egyptian cotton poplin, 190 gsm, pre-shrunk.',
     gsm: '190 GSM Cotton Poplin',
     fitType: 'Relaxed',
     sizes: ['S', 'M', 'L', 'XL', '2XL'],
-    colors: [
-      { name: 'Baby Blue', hex: '#9ec4db' }
-    ],
-    images: [
-      'https://sole-eg.net/cdn/shop/files/0B8448E8-CC72-40E2-B2E6-D4ACF518116D.png?v=1786064994&width=1200',
-      'https://sole-eg.net/cdn/shop/files/660BAFB3-78F5-40DC-A40F-5F7F7CF506E6.jpg?v=1786024435&width=1200',
-      'https://sole-eg.net/cdn/shop/files/26.jpg?v=1786024421&width=1200',
-      'https://sole-eg.net/cdn/shop/files/IMG_1156.jpg?v=1786024421&width=1200'
-    ],
+    colors: [{ name: 'Baby Blue', hex: '#9ec4db' }],
+    images: ['/img/products/shirt-baby-blue.webp'],
+    cutoutUrl: '/img/products/shirt-baby-blue-cut.webp',
+    sketchUrl: '/img/sketches/shirt.svg',
+    macroUrl: '/img/detail/fabric.webp',
+    details: detailPoints('/img/detail/fabric.webp'),
     badge: 'SALE',
     isFeatured: true,
     rating: 5.0,
     reviewsCount: 38,
-    createdAt: '2026-08-01'
+    createdAt: '2026-08-01',
   },
   {
     id: 'molfet-p2',
     titleAr: 'قميص بوبلين كلاسيك أسود',
-    titleEn: 'Black CLASSIC POPLIN SHIRT',
+    titleEn: 'BLACK CLASSIC POPLIN SHIRT',
     slug: 'black-classic-poplin-shirt',
     category: 'shirts',
+    slot: 'top',
     price: 750,
     compareAtPrice: 950,
     stock: 20,
     sku: 'MLFT-SHIRT-02',
     descriptionAr: 'قميص بوبلين كلاسيك أسود فاخر، بقصة انسيابية ومظهر راقي للارتداء اليومي أو المناسبات الخاصة.',
-    descriptionEn: 'Black classic relaxed poplin shirt with fine stitching and durable luxury finish.',
-    fabricDetails: '100% Cotton Poplin High Thread Count',
+    descriptionEn: 'Black classic poplin shirt with fine stitching and a durable luxury finish. The everyday shirt that behaves like an evening one.',
+    fabricDetails: '100% Egyptian cotton poplin, high thread count.',
     gsm: '190 GSM Cotton Poplin',
     fitType: 'Relaxed',
     sizes: ['S', 'M', 'L', 'XL', '2XL'],
-    colors: [
-      { name: 'Black', hex: '#111111' }
-    ],
-    images: [
-      'https://sole-eg.net/cdn/shop/files/IMG_1152.jpg?v=1786024156&width=1200',
-      'https://sole-eg.net/cdn/shop/files/24.jpg?v=1786024157&width=1200',
-      'https://sole-eg.net/cdn/shop/files/B3E35394-7CED-465E-8367-02CFC10157A8.png?v=1786064659&width=1200',
-      'https://sole-eg.net/cdn/shop/files/BDC7B533-4950-4AFF-ACE6-9F9F6358EC4F.jpg?v=1786064658&width=1200'
-    ],
+    colors: [{ name: 'Black', hex: '#321E19' }],
+    images: ['/img/products/shirt-black.webp'],
+    cutoutUrl: '/img/products/shirt-black-cut.webp',
+    sketchUrl: '/img/sketches/shirt.svg',
+    macroUrl: '/img/detail/cut.webp',
+    details: detailPoints('/img/detail/fabric.webp'),
     badge: 'SALE',
     isFeatured: true,
     rating: 4.9,
     reviewsCount: 29,
-    createdAt: '2026-08-02'
+    createdAt: '2026-08-02',
   },
-
-  // 2. T-SHIRTS
   {
     id: 'molfet-p3',
     titleAr: 'تيشرت قطن ثقيل أسود',
-    titleEn: 'Black HEAVYWEIGHT COTTON T-SHIRT',
+    titleEn: 'BLACK HEAVYWEIGHT COTTON T-SHIRT',
     slug: 'black-heavyweight-cotton-t-shirt',
     category: 't-shirts',
+    slot: 'top',
     price: 600,
     compareAtPrice: 950,
     stock: 35,
     sku: 'MLFT-TEE-01',
     descriptionAr: 'تيشرت قطن مصري 100% ثقيل بقصة أوفر سايز عصرية وأكمام واسعة. متين ومريح ومناسب للإطلالات اليومية.',
-    descriptionEn: 'Black heavyweight cotton t-shirt with drop shoulders and structured ribbed collar.',
-    fabricDetails: '100% Pure Egyptian Heavyweight Cotton',
+    descriptionEn: 'A 270 gsm Egyptian cotton tee with drop shoulders, a structured ribbed collar and a boxy cut that holds its shape.',
+    fabricDetails: '100% pure Egyptian heavyweight cotton, 270 gsm.',
     gsm: '270 GSM Heavyweight Cotton',
     fitType: 'Oversized',
     sizes: ['S', 'M', 'L', 'XL', '2XL'],
-    colors: [
-      { name: 'Black', hex: '#111111' }
-    ],
-    images: [
-      'https://sole-eg.net/cdn/shop/files/7D24F74A-3C73-4FCF-9611-9D7E0EC24EEB.jpg?v=1786022054&width=1200',
-      'https://sole-eg.net/cdn/shop/files/1.jpg?v=1786064786&width=1200',
-      'https://sole-eg.net/cdn/shop/files/67B734BF-F5ED-476F-8EF7-33E0C5380C5C.jpg?v=1786064772&width=1200',
-      'https://sole-eg.net/cdn/shop/files/15.jpg?v=1786022054&width=1200',
-      'https://sole-eg.net/cdn/shop/files/69520A61-D17D-4527-910A-1111A47947B8.jpg?v=1786025529&width=1200'
-    ],
+    colors: [{ name: 'Black', hex: '#321E19' }],
+    images: ['/img/products/tee-black.webp'],
+    cutoutUrl: '/img/products/tee-black-cut.webp',
+    sketchUrl: '/img/sketches/tee.svg',
+    macroUrl: '/img/detail/fabric.webp',
+    details: detailPoints('/img/detail/fabric.webp'),
     badge: 'SALE',
     isFeatured: true,
     rating: 5.0,
     reviewsCount: 52,
-    createdAt: '2026-08-03'
+    createdAt: '2026-08-03',
   },
   {
     id: 'molfet-p4',
-    titleAr: 'تيشرت قطن ثقيل أبيض',
-    titleEn: 'WHITE HEAVY WEIGHT COTTON T-SHIRT',
-    slug: 'heavyweight-cotton-t-shirt-pullover',
+    titleAr: 'تيشرت قطن ثقيل كريمي',
+    titleEn: 'CREAM HEAVYWEIGHT COTTON T-SHIRT',
+    slug: 'cream-heavyweight-cotton-t-shirt',
     category: 't-shirts',
+    slot: 'top',
     price: 600,
     compareAtPrice: 950,
     stock: 30,
     sku: 'MLFT-TEE-02',
-    descriptionAr: 'تيشرت قطن مصري أبيض ثقيل بجودة تصنيع فائقة وقصة بوكسي أوفر سايز راقية.',
-    descriptionEn: 'Clean white heavyweight premium cotton tee designed for supreme comfort and effortless style.',
-    fabricDetails: '100% Pure Egyptian Heavyweight Cotton',
+    descriptionAr: 'تيشرت قطن مصري كريمي ثقيل بجودة تصنيع فائقة وقصة بوكسي أوفر سايز راقية.',
+    descriptionEn: 'Clean cream heavyweight premium cotton tee designed for supreme comfort and effortless style.',
+    fabricDetails: '100% pure Egyptian heavyweight cotton, 270 gsm.',
     gsm: '270 GSM Heavyweight Cotton',
     fitType: 'Oversized',
     sizes: ['S', 'M', 'L', 'XL', '2XL'],
-    colors: [
-      { name: 'White', hex: '#ffffff' }
-    ],
-    images: [
-      'https://sole-eg.net/cdn/shop/files/324EB0C2-E4F8-4E39-A39C-68AD6EB82411.png?v=1786018130&width=1200',
-      'https://sole-eg.net/cdn/shop/files/IMG_1144.jpg?v=1786018150&width=1200',
-      'https://sole-eg.net/cdn/shop/files/IMG_1143.jpg?v=1786018152&width=1200',
-      'https://sole-eg.net/cdn/shop/files/IMG_1147.jpg?v=1786018150&width=1200'
-    ],
+    colors: [{ name: 'Cream', hex: '#FAED99' }],
+    images: ['/img/products/tee-white.webp'],
+    cutoutUrl: '/img/products/tee-white-cut.webp',
+    sketchUrl: '/img/sketches/tee.svg',
+    macroUrl: '/img/detail/finish.webp',
+    details: detailPoints('/img/detail/fabric.webp'),
     badge: 'SALE',
     isFeatured: true,
     rating: 4.9,
     reviewsCount: 41,
-    createdAt: '2026-08-04'
+    createdAt: '2026-08-04',
   },
-
-  // 3. PANTS
   {
     id: 'molfet-p5',
     titleAr: 'بنطلون فرينش تيري أسود',
     titleEn: 'BLACK FRENCH TERRY PANTS',
     slug: 'black-french-terry-pants',
     category: 'pants',
+    slot: 'bottom',
     price: 999,
     compareAtPrice: 1200,
     stock: 22,
     sku: 'MLFT-PNT-01',
     descriptionAr: 'بنطلون فرينش تيري قطني مريح وأنيق، بقصة واسعة مستقيمة وحزام خصر مطاطي برباط وجيوب عميقة.',
-    descriptionEn: 'Black French Terry relaxed pants featuring an elastic drawstring waistband and clean silhouette.',
-    fabricDetails: '100% Heavy French Terry Cotton 350 GSM',
+    descriptionEn: 'Black French terry relaxed pants with an elastic drawstring waistband and a clean, straight silhouette.',
+    fabricDetails: '100% heavy French terry cotton, 350 gsm.',
     gsm: '350 GSM French Terry',
     fitType: 'Relaxed',
     sizes: ['S', 'M', 'L', 'XL', '2XL'],
-    colors: [
-      { name: 'Black', hex: '#111111' }
-    ],
-    images: [
-      'https://sole-eg.net/cdn/shop/files/4BF0AAF0-AF40-4811-88F9-C81B83717C7C.png?v=1786063991&width=1200',
-      'https://sole-eg.net/cdn/shop/files/2_679c69e8-f3a6-4e4e-94ca-98fc6028e43c.jpg?v=1786064944&width=1200',
-      'https://sole-eg.net/cdn/shop/files/01.jpg?v=1786063992&width=1200',
-      'https://sole-eg.net/cdn/shop/files/A743F556-788B-43E8-B313-6BC7EFEB5F1B_13328ec5-0e0b-4256-afff-944ecbd95609.jpg?v=1786064920&width=1200'
-    ],
+    colors: [{ name: 'Black', hex: '#321E19' }],
+    images: ['/img/products/pants-black.webp'],
+    cutoutUrl: '/img/products/pants-black-cut.webp',
+    sketchUrl: '/img/sketches/pants.svg',
+    macroUrl: '/img/detail/cut.webp',
+    details: detailPoints('/img/detail/fabric.webp'),
     badge: 'SALE',
     isFeatured: true,
     rating: 5.0,
     reviewsCount: 34,
-    createdAt: '2026-08-05'
+    createdAt: '2026-08-05',
   },
   {
     id: 'molfet-p6',
     titleAr: 'بنطلون فرينش تيري رمادي',
     titleEn: 'GRAY FRENCH TERRY PANTS',
-    slug: 'french-terry-pants',
+    slug: 'gray-french-terry-pants',
     category: 'pants',
+    slot: 'bottom',
     price: 999,
     compareAtPrice: 1200,
     stock: 18,
     sku: 'MLFT-PNT-02',
     descriptionAr: 'بنطلون فرينش تيري رمادي هيذر ناعم، مصمم لأقصى درجات الراحة مع الحفاظ على الأناقة العصرية.',
-    descriptionEn: 'Gray heather French Terry cotton pants with comfortable stretch and modern fit.',
-    fabricDetails: '100% Heavy French Terry Cotton 350 GSM',
+    descriptionEn: 'Gray heather French terry cotton pants with comfortable stretch and a modern fit.',
+    fabricDetails: '100% heavy French terry cotton, 350 gsm.',
     gsm: '350 GSM French Terry',
     fitType: 'Relaxed',
     sizes: ['S', 'M', 'L', 'XL', '2XL'],
-    colors: [
-      { name: 'Heather Gray', hex: '#8a8d91' }
-    ],
-    images: [
-      'https://sole-eg.net/cdn/shop/files/AF4DF890-8A0D-4A44-871E-CB106D2FFD36.png?v=1786025643&width=1200',
-      'https://sole-eg.net/cdn/shop/files/1AA250F4-C73D-4602-98DF-EC154AB84F7E_413b447c-fe68-4dc3-8c28-579b976992b4.png?v=1786025794&width=1200',
-      'https://sole-eg.net/cdn/shop/files/9.jpg?v=1786025643&width=1200',
-      'https://sole-eg.net/cdn/shop/files/324EB0C2-E4F8-4E39-A39C-68AD6EB82411_95f191b5-e38f-466b-b8c9-3a61030cd974.png?v=1786064865&width=1200'
-    ],
+    colors: [{ name: 'Heather Gray', hex: '#8a8d91' }],
+    images: ['/img/products/pants-gray.webp'],
+    cutoutUrl: '/img/products/pants-gray-cut.webp',
+    sketchUrl: '/img/sketches/pants.svg',
+    macroUrl: '/img/detail/fabric.webp',
+    details: detailPoints('/img/detail/fabric.webp'),
     badge: 'SALE',
     isFeatured: true,
     rating: 4.9,
     reviewsCount: 27,
-    createdAt: '2026-08-06'
-  }
+    createdAt: '2026-08-06',
+  },
+  {
+    id: 'molfet-p7',
+    titleAr: 'أوفرشيرت صوف مارون',
+    titleEn: 'MAROON WOOL-BLEND OVERSHIRT',
+    slug: 'maroon-wool-blend-overshirt',
+    category: 'outerwear',
+    slot: 'outerwear',
+    price: 1450,
+    compareAtPrice: 1800,
+    stock: 14,
+    sku: 'MLFT-OVR-01',
+    descriptionAr: 'أوفرشيرت صوف بقصة بوكسي واسعة الأكتاف وجيوب أمامية. طبقة خارجية دافئة بلون المارون الأساسي.',
+    descriptionEn: 'A boxy wool-blend overshirt in the brand maroon. Open front, patch pockets, a shoulder that stays architectural.',
+    fabricDetails: 'Wool and cotton blend, brushed finish, fully bound seams.',
+    gsm: '420 GSM Wool Blend',
+    fitType: 'Boxy',
+    sizes: ['S', 'M', 'L', 'XL', '2XL'],
+    colors: [{ name: 'Maroon', hex: '#711518' }],
+    images: ['/img/products/overshirt-maroon.webp'],
+    cutoutUrl: '/img/products/overshirt-maroon-cut.webp',
+    sketchUrl: '/img/sketches/overshirt.svg',
+    macroUrl: '/img/detail/finish.webp',
+    details: detailPoints('/img/detail/fabric.webp'),
+    badge: 'NEW',
+    isFeatured: true,
+    rating: 5.0,
+    reviewsCount: 18,
+    createdAt: '2026-08-07',
+  },
+  {
+    id: 'molfet-p8',
+    titleAr: 'شنطة توت كتان كريمي',
+    titleEn: 'CREAM CANVAS TOTE',
+    slug: 'cream-canvas-tote',
+    category: 'accessories',
+    slot: 'accessory',
+    price: 390,
+    compareAtPrice: 490,
+    stock: 40,
+    sku: 'MLFT-ACC-01',
+    descriptionAr: 'شنطة توت من الكتان الثقيل بلون الكريم، بيدين مخيطتين ومقاس يومي عملي. بدون أي طباعة.',
+    descriptionEn: 'A plain heavy canvas tote in cream. Two stitched handles, an everyday size, nothing printed on it.',
+    fabricDetails: '16 oz Egyptian cotton canvas, unbleached.',
+    gsm: '16 oz Canvas',
+    fitType: 'Regular',
+    sizes: ['One Size'],
+    colors: [{ name: 'Cream', hex: '#FAED99' }],
+    images: ['/img/products/tote-cream.webp'],
+    cutoutUrl: '/img/products/tote-cream-cut.webp',
+    sketchUrl: '/img/sketches/tote.svg',
+    macroUrl: '/img/detail/cut.webp',
+    details: detailPoints('/img/detail/fabric.webp'),
+    badge: 'NEW',
+    isFeatured: false,
+    rating: 4.8,
+    reviewsCount: 12,
+    createdAt: '2026-08-08',
+  },
 ];
 
 export const PRESET_IMAGE_GALLERY = [
-  { label: 'Baby Blue Poplin Shirt', url: 'https://sole-eg.net/cdn/shop/files/0B8448E8-CC72-40E2-B2E6-D4ACF518116D.png?v=1786064994&width=1200' },
-  { label: 'Black Poplin Shirt', url: 'https://sole-eg.net/cdn/shop/files/IMG_1152.jpg?v=1786024156&width=1200' },
-  { label: 'Black Heavyweight Tee', url: 'https://sole-eg.net/cdn/shop/files/7D24F74A-3C73-4FCF-9611-9D7E0EC24EEB.jpg?v=1786022054&width=1200' },
-  { label: 'White Heavyweight Tee', url: 'https://sole-eg.net/cdn/shop/files/324EB0C2-E4F8-4E39-A39C-68AD6EB82411.png?v=1786018130&width=1200' },
-  { label: 'Black French Terry Pants', url: 'https://sole-eg.net/cdn/shop/files/4BF0AAF0-AF40-4811-88F9-C81B83717C7C.png?v=1786063991&width=1200' },
-  { label: 'Gray French Terry Pants', url: 'https://sole-eg.net/cdn/shop/files/AF4DF890-8A0D-4A44-871E-CB106D2FFD36.png?v=1786025643&width=1200' },
+  { label: 'Baby Blue Poplin Shirt', url: '/img/products/shirt-baby-blue.webp' },
+  { label: 'Black Poplin Shirt', url: '/img/products/shirt-black.webp' },
+  { label: 'Black Heavyweight Tee', url: '/img/products/tee-black.webp' },
+  { label: 'Cream Heavyweight Tee', url: '/img/products/tee-white.webp' },
+  { label: 'Black French Terry Pants', url: '/img/products/pants-black.webp' },
+  { label: 'Gray French Terry Pants', url: '/img/products/pants-gray.webp' },
+  { label: 'Maroon Overshirt', url: '/img/products/overshirt-maroon.webp' },
+  { label: 'Cream Canvas Tote', url: '/img/products/tote-cream.webp' },
 ];

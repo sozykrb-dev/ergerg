@@ -1,0 +1,36 @@
+{%- comment -%}
+  Announcement bar. The slogan lives here, in light weight with wide letter spacing.
+{%- endcomment -%}
+<div class="mf-announcement" style="background: {{ section.settings.bg }}; color: {{ section.settings.fg }};">
+  <div class="mf-announcement__inner">
+    {%- if section.settings.message != blank -%}
+      <p class="mf-slogan">{{ section.settings.message }}</p>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Announcement bar",
+  "settings": [
+    {
+      "type": "text",
+      "id": "message",
+      "label": "Message",
+      "default": "Style Without Limits"
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Background",
+      "default": "#321E19"
+    },
+    {
+      "type": "color",
+      "id": "fg",
+      "label": "Text",
+      "default": "#FAED99"
+    }
+  ]
+}
+{% endschema %}

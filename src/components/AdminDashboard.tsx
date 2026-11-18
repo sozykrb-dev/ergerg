@@ -173,8 +173,8 @@ export const AdminDashboard: React.FC = () => {
   const [fitType, setFitType] = useState<Product['fitType']>('Relaxed');
   const [sizes, setSizes] = useState<string[]>(['S', 'M', 'L', 'XL', '2XL']);
   const [colors, setColors] = useState<ProductColor[]>([
-    { name: 'Black', hex: '#000000' },
-    { name: 'White', hex: '#ffffff' }
+    { name: 'Black', hex: 'var(--molfet-brown)' },
+    { name: 'White', hex: 'var(--molfet-cream)' }
   ]);
   const [images, setImages] = useState<string[]>([]);
   const [thumbnailUrl, setThumbnailUrl] = useState<string>('');
@@ -188,7 +188,7 @@ export const AdminDashboard: React.FC = () => {
 
   // Helper color input
   const [customColorName, setCustomColorName] = useState('');
-  const [customColorHex, setCustomColorHex] = useState('#000000');
+  const [customColorHex, setCustomColorHex] = useState('var(--molfet-brown)');
 
   // Coupon form
   const [newCouponCode, setNewCouponCode] = useState('');
@@ -369,8 +369,8 @@ export const AdminDashboard: React.FC = () => {
     setFitType('Relaxed');
     setSizes(['S', 'M', 'L', 'XL', '2XL']);
     setColors([
-      { name: 'Black', hex: '#000000' },
-      { name: 'White', hex: '#ffffff' }
+      { name: 'Black', hex: 'var(--molfet-brown)' },
+      { name: 'White', hex: 'var(--molfet-cream)' }
     ]);
     setImages([]);
     setThumbnailUrl('');
@@ -436,7 +436,7 @@ export const AdminDashboard: React.FC = () => {
         gsm: gsm?.trim() || '270 GSM',
         fitType,
         sizes: sizes.length ? sizes : ['S', 'M', 'L', 'XL', '2XL'],
-        colors: colors.length ? colors : [{ name: 'Standard', hex: '#111111' }],
+        colors: colors.length ? colors : [{ name: 'Standard', hex: 'var(--molfet-brown)' }],
         thumbnailUrl: thumbnailUrl || images[0] || '',
         images,
         badge,
@@ -1157,6 +1157,10 @@ export const AdminDashboard: React.FC = () => {
         mobileWebhookUrl: (settingsForm.mobileWebhookUrl || '').trim(),
         enableTelegramNotifications: settingsForm.enableTelegramNotifications ?? true,
         enableWebhookNotifications: settingsForm.enableWebhookNotifications ?? true,
+        // BREAK THE FRAME — theme settings
+        slogan: (settingsForm.slogan || 'Style Without Limits').trim(),
+        lensEnabled: settingsForm.lensEnabled !== false,
+        lookDiscountPercent: Math.max(0, Number(settingsForm.lookDiscountPercent) || 0),
       };
 
       if (payload.telegramBotToken) localStorage.setItem('molfet_tg_bot_token', payload.telegramBotToken);
@@ -1423,19 +1427,19 @@ export const AdminDashboard: React.FC = () => {
 
       {/* Top Metrics Cards (Calculated from Supabase aggregation) */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-        <div className="p-4 rounded-xl bg-white border border-[#dfdfdf] shadow-xs">
+        <div className="p-4 rounded-xl bg-white border border-[var(--mf-hairline)] shadow-xs">
           <span className="text-xs text-zinc-500 block mb-1">Products in Catalog</span>
           <span className="text-2xl font-bold text-black">{stats.productsCount || products.length}</span>
         </div>
-        <div className="p-4 rounded-xl bg-white border border-[#dfdfdf] shadow-xs">
+        <div className="p-4 rounded-xl bg-white border border-[var(--mf-hairline)] shadow-xs">
           <span className="text-xs text-zinc-500 block mb-1">Total Orders</span>
           <span className="text-2xl font-bold text-black">{stats.totalOrdersCount}</span>
         </div>
-        <div className="p-4 rounded-xl bg-white border border-[#dfdfdf] shadow-xs">
+        <div className="p-4 rounded-xl bg-white border border-[var(--mf-hairline)] shadow-xs">
           <span className="text-xs text-zinc-500 block mb-1">Pending Orders</span>
           <span className="text-2xl font-bold text-amber-600">{stats.pendingOrdersCount}</span>
         </div>
-        <div className="p-4 rounded-xl bg-white border border-[#dfdfdf] shadow-xs">
+        <div className="p-4 rounded-xl bg-white border border-[var(--mf-hairline)] shadow-xs">
           <span className="text-xs text-zinc-500 block mb-1">Total Sales Revenue</span>
           <span className="text-2xl font-bold text-black">LE {stats.totalSalesRevenue.toFixed(2)}</span>
         </div>
@@ -1542,7 +1546,7 @@ export const AdminDashboard: React.FC = () => {
 
       {/* TAB 1: ADD / EDIT PRODUCT */}
       {activeTab === 'add-product' && (
-        <div className="bg-white border border-[#dfdfdf] rounded-2xl p-6 sm:p-8 shadow-xs">
+        <div className="bg-white border border-[var(--mf-hairline)] rounded-2xl p-6 sm:p-8 shadow-xs">
           <div className="flex items-center justify-between pb-4 border-b border-zinc-200 mb-6">
             <div>
               <h2 className="text-lg font-bold text-black">
@@ -1575,7 +1579,7 @@ export const AdminDashboard: React.FC = () => {
                   value={titleEn}
                   onChange={(e) => setTitleEn(e.target.value)}
                   placeholder="e.g. OVERSIZED HEAVYWEIGHT SHIRT"
-                  className="w-full bg-[#f9f9f9] border border-zinc-300 rounded-lg px-3.5 py-2.5 text-sm text-black focus:outline-none focus:border-black"
+                  className="w-full bg-[var(--mf-surface-soft)] border border-zinc-300 rounded-lg px-3.5 py-2.5 text-sm text-black focus:outline-none focus:border-black"
                 />
               </div>
 
@@ -1588,7 +1592,7 @@ export const AdminDashboard: React.FC = () => {
                   value={sku}
                   onChange={(e) => setSku(e.target.value)}
                   placeholder="MLFT-701"
-                  className="w-full bg-[#f9f9f9] border border-zinc-300 rounded-lg px-3.5 py-2.5 text-sm font-mono text-black focus:outline-none focus:border-black"
+                  className="w-full bg-[var(--mf-surface-soft)] border border-zinc-300 rounded-lg px-3.5 py-2.5 text-sm font-mono text-black focus:outline-none focus:border-black"
                 />
               </div>
             </div>
@@ -1616,7 +1620,7 @@ export const AdminDashboard: React.FC = () => {
                     }
                     setCategory(e.target.value);
                   }}
-                  className="w-full bg-[#f9f9f9] border border-zinc-300 rounded-lg px-3.5 py-2.5 text-sm text-black focus:outline-none focus:border-black"
+                  className="w-full bg-[var(--mf-surface-soft)] border border-zinc-300 rounded-lg px-3.5 py-2.5 text-sm text-black focus:outline-none focus:border-black"
                 >
                   {categories.filter((c) => c.id !== 'all').map((c) => (
                     <option key={c.id} value={c.id}>
@@ -1637,7 +1641,7 @@ export const AdminDashboard: React.FC = () => {
                 <select
                   value={badge || ''}
                   onChange={(e) => setBadge(e.target.value as any || undefined)}
-                  className="w-full bg-[#f9f9f9] border border-zinc-300 rounded-lg px-3.5 py-2.5 text-sm text-black focus:outline-none focus:border-black font-medium"
+                  className="w-full bg-[var(--mf-surface-soft)] border border-zinc-300 rounded-lg px-3.5 py-2.5 text-sm text-black focus:outline-none focus:border-black font-medium"
                 >
                   <option value="">بدون شارة (No Badge)</option>
                   <option value="SALE">SALE (مستطيل أسود في الركن العلوي الأيسر)</option>
@@ -1787,7 +1791,7 @@ export const AdminDashboard: React.FC = () => {
                         }
                       }}
                       placeholder="https://example.com/image.webp"
-                      className="w-full bg-[#f9f9f9] border border-zinc-300 rounded-lg px-3 py-2 text-xs text-black focus:outline-none focus:border-black"
+                      className="w-full bg-[var(--mf-surface-soft)] border border-zinc-300 rounded-lg px-3 py-2 text-xs text-black focus:outline-none focus:border-black"
                     />
                   </div>
                   <button
@@ -1944,7 +1948,7 @@ export const AdminDashboard: React.FC = () => {
                 <select
                   value={fitType}
                   onChange={(e) => setFitType(e.target.value as any)}
-                  className="w-full bg-[#f9f9f9] border border-zinc-300 rounded-lg px-3.5 py-2 text-sm text-black focus:outline-none focus:border-black"
+                  className="w-full bg-[var(--mf-surface-soft)] border border-zinc-300 rounded-lg px-3.5 py-2 text-sm text-black focus:outline-none focus:border-black"
                 >
                   <option value="Oversized">Oversized</option>
                   <option value="Relaxed">Relaxed</option>
@@ -1981,7 +1985,7 @@ export const AdminDashboard: React.FC = () => {
 
       {/* TAB 2: PRODUCTS CATALOG LIST */}
       {activeTab === 'products-list' && (
-        <div className="bg-white border border-[#dfdfdf] rounded-2xl p-6 sm:p-8 shadow-xs">
+        <div className="bg-white border border-[var(--mf-hairline)] rounded-2xl p-6 sm:p-8 shadow-xs">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-zinc-200 mb-4">
             <div>
               <h2 className="text-lg font-bold text-black flex items-center gap-2">
@@ -1999,14 +2003,14 @@ export const AdminDashboard: React.FC = () => {
                   value={searchInList}
                   onChange={(e) => setSearchInList(e.target.value)}
                   placeholder="Search by title, SKU..."
-                  className="w-full bg-[#f9f9f9] border border-zinc-300 rounded-lg pl-9 pr-3 py-1.5 text-xs text-black focus:outline-none focus:border-black"
+                  className="w-full bg-[var(--mf-surface-soft)] border border-zinc-300 rounded-lg pl-9 pr-3 py-1.5 text-xs text-black focus:outline-none focus:border-black"
                 />
               </div>
 
               <select
                 value={filterCatInList}
                 onChange={(e) => setFilterCatInList(e.target.value)}
-                className="bg-[#f9f9f9] border border-zinc-300 rounded-lg px-3 py-1.5 text-xs text-black focus:outline-none"
+                className="bg-[var(--mf-surface-soft)] border border-zinc-300 rounded-lg px-3 py-1.5 text-xs text-black focus:outline-none"
               >
                 <option value="all">All Categories</option>
                 {categories.map((c) => (
@@ -2248,7 +2252,7 @@ export const AdminDashboard: React.FC = () => {
 
       {/* TAB 3: CUSTOMER ORDERS (Paginated, Server-Side Filtered) */}
       {activeTab === 'orders' && (
-        <div className="bg-white border border-[#dfdfdf] rounded-2xl p-6 sm:p-8 shadow-xs">
+        <div className="bg-white border border-[var(--mf-hairline)] rounded-2xl p-6 sm:p-8 shadow-xs">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-zinc-200 mb-4">
             <div>
               <h2 className="text-lg font-bold text-black flex items-center gap-2">
@@ -2266,14 +2270,14 @@ export const AdminDashboard: React.FC = () => {
                   value={ordersSearchQuery}
                   onChange={(e) => { setOrdersSearchQuery(e.target.value); setOrdersPage(1); }}
                   placeholder="Search order #, phone..."
-                  className="w-full bg-[#f9f9f9] border border-zinc-300 rounded-lg pl-9 pr-3 py-1.5 text-xs text-black focus:outline-none focus:border-black"
+                  className="w-full bg-[var(--mf-surface-soft)] border border-zinc-300 rounded-lg pl-9 pr-3 py-1.5 text-xs text-black focus:outline-none focus:border-black"
                 />
               </div>
 
               <select
                 value={ordersStatusFilter}
                 onChange={(e) => { setOrdersStatusFilter(e.target.value); setOrdersPage(1); }}
-                className="bg-[#f9f9f9] border border-zinc-300 rounded-lg px-3 py-1.5 text-xs text-black focus:outline-none"
+                className="bg-[var(--mf-surface-soft)] border border-zinc-300 rounded-lg px-3 py-1.5 text-xs text-black focus:outline-none"
               >
                 <option value="all">All Statuses</option>
                 <option value="pending">Pending</option>
@@ -2677,7 +2681,7 @@ export const AdminDashboard: React.FC = () => {
       {/* TAB 4: COUPONS */}
       {activeTab === 'coupons' && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white border border-[#dfdfdf] rounded-2xl p-6 shadow-xs">
+          <div className="bg-white border border-[var(--mf-hairline)] rounded-2xl p-6 shadow-xs">
             <h3 className="text-base font-bold text-black mb-4">Create Promo Code</h3>
             <form onSubmit={handleCreateCoupon} className="space-y-4 text-xs">
               <div>
@@ -2688,7 +2692,7 @@ export const AdminDashboard: React.FC = () => {
                   value={newCouponCode}
                   onChange={(e) => setNewCouponCode(e.target.value)}
                   placeholder="e.g. SUMMER20"
-                  className="w-full bg-[#f9f9f9] border border-zinc-300 rounded-lg p-2.5 font-mono uppercase font-bold focus:outline-none focus:border-black"
+                  className="w-full bg-[var(--mf-surface-soft)] border border-zinc-300 rounded-lg p-2.5 font-mono uppercase font-bold focus:outline-none focus:border-black"
                 />
               </div>
 
@@ -2697,7 +2701,7 @@ export const AdminDashboard: React.FC = () => {
                 <select
                   value={newCouponType}
                   onChange={(e) => setNewCouponType(e.target.value as any)}
-                  className="w-full bg-[#f9f9f9] border border-zinc-300 rounded-lg p-2.5 focus:outline-none"
+                  className="w-full bg-[var(--mf-surface-soft)] border border-zinc-300 rounded-lg p-2.5 focus:outline-none"
                 >
                   <option value="percentage">Percentage (%)</option>
                   <option value="fixed">Fixed Amount (LE)</option>
@@ -2713,7 +2717,7 @@ export const AdminDashboard: React.FC = () => {
                   value={newCouponValue}
                   onChange={(e) => setNewCouponValue(e.target.value ? Number(e.target.value) : '')}
                   placeholder="10"
-                  className="w-full bg-[#f9f9f9] border border-zinc-300 rounded-lg p-2.5 focus:outline-none"
+                  className="w-full bg-[var(--mf-surface-soft)] border border-zinc-300 rounded-lg p-2.5 focus:outline-none"
                 />
               </div>
 
@@ -2725,7 +2729,7 @@ export const AdminDashboard: React.FC = () => {
                   value={newCouponMin}
                   onChange={(e) => setNewCouponMin(e.target.value ? Number(e.target.value) : '')}
                   placeholder="500"
-                  className="w-full bg-[#f9f9f9] border border-zinc-300 rounded-lg p-2.5 focus:outline-none"
+                  className="w-full bg-[var(--mf-surface-soft)] border border-zinc-300 rounded-lg p-2.5 focus:outline-none"
                 />
               </div>
 
@@ -2738,7 +2742,7 @@ export const AdminDashboard: React.FC = () => {
             </form>
           </div>
 
-          <div className="md:col-span-2 bg-white border border-[#dfdfdf] rounded-2xl p-6 shadow-xs">
+          <div className="md:col-span-2 bg-white border border-[var(--mf-hairline)] rounded-2xl p-6 shadow-xs">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-3 border-b border-zinc-200 mb-4">
               <h3 className="text-base font-bold text-black flex items-center gap-2">
                 <span>Active Promo Codes</span>
@@ -2838,7 +2842,7 @@ export const AdminDashboard: React.FC = () => {
       {/* TAB: HERO BANNER & TOP ANNOUNCEMENT TAGS */}
       {activeTab === 'banners' && (
         <div className="space-y-8">
-          <div className="bg-white border border-[#dfdfdf] rounded-2xl p-6 sm:p-8 shadow-xs">
+          <div className="bg-white border border-[var(--mf-hairline)] rounded-2xl p-6 sm:p-8 shadow-xs">
             <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-zinc-200 mb-6">
               <div>
                 <div className="flex items-center gap-2">
@@ -3259,7 +3263,7 @@ export const AdminDashboard: React.FC = () => {
       {activeTab === 'social' && (
         <div className="space-y-6">
           {/* Header Card */}
-          <div className="bg-white border border-[#dfdfdf] rounded-2xl p-6 sm:p-8 shadow-xs">
+          <div className="bg-white border border-[var(--mf-hairline)] rounded-2xl p-6 sm:p-8 shadow-xs">
             <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-zinc-200">
               <div className="flex items-center gap-3">
                 <div className="p-3 bg-blue-50 text-blue-600 rounded-2xl">
@@ -3377,7 +3381,7 @@ export default SOCIAL_LINKS_CONFIG;
             </div>
 
             {/* Add / Edit Form Card */}
-            <div id="social-link-form" className="mt-6 bg-[#fcfcfc] border border-zinc-200 rounded-xl p-5 sm:p-6">
+            <div id="social-link-form" className="mt-6 bg-[var(--mf-surface-soft)] border border-zinc-200 rounded-xl p-5 sm:p-6">
               <div className="flex items-center justify-between pb-3 border-b border-zinc-200 mb-4">
                 <div className="flex items-center gap-2">
                   <div className="p-1.5 bg-black text-white rounded-lg">
@@ -3766,7 +3770,7 @@ export default SOCIAL_LINKS_CONFIG;
       {activeTab === 'settings' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Supabase Connection Setup */}
-          <div className="bg-white border border-[#dfdfdf] rounded-2xl p-6 shadow-xs">
+          <div className="bg-white border border-[var(--mf-hairline)] rounded-2xl p-6 shadow-xs">
             <div className="flex items-center justify-between mb-4 pb-3 border-b border-zinc-200">
               <div className="flex items-center gap-2">
                 <Database className="w-5 h-5 text-black" />
@@ -3829,7 +3833,7 @@ export default SOCIAL_LINKS_CONFIG;
                   value={supabaseUrlInput}
                   onChange={(e) => setSupabaseUrlInput(e.target.value)}
                   placeholder="https://xyzcompany.supabase.co"
-                  className="w-full bg-[#f9f9f9] border border-zinc-300 rounded-lg p-2.5 font-mono text-xs focus:outline-none focus:border-black"
+                  className="w-full bg-[var(--mf-surface-soft)] border border-zinc-300 rounded-lg p-2.5 font-mono text-xs focus:outline-none focus:border-black"
                 />
               </div>
 
@@ -3840,7 +3844,7 @@ export default SOCIAL_LINKS_CONFIG;
                   value={supabaseKeyInput}
                   onChange={(e) => setSupabaseKeyInput(e.target.value)}
                   placeholder="eyJhbGciOiJIUzI1NiIsIn..."
-                  className="w-full bg-[#f9f9f9] border border-zinc-300 rounded-lg p-2.5 font-mono text-xs focus:outline-none focus:border-black"
+                  className="w-full bg-[var(--mf-surface-soft)] border border-zinc-300 rounded-lg p-2.5 font-mono text-xs focus:outline-none focus:border-black"
                 />
               </div>
 
@@ -3991,7 +3995,7 @@ export default SOCIAL_LINKS_CONFIG;
           </div>
 
           {/* Store General Settings & Payment Methods */}
-          <div className="bg-white border border-[#dfdfdf] rounded-2xl p-6 shadow-xs">
+          <div className="bg-white border border-[var(--mf-hairline)] rounded-2xl p-6 shadow-xs">
             <div className="flex items-center justify-between mb-4 pb-3 border-b border-zinc-200">
               <div className="flex items-center gap-2">
                 <Sliders className="w-5 h-5 text-black" />
@@ -4012,7 +4016,7 @@ export default SOCIAL_LINKS_CONFIG;
                     value={settingsForm.storeName || ''}
                     onChange={(e) => setSettingsForm({ ...settingsForm, storeName: e.target.value })}
                     placeholder="MOLFET FOR FASHON"
-                    className="w-full bg-[#f9f9f9] border border-zinc-300 rounded-lg p-2.5 focus:outline-none"
+                    className="w-full bg-[var(--mf-surface-soft)] border border-zinc-300 rounded-lg p-2.5 focus:outline-none"
                   />
                 </div>
                 <div>
@@ -4022,7 +4026,7 @@ export default SOCIAL_LINKS_CONFIG;
                     value={settingsForm.tagline || ''}
                     onChange={(e) => setSettingsForm({ ...settingsForm, tagline: e.target.value })}
                     placeholder="MOLFET FOR FASHON"
-                    className="w-full bg-[#f9f9f9] border border-zinc-300 rounded-lg p-2.5 focus:outline-none"
+                    className="w-full bg-[var(--mf-surface-soft)] border border-zinc-300 rounded-lg p-2.5 focus:outline-none"
                   />
                 </div>
               </div>
@@ -4036,7 +4040,7 @@ export default SOCIAL_LINKS_CONFIG;
                     value={settingsForm.phone || ''}
                     onChange={(e) => setSettingsForm({ ...settingsForm, phone: e.target.value })}
                     placeholder="+201012345678"
-                    className="w-full bg-[#f9f9f9] border border-zinc-300 rounded-lg p-2.5 focus:outline-none"
+                    className="w-full bg-[var(--mf-surface-soft)] border border-zinc-300 rounded-lg p-2.5 focus:outline-none"
                   />
                 </div>
                 <div>
@@ -4046,7 +4050,7 @@ export default SOCIAL_LINKS_CONFIG;
                     value={settingsForm.whatsapp || ''}
                     onChange={(e) => setSettingsForm({ ...settingsForm, whatsapp: e.target.value })}
                     placeholder="201012345678"
-                    className="w-full bg-[#f9f9f9] border border-zinc-300 rounded-lg p-2.5 focus:outline-none"
+                    className="w-full bg-[var(--mf-surface-soft)] border border-zinc-300 rounded-lg p-2.5 focus:outline-none"
                   />
                 </div>
               </div>
@@ -4065,9 +4069,56 @@ export default SOCIAL_LINKS_CONFIG;
                     value={settingsForm.freeShippingThreshold}
                     onChange={(e) => setSettingsForm({ ...settingsForm, freeShippingThreshold: Number(e.target.value) })}
                     placeholder="1500"
-                    className="w-full bg-[#f9f9f9] border border-zinc-300 rounded-lg p-2.5 focus:outline-none"
+                    className="w-full bg-[var(--mf-surface-soft)] border border-zinc-300 rounded-lg p-2.5 focus:outline-none"
                   />
                   <span className="text-[11px] text-zinc-500 block mt-0.5">الطلبات التي تتجاوز هذا المبلغ تحصل على شحن مجاني تلقائياً.</span>
+                </div>
+
+                {/* BREAK THE FRAME — theme settings (slogan, Lens switch, look discount) */}
+                <div className="pt-3 border-t border-zinc-200 space-y-3">
+                  <h4 className="font-bold text-black text-sm">هوية "Break the Frame"</h4>
+
+                  <div>
+                    <label className="block font-bold text-black mb-1">نص الشعار (Slogan Text)</label>
+                    <input
+                      type="text"
+                      value={settingsForm.slogan ?? 'Style Without Limits'}
+                      onChange={(e) => setSettingsForm({ ...settingsForm, slogan: e.target.value })}
+                      placeholder="Style Without Limits"
+                      className="w-full bg-[var(--mf-surface-soft)] border border-zinc-300 rounded-lg p-2.5 focus:outline-none"
+                    />
+                    <span className="text-[11px] text-zinc-500 block mt-0.5">
+                      الشعار الرسمي "Style Without Limits" ويظهر في الهيرو وشريط الإعلانات والفوتر واللودر والسلة الفارغة وصفحة 404.
+                    </span>
+                  </div>
+
+                  <label className="flex items-center justify-between gap-3 border border-zinc-200 rounded-lg p-3 cursor-pointer">
+                    <span>
+                      <span className="block font-bold text-black">تشغيل العدسة (The Lens)</span>
+                      <span className="block text-[11px] text-zinc-500">
+                        مؤشر الفرشاة على الديسكتوب، ويُفتح دائرة تعرض الرسم الإيطالي وتفاصيل القماش.
+                      </span>
+                    </span>
+                    <input
+                      type="checkbox"
+                      checked={settingsForm.lensEnabled !== false}
+                      onChange={(e) => setSettingsForm({ ...settingsForm, lensEnabled: e.target.checked })}
+                      className="w-5 h-5 accent-black"
+                    />
+                  </label>
+
+                  <div>
+                    <label className="block font-bold text-black mb-1">خصم الإطلالة (٣ قطع أو أكثر) %</label>
+                    <input
+                      type="number"
+                      min={0}
+                      max={50}
+                      value={settingsForm.lookDiscountPercent ?? 10}
+                      onChange={(e) => setSettingsForm({ ...settingsForm, lookDiscountPercent: Number(e.target.value) })}
+                      className="w-full bg-[var(--mf-surface-soft)] border border-zinc-300 rounded-lg p-2.5 focus:outline-none"
+                    />
+                    <span className="text-[11px] text-zinc-500 block mt-0.5">تُستخدم في رسالة الخصم التلقائي داخل Limitless Mix.</span>
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
@@ -4078,7 +4129,7 @@ export default SOCIAL_LINKS_CONFIG;
                       value={settingsForm.alexShipping ?? settingsForm.defaultShippingFee ?? 60}
                       onChange={(e) => setSettingsForm({ ...settingsForm, alexShipping: Number(e.target.value), defaultShippingFee: Number(e.target.value) })}
                       placeholder="60"
-                      className="w-full bg-[#f9f9f9] border border-zinc-300 rounded-lg p-2.5 focus:outline-none"
+                      className="w-full bg-[var(--mf-surface-soft)] border border-zinc-300 rounded-lg p-2.5 focus:outline-none"
                     />
                   </div>
                   <div>
@@ -4088,7 +4139,7 @@ export default SOCIAL_LINKS_CONFIG;
                       value={settingsForm.cairoGizaShipping ?? 50}
                       onChange={(e) => setSettingsForm({ ...settingsForm, cairoGizaShipping: Number(e.target.value) })}
                       placeholder="50"
-                      className="w-full bg-[#f9f9f9] border border-zinc-300 rounded-lg p-2.5 focus:outline-none"
+                      className="w-full bg-[var(--mf-surface-soft)] border border-zinc-300 rounded-lg p-2.5 focus:outline-none"
                     />
                   </div>
                   <div>
@@ -4098,7 +4149,7 @@ export default SOCIAL_LINKS_CONFIG;
                       value={settingsForm.deltaShipping ?? 50}
                       onChange={(e) => setSettingsForm({ ...settingsForm, deltaShipping: Number(e.target.value) })}
                       placeholder="50"
-                      className="w-full bg-[#f9f9f9] border border-zinc-300 rounded-lg p-2.5 focus:outline-none"
+                      className="w-full bg-[var(--mf-surface-soft)] border border-zinc-300 rounded-lg p-2.5 focus:outline-none"
                     />
                   </div>
                   <div>
@@ -4108,7 +4159,7 @@ export default SOCIAL_LINKS_CONFIG;
                       value={settingsForm.upperEgyptShipping ?? 60}
                       onChange={(e) => setSettingsForm({ ...settingsForm, upperEgyptShipping: Number(e.target.value) })}
                       placeholder="60"
-                      className="w-full bg-[#f9f9f9] border border-zinc-300 rounded-lg p-2.5 focus:outline-none"
+                      className="w-full bg-[var(--mf-surface-soft)] border border-zinc-300 rounded-lg p-2.5 focus:outline-none"
                     />
                   </div>
                 </div>
@@ -4128,7 +4179,7 @@ export default SOCIAL_LINKS_CONFIG;
                     value={settingsForm.instapayAddress || ''}
                     onChange={(e) => setSettingsForm({ ...settingsForm, instapayAddress: e.target.value })}
                     placeholder="e.g. molfet@instapay"
-                    className="w-full bg-[#f9f9f9] border border-zinc-300 rounded-lg p-2.5 focus:outline-none font-mono"
+                    className="w-full bg-[var(--mf-surface-soft)] border border-zinc-300 rounded-lg p-2.5 focus:outline-none font-mono"
                   />
                   <span className="text-[11px] text-zinc-500 block mt-0.5">يظهر للعميل في شاشة الدفع عند اختيار InstaPay.</span>
                 </div>
@@ -4140,7 +4191,7 @@ export default SOCIAL_LINKS_CONFIG;
                     value={settingsForm.instapayPhone || ''}
                     onChange={(e) => setSettingsForm({ ...settingsForm, instapayPhone: e.target.value })}
                     placeholder="01012345678"
-                    className="w-full bg-[#f9f9f9] border border-zinc-300 rounded-lg p-2.5 focus:outline-none font-mono"
+                    className="w-full bg-[var(--mf-surface-soft)] border border-zinc-300 rounded-lg p-2.5 focus:outline-none font-mono"
                   />
                 </div>
 
@@ -4151,7 +4202,7 @@ export default SOCIAL_LINKS_CONFIG;
                     value={settingsForm.vodafoneCashNumber || ''}
                     onChange={(e) => setSettingsForm({ ...settingsForm, vodafoneCashNumber: e.target.value })}
                     placeholder="01012345678"
-                    className="w-full bg-[#f9f9f9] border border-zinc-300 rounded-lg p-2.5 focus:outline-none font-mono"
+                    className="w-full bg-[var(--mf-surface-soft)] border border-zinc-300 rounded-lg p-2.5 focus:outline-none font-mono"
                   />
                   <span className="text-[11px] text-zinc-500 block mt-0.5">يظهر للعميل لتحويل قيمة الطلب لمحفظتك.</span>
                 </div>
@@ -4163,7 +4214,7 @@ export default SOCIAL_LINKS_CONFIG;
                     value={settingsForm.paymentInstructions || ''}
                     onChange={(e) => setSettingsForm({ ...settingsForm, paymentInstructions: e.target.value })}
                     placeholder="يرجى تحويل المبلغ الإجمالي إلى العنوان أو الرقم أعلاه ورفع سكرين شوت بالتحويل لتأكيد الطلب فوراً."
-                    className="w-full bg-[#f9f9f9] border border-zinc-300 rounded-lg p-2.5 focus:outline-none text-xs"
+                    className="w-full bg-[var(--mf-surface-soft)] border border-zinc-300 rounded-lg p-2.5 focus:outline-none text-xs"
                   />
                 </div>
               </div>
@@ -4371,7 +4422,7 @@ export default SOCIAL_LINKS_CONFIG;
           </div>
 
           {/* Admin Passkey & Security Settings */}
-          <div className="bg-white border border-[#dfdfdf] rounded-2xl p-6 shadow-xs">
+          <div className="bg-white border border-[var(--mf-hairline)] rounded-2xl p-6 shadow-xs">
             <div className="flex items-center justify-between pb-3 border-b border-zinc-200 mb-4">
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-5 h-5 text-black" />
@@ -4477,7 +4528,7 @@ export default SOCIAL_LINKS_CONFIG;
                     onChange={(e) => setAdminPasskeyInput(e.target.value)}
                     placeholder="Enter new passkey"
                     required
-                    className="w-full bg-[#f9f9f9] border border-zinc-300 rounded-lg p-2.5 font-mono text-xs focus:outline-none"
+                    className="w-full bg-[var(--mf-surface-soft)] border border-zinc-300 rounded-lg p-2.5 font-mono text-xs focus:outline-none"
                   />
                 </div>
                 <div>
@@ -4488,7 +4539,7 @@ export default SOCIAL_LINKS_CONFIG;
                     onChange={(e) => setConfirmAdminPasskeyInput(e.target.value)}
                     placeholder="Confirm new passkey"
                     required
-                    className="w-full bg-[#f9f9f9] border border-zinc-300 rounded-lg p-2.5 font-mono text-xs focus:outline-none"
+                    className="w-full bg-[var(--mf-surface-soft)] border border-zinc-300 rounded-lg p-2.5 font-mono text-xs focus:outline-none"
                   />
                 </div>
 
@@ -4524,7 +4575,7 @@ export default SOCIAL_LINKS_CONFIG;
       {/* TAB: CATEGORIES MANAGEMENT */}
       {activeTab === 'categories' && (
         <div className="space-y-6">
-          <div className="bg-white border border-[#dfdfdf] rounded-2xl p-6 sm:p-8 shadow-xs">
+          <div className="bg-white border border-[var(--mf-hairline)] rounded-2xl p-6 sm:p-8 shadow-xs">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-zinc-200 mb-6">
               <div>
                 <h2 className="text-lg font-bold text-black flex items-center gap-2">
@@ -4551,7 +4602,7 @@ export default SOCIAL_LINKS_CONFIG;
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
               {/* Form Column */}
-              <div className="lg:col-span-5 bg-[#fafafa] border border-zinc-200 rounded-2xl p-5">
+              <div className="lg:col-span-5 bg-[var(--mf-surface-soft)] border border-zinc-200 rounded-2xl p-5">
                 <div className="flex items-center justify-between pb-3 border-b border-zinc-200 mb-4">
                   <span className="text-sm font-bold text-black flex items-center gap-2">
                     <FolderPlus className="w-4 h-4 text-emerald-600" />
@@ -4773,7 +4824,7 @@ export default SOCIAL_LINKS_CONFIG;
                   value={quickCategoryNameAr}
                   onChange={(e) => setQuickCategoryNameAr(e.target.value)}
                   placeholder="مثال: تيشيرت، هوديز، شورتات، جاكيتات..."
-                  className="w-full bg-[#f9f9f9] border border-zinc-300 rounded-lg px-3 py-2 text-xs text-black focus:outline-none focus:border-black font-medium text-right"
+                  className="w-full bg-[var(--mf-surface-soft)] border border-zinc-300 rounded-lg px-3 py-2 text-xs text-black focus:outline-none focus:border-black font-medium text-right"
                   autoFocus
                 />
               </div>
@@ -4787,7 +4838,7 @@ export default SOCIAL_LINKS_CONFIG;
                   value={quickCategoryNameEn}
                   onChange={(e) => setQuickCategoryNameEn(e.target.value)}
                   placeholder="e.g. T-Shirts, Hoodies..."
-                  className="w-full bg-[#f9f9f9] border border-zinc-300 rounded-lg px-3 py-2 text-xs text-black focus:outline-none focus:border-black font-medium"
+                  className="w-full bg-[var(--mf-surface-soft)] border border-zinc-300 rounded-lg px-3 py-2 text-xs text-black focus:outline-none focus:border-black font-medium"
                 />
               </div>
 

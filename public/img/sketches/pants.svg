@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 380" fill="none" stroke="#FAED99" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round">
+  <path d="M92 40 L208 40 L214 74 L206 348 L166 348 L152 168 L136 168 L122 348 L82 348 L74 74 Z"/>
+  <path d="M92 40 L208 40"/>
+  <path d="M92 66 L208 66"/>
+  <path d="M150 40 L150 66" />
+  <path d="M120 66 C126 76 136 80 150 80 C164 80 174 76 180 66"/>
+  <path d="M136 40 C142 50 158 50 164 40"/>
+  <path d="M110 66 L104 54 M190 66 L196 54"/>
+  <path d="M74 74 L92 40 M214 74 L208 40"/>
+  <path d="M94 108 C86 130 88 156 100 172" stroke-dasharray="3 5" stroke-width="1"/>
+  <path d="M206 108 C214 130 212 156 200 172" stroke-dasharray="3 5" stroke-width="1"/>
+  <path d="M96 168 C104 178 116 180 124 176"/>
+  <path d="M204 168 C196 178 184 180 176 176"/>
+  <path d="M152 168 L152 348" stroke-dasharray="3 6" stroke-width="1"/>
+  <path d="M82 336 L122 336 M166 336 L206 336" stroke-dasharray="3 5" stroke-width="1"/>
+  <text x="150" y="374" fill="#FAED99" stroke="none" font-family="Jost, sans-serif" font-size="8" letter-spacing="3" text-anchor="middle">FRENCH TERRY · FLAT</text>
+</svg>

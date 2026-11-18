@@ -1,0 +1,21 @@
+{%- comment -%}
+  THE LENS — the cursor is the brush circle. It grows to ~160px over a product
+  and reveals the detail layer. Desktop only; touch devices get press-and-hold
+  plus a visible Detail button (handled in molfet.js).
+{%- endcomment -%}
+{%- if settings.lens_enabled -%}
+  <div class="mf-lens-cursor" id="MolfetLensCursor" aria-hidden="true" data-tone="light" data-visible="false">
+    <svg viewBox="0 0 100 100" fill="none" class="mf-lens-cursor__icon">
+      <path d="M 78.6 84.4 A 42 42 0 1 1 78.6 15.6" stroke="currentColor" stroke-width="7" stroke-linecap="round"/>
+      <path d="M 82 78 A 34 34 0 0 0 84.4 25" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".7"/>
+    </svg>
+  </div>
+
+  <template id="MolfetLensTemplate">
+    <div class="mf-lens">
+      <div class="mf-lens__sketch"></div>
+      <div class="mf-lens__macro"></div>
+      <span class="mf-lens__caption">{{ settings.lens_caption | default: 'Italian mindset. Egyptian hands.' }}</span>
+    </div>
+  </template>
+{%- endif -%}

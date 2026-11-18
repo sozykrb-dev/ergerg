@@ -1,0 +1,28 @@
+<section class="mf-search">
+  <h1>{{ 'search.title' | t }}</h1>
+
+  <form action="{{ routes.search_url }}" method="get" role="search" class="mf-search__form">
+    <input type="search" name="q" value="{{ search.terms | escape }}" placeholder="{{ 'search.placeholder' | t }}" aria-label="{{ 'search.title' | t }}">
+    <input type="hidden" name="type" value="product">
+    <button type="submit" class="mf-btn">{{ 'search.submit' | t }}</button>
+  </form>
+
+  {%- if search.performed -%}
+    {%- if search.results_count == 0 -%}
+      <p class="mf-muted">{{ 'search.no_results' | t: terms: search.terms }}</p>
+    {%- else -%}
+      <p class="mf-muted">{{ 'search.results' | t: count: search.results_count }}</p>
+      <div class="mf-product-grid">
+        {%- for item in search.results -%}
+          {%- if item.object_type == 'product' -%}
+            {% render 'molfet-product-card', product: item %}
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  {%- endif -%}
+</section>
+
+{% schema %}
+{ "name": "Search", "settings": [] }
+{% endschema %}

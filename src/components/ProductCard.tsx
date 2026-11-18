@@ -52,7 +52,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       {/* Product Media Gallery Container */}
       <div 
         onClick={() => openProductModal(product)}
-        className="relative aspect-[2/3] w-full overflow-hidden bg-[#f4f4f4] cursor-pointer rounded-xs"
+        className="relative aspect-[2/3] w-full overflow-hidden bg-[var(--mf-surface-soft)] cursor-pointer rounded-xs"
       >
         <img
           src={images[currentImageIndex]}
@@ -116,7 +116,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           {!showQuickSelect ? (
             <button
               onClick={handleQuickAddClick}
-              className="w-full max-w-[200px] py-2 px-4 rounded-full bg-white hover:bg-[#262626] text-black hover:text-white border border-[#dfdfdf] hover:border-black text-xs font-semibold tracking-wide flex items-center justify-center gap-1.5 shadow-sm transition-all transform active:scale-95 duration-150"
+              className="w-full max-w-[200px] py-2 px-4 rounded-full bg-white hover:bg-[var(--molfet-brown)] text-black hover:text-white border border-[var(--mf-hairline)] hover:border-black text-xs font-semibold tracking-wide flex items-center justify-center gap-1.5 shadow-sm transition-all transform active:scale-95 duration-150"
             >
               <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none" className="w-3.5 h-3.5">
                 <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M16.608 9.421V6.906H3.392v8.016c0 .567.224 1.112.624 1.513.4.402.941.627 1.506.627H8.63M8.818 3h2.333c.618 0 1.212.247 1.649.686a2.35 2.35 0 0 1 .683 1.658v1.562H6.486V5.344c0-.622.246-1.218.683-1.658A2.33 2.33 0 0 1 8.82 3"></path>
@@ -127,7 +127,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           ) : (
             <div 
               onClick={(e) => e.stopPropagation()}
-              className="w-full bg-white border border-[#dfdfdf] p-2 rounded-xl shadow-xl animate-in fade-in duration-200"
+              className="w-full bg-white border border-[var(--mf-hairline)] p-2 rounded-xl shadow-xl animate-in fade-in duration-200"
             >
               <div className="flex items-center justify-between text-[11px] font-semibold text-zinc-600 mb-1.5 px-1">
                 <span>Select Size:</span>

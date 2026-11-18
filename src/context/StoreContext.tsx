@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { Product, CartItem, Order, Coupon, StoreSettings, ViewMode, HeroSlide, Category } from '../types';
-import { DEFAULT_STORE_SETTINGS, DEFAULT_SOCIAL_LINKS, INITIAL_COUPONS, INITIAL_HERO_SLIDES, CATEGORIES } from '../data/constants';
+import { DEFAULT_STORE_SETTINGS, DEFAULT_SOCIAL_LINKS, INITIAL_COUPONS, INITIAL_HERO_SLIDES, CATEGORIES, INITIAL_PRODUCTS } from '../data/constants';
 import { 
   fetchProductsListing, 
   fetchProductDetails, 
@@ -24,6 +24,7 @@ import {
   updateStoreSettingsDb,
 } from '../lib/db';
 import { getSupabaseConfig, saveCustomSupabaseConfig } from '../lib/supabase';
+import { navigate, parseRoute, Route } from '../lib/router';
 import { 
   notifyAdminNewOrderLocally, 
   sendTelegramOrderNotification, 
@@ -188,8 +189,47 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const [heroSlides, setHeroSlides] = useState<HeroSlide[]>(INITIAL_HERO_SLIDES);
 
-  // Navigation & UI state
-  const [viewMode, setViewMode] = useState<ViewMode>('store');
+  // Navigation & UI state — viewMode is a thin projection of the hash route so
+  // deep links (#/product/x, #/mix, #/checkout) are shareable.
+  const routeToViewMode = (route: Route): ViewMode => {
+    switch (route.name) {
+      case 'admin': return 'admin';
+      case 'checkout': return 'checkout';
+      case 'success': return 'order-success';
+      case 'track': return 'track-order';
+      case 'mix': return 'mix';
+      case 'about': return 'about';
+      case 'cart': return 'cart';
+      case 'notfound': return 'notfound';
+      case 'product': return 'product-detail';
+      default: return 'store';
+    }
+  };
+
+  const [viewMode, setViewModeState] = useState<ViewMode>(() => routeToViewMode(parseRoute(window.location.hash)));
+
+  useEffect(() => {
+    const sync = () => setViewModeState(routeToViewMode(parseRoute(window.location.hash)));
+    window.addEventListener('hashchange', sync);
+    return () => window.removeEventListener('hashchange', sync);
+  }, []);
+
+  const setViewMode = (mode: ViewMode) => {
+    const map: Record<string, string> = {
+      store: '#/',
+      admin: '#/admin',
+      checkout: '#/checkout',
+      'order-success': '#/success',
+      'track-order': '#/track',
+      mix: '#/mix',
+      about: '#/about',
+      cart: '#/cart',
+      notfound: '#/404',
+    };
+    if (mode === 'product-detail') return;
+    navigate(map[mode] || '#/');
+    setViewModeState(mode);
+  };
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -221,10 +261,34 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   }, [wishlist]);
 
-  // Load Products from Supabase
+  // Load Products from Supabase, with the local catalogue as a resilient base.
+  // The local catalogue carries the concept layers (cut-out, sketch, macro,
+  // hotspots) and is also used to fill any of those that the database row omits.
   const loadProducts = useCallback(async (options: { category?: string; force?: boolean } = {}) => {
     setIsLoadingProducts(true);
     setProductsError(null);
+
+    const mergeWithLocal = (remote: Product[]): Product[] => {
+      if (!remote || remote.length === 0) return INITIAL_PRODUCTS;
+      const localById = new Map(INITIAL_PRODUCTS.map((p) => [p.id, p]));
+      const bySku = new Map(INITIAL_PRODUCTS.map((p) => [p.sku, p]));
+      const merged = remote.map((product) => {
+        const local = localById.get(product.id) || (product.sku ? bySku.get(product.sku) : undefined);
+        if (!local) return product;
+        return {
+          ...local,
+          ...Object.fromEntries(Object.entries(product).filter(([, v]) => v !== undefined && v !== null && v !== '')),
+          slot: product.slot || local.slot,
+          cutoutUrl: product.cutoutUrl || local.cutoutUrl,
+          sketchUrl: product.sketchUrl || local.sketchUrl,
+          macroUrl: product.macroUrl || local.macroUrl,
+          details: product.details && product.details.length ? product.details : local.details,
+        } as Product;
+      });
+      const seen = new Set(merged.map((p) => p.id));
+      const extras = INITIAL_PRODUCTS.filter((p) => !seen.has(p.id) && !remote.some((r) => r.sku === p.sku));
+      return [...merged, ...extras];
+    };
 
     try {
       const { products: fetchedProducts } = await fetchProductsListing({
@@ -233,10 +297,11 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         forceRefresh: options.force || false,
       });
 
-      setProducts(fetchedProducts);
+      setProducts(mergeWithLocal(fetchedProducts));
     } catch (err: any) {
-      console.error('Error fetching products from database:', err);
-      setProductsError('Unable to load products. Please check database connection.');
+      console.warn('Falling back to the local MOLFET catalogue:', err?.message || err);
+      setProducts(INITIAL_PRODUCTS);
+      setProductsError(null);
     } finally {
       setIsLoadingProducts(false);
     }

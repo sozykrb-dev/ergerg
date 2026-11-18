@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 380" fill="none" stroke="#FAED99" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round">
+  <path d="M62 132 L238 132 L238 342 C238 348 234 352 228 352 L72 352 C66 352 62 348 62 342 Z"/>
+  <path d="M108 132 C108 84 118 52 130 52 C142 52 148 84 148 132"/>
+  <path d="M152 132 C152 84 158 52 170 52 C182 52 192 84 192 132"/>
+  <path d="M108 132 L192 132" stroke-dasharray="3 6" stroke-width="1"/>
+  <path d="M98 150 L98 132 M202 150 L202 132"/>
+  <path d="M62 160 L238 160" stroke-dasharray="3 5" stroke-width="1"/>
+  <path d="M70 344 L230 344" stroke-dasharray="3 5" stroke-width="1"/>
+  <path d="M74 180 L74 330 M226 180 L226 330" stroke-dasharray="3 6" stroke-width="1"/>
+  <text x="150" y="374" fill="#FAED99" stroke="none" font-family="Jost, sans-serif" font-size="8" letter-spacing="3" text-anchor="middle">CANVAS TOTE · FLAT</text>
+</svg>

@@ -63,9 +63,9 @@ export const CartDrawer: React.FC = () => {
       />
 
       <div className="fixed inset-y-0 right-0 max-w-full flex">
-        <div className="w-screen max-w-md bg-white border-l border-[#dfdfdf] text-black shadow-2xl flex flex-col justify-between">
+        <div className="w-screen max-w-md bg-white border-l border-[var(--mf-hairline)] text-black shadow-2xl flex flex-col justify-between">
           {/* Header */}
-          <div className="p-5 border-b border-[#dfdfdf] flex items-center justify-between">
+          <div className="p-5 border-b border-[var(--mf-hairline)] flex items-center justify-between">
             <div className="flex items-center gap-2">
               <h2 className="text-base font-semibold tracking-tight">Cart</h2>
               <span className="text-xs bg-black text-white px-2 py-0.5 rounded-full font-bold">
@@ -82,7 +82,7 @@ export const CartDrawer: React.FC = () => {
           </div>
 
           {/* Free Shipping Progress Bar */}
-          <div className="bg-[#f7f7f7] p-4 border-b border-[#dfdfdf]">
+          <div className="bg-[var(--mf-surface-soft)] p-4 border-b border-[var(--mf-hairline)]">
             <div className="flex items-center justify-between text-xs mb-2 font-medium">
               <span>
                 {remainingForFreeShipping === 0 ? (
@@ -132,7 +132,7 @@ export const CartDrawer: React.FC = () => {
                   <img
                     src={item.product.images[0]}
                     alt={item.product.titleEn}
-                    className="w-20 h-24 object-cover rounded-xs bg-[#f4f4f4] shrink-0 border border-zinc-200"
+                    className="w-20 h-24 object-cover rounded-xs bg-[var(--mf-surface-soft)] shrink-0 border border-zinc-200"
                   />
 
                   <div className="flex-1 flex flex-col justify-between min-h-[96px]">
@@ -195,7 +195,7 @@ export const CartDrawer: React.FC = () => {
 
           {/* Footer with Subtotal, Promo & Checkout */}
           {cart.length > 0 && (
-            <div className="p-5 bg-white border-t border-[#dfdfdf] space-y-4">
+            <div className="p-5 bg-white border-t border-[var(--mf-hairline)] space-y-4">
               {/* Promo Code Input */}
               <div>
                 {appliedCoupon ? (

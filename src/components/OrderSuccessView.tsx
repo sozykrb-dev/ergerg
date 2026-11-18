@@ -40,7 +40,7 @@ export const OrderSuccessView: React.FC = () => {
 
   return (
     <div className="py-12 px-4 sm:px-8 max-w-3xl mx-auto text-left text-black">
-      <div className="bg-white border border-[#dfdfdf] rounded-2xl p-6 sm:p-10 shadow-xs">
+      <div className="bg-white border border-[var(--mf-hairline)] rounded-2xl p-6 sm:p-10 shadow-xs">
         {/* Success Icon & Heading */}
         <div className="text-center mb-8 pb-8 border-b border-zinc-200">
           <div className="w-16 h-16 bg-emerald-100 text-emerald-800 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -86,7 +86,7 @@ export const OrderSuccessView: React.FC = () => {
         </div>
 
         {/* Customer & Address Details */}
-        <div className="space-y-3 p-5 rounded-xl bg-[#f9f9f9] border border-zinc-200 text-xs text-zinc-700 mb-8">
+        <div className="space-y-3 p-5 rounded-xl bg-[var(--mf-surface-soft)] border border-zinc-200 text-xs text-zinc-700 mb-8">
           <h4 className="font-bold text-black pb-2 border-b border-zinc-200 flex items-center justify-between">
             <span>Customer & Shipping Information</span>
             <span className="text-[11px] text-zinc-400 font-normal">{new Date(lastPlacedOrder.createdAt).toLocaleDateString()}</span>
@@ -111,7 +111,7 @@ export const OrderSuccessView: React.FC = () => {
               <div key={idx} className="flex items-center justify-between p-3 rounded-lg bg-zinc-50 border border-zinc-200 text-xs">
                 <div className="flex items-center gap-3">
                   {item.image && (
-                    <img src={item.image} alt="" className="w-12 h-14 object-cover rounded-xs bg-[#efefef] border border-zinc-200" />
+                    <img src={item.image} alt="" className="w-12 h-14 object-cover rounded-xs bg-[var(--mf-surface-soft)] border border-zinc-200" />
                   )}
                   <div>
                     <h5 className="font-bold text-black uppercase">{item.title}</h5>
@@ -185,7 +185,7 @@ export const OrderSuccessView: React.FC = () => {
               href={`https://wa.me/${(settings?.whatsapp || '201012345678').replace(/\D/g, '')}?text=${encodeURIComponent(`مرحباً MOLFET، أود المتابعة بخصوص الطلب #${lastPlacedOrder.orderNumber}`)}`}
               target="_blank"
               rel="noreferrer"
-              className="px-4 py-2.5 bg-[#25D366]/10 hover:bg-[#25D366]/20 text-[#128C7E] border border-[#25D366]/30 font-semibold text-xs rounded-full flex items-center gap-1.5 transition-colors"
+              className="px-4 py-2.5 bg-[var(--molfet-maroon)]/10 hover:bg-[var(--molfet-maroon)]/20 text-[var(--molfet-maroon)] border border-[var(--molfet-maroon)]/30 font-semibold text-xs rounded-full flex items-center gap-1.5 transition-colors"
             >
               <MessageCircle className="w-4 h-4" />
               <span>واتساب</span>

@@ -210,7 +210,13 @@ ${itemsText || '  (منتجات الطلب)'}
   // Vite middleware for development / static files for production
   if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({
-      server: { middlewareMode: true },
+      server: {
+        middlewareMode: true,
+        host: '0.0.0.0',
+        // the platform serves the app under a proxied preview host
+        allowedHosts: true as any,
+        hmr: { port: 24678, host: '0.0.0.0', clientPort: 443, protocol: 'wss' },
+      },
       appType: 'spa',
     });
     app.use(vite.middlewares);

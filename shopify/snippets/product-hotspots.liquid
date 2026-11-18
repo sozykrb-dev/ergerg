@@ -1,0 +1,21 @@
+{%- comment -%}
+  Up to three hotspots (Fabric, Cut, Finish) from the metaobject type
+  detail_point: fields x, y, title, text, macro_image.
+  Keyboard reachable: Tab to a hotspot, Enter to open.
+{%- endcomment -%}
+{%- assign points = product.metafields.molfet.detail_points.value -%}
+{%- if points != blank -%}
+  <div class="mf-hotspots">
+    {%- for point in points limit: 3 -%}
+      <button type="button"
+        class="mf-hotspot"
+        style="left: {{ point.x }}%; top: {{ point.y }}%;"
+        data-title="{{ point.title | escape }}"
+        data-text="{{ point.text | escape }}"
+        data-macro="{{ point.macro_image | image_url: width: 500 }}"
+        aria-label="{{ point.title | escape }}: {{ point.text | escape }}">
+        {{ forloop.index | prepend: '0' }}
+      </button>
+    {%- endfor -%}
+  </div>
+{%- endif -%}

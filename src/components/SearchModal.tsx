@@ -21,7 +21,7 @@ export const SearchModal: React.FC = () => {
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-black/40 backdrop-blur-xs flex items-start justify-center pt-16 sm:pt-24 p-4 animate-in fade-in duration-200">
       <div 
-        className="relative w-full max-w-xl bg-white border border-[#dfdfdf] rounded-2xl p-6 shadow-2xl text-left text-black"
+        className="relative w-full max-w-xl bg-white border border-[var(--mf-hairline)] rounded-2xl p-6 shadow-2xl text-left text-black"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between pb-4 border-b border-zinc-200 mb-4">
@@ -43,7 +43,7 @@ export const SearchModal: React.FC = () => {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search for shirts, tees, pants..."
-            className="w-full bg-[#f7f7f7] border border-zinc-200 rounded-xl pl-10 pr-4 py-3 text-sm text-black placeholder-zinc-400 focus:outline-none focus:border-black"
+            className="w-full bg-[var(--mf-surface-soft)] border border-zinc-200 rounded-xl pl-10 pr-4 py-3 text-sm text-black placeholder-zinc-400 focus:outline-none focus:border-black"
           />
         </div>
 
@@ -71,7 +71,7 @@ export const SearchModal: React.FC = () => {
                   <img
                     src={product.images[0]}
                     alt=""
-                    className="w-12 h-16 object-cover rounded-xs bg-[#efefef] border border-zinc-200"
+                    className="w-12 h-16 object-cover rounded-xs bg-[var(--mf-surface-soft)] border border-zinc-200"
                   />
                   <div>
                     <h4 className="text-xs font-bold text-black uppercase">{product.titleEn}</h4>

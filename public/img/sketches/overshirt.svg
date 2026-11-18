@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 380" fill="none" stroke="#FAED99" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round">
+  <path d="M120 44 L94 44 L46 72 L34 190 L56 196 L56 340 C56 346 60 350 66 350 L234 350 C240 350 244 346 244 340 L244 196 L266 190 L254 72 L206 44 L180 44"/>
+  <path d="M120 44 L138 62 L150 52 L162 62 L180 44"/>
+  <path d="M150 62 L150 350"/>
+  <path d="M120 44 L120 96 L150 92 M180 44 L180 96 L150 92"/>
+  <path d="M46 72 L76 122 M254 72 L224 122"/>
+  <path d="M56 196 L76 122 M244 196 L224 122"/>
+  <path d="M84 168 L130 168 L130 216 C118 226 92 224 84 212 Z"/>
+  <path d="M170 168 L216 168 L216 212 C208 224 182 226 170 216 Z"/>
+  <path d="M84 168 L84 140 M216 168 L216 140" />
+  <path d="M56 340 L56 300 M244 340 L244 300 M76 350 L76 320 M224 350 L224 320" stroke-dasharray="3 5" stroke-width="1"/>
+  <text x="150" y="374" fill="#FAED99" stroke="none" font-family="Jost, sans-serif" font-size="8" letter-spacing="3" text-anchor="middle">OVERSHIRT · BOXY FLAT</text>
+</svg>

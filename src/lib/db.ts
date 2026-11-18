@@ -53,6 +53,13 @@ export function mapProductRowToProduct(row: any): Product {
     rating: Number(row.rating) || 5.0,
     reviewsCount: Number(row.reviews_count) || 1,
     createdAt: row.created_at || new Date().toISOString(),
+
+    // BREAK THE FRAME fields — present when the store is set up for the concept
+    slot: row.slot || undefined,
+    cutoutUrl: row.cutout_url || undefined,
+    sketchUrl: row.sketch_url || undefined,
+    macroUrl: row.macro_url || undefined,
+    details: Array.isArray(row.details) ? row.details : undefined,
   };
 }
 
@@ -84,6 +91,12 @@ export function mapProductToRow(p: Partial<Product>): any {
   if (p.isActive !== undefined) row.is_active = p.isActive !== false;
   if (p.rating !== undefined) row.rating = Number(p.rating) || 5.0;
   if (p.reviewsCount !== undefined) row.reviews_count = Number(p.reviewsCount) || 1;
+  // BREAK THE FRAME concept columns (optional — only written when provided)
+  if ((p as any).slot !== undefined) row.slot = (p as any).slot;
+  if ((p as any).cutoutUrl !== undefined) row.cutout_url = (p as any).cutoutUrl;
+  if ((p as any).sketchUrl !== undefined) row.sketch_url = (p as any).sketchUrl;
+  if ((p as any).macroUrl !== undefined) row.macro_url = (p as any).macroUrl;
+  if ((p as any).details !== undefined) row.details = (p as any).details;
   return row;
 }
 

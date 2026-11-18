@@ -1,0 +1,28 @@
+{
+  "settings_schema": {
+    "Brand": "Brand",
+    "Concept — Break the Frame": "Concept — Break the Frame",
+    "Cart and shipping": "Cart and shipping",
+    "Contact": "Contact",
+    "Typography": "Typography",
+    "slogan": "Slogan",
+    "brand_name": "Brand name",
+    "color_maroon": "Maroon (main, 30%)",
+    "color_cream": "Cream (secondary, 60%)",
+    "color_brown": "Dark brown (contrast, 10%)",
+    "wordmark_on_cream": "Lockup 1 — maroon wordmark on cream",
+    "wordmark_on_brown": "Lockup 2 — cream wordmark on dark brown",
+    "icon_on_maroon": "Lockup 3 — cream brush-circle icon on maroon",
+    "icon_on_cream": "Lockup 4 — maroon brush-circle icon on cream",
+    "lens_enabled": "Enable the Lens",
+    "lens_size": "Lens diameter",
+    "frame_break_px": "How far the subject crosses the frame",
+    "frame_gap_px": "Frame opening (bottom-right)",
+    "lens_caption": "Lens caption",
+    "free_shipping_threshold": "Free-shipping threshold (EGP)",
+    "look_discount_percent": "Automatic discount for looks of 3+ pieces (%)",
+    "sticky_atc": "Sticky add-to-cart on mobile",
+    "whatsapp_number": "WhatsApp number",
+    "whatsapp_message": "Default WhatsApp order message"
+  }
+}

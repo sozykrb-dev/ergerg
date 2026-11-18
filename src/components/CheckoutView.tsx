@@ -264,7 +264,7 @@ export const CheckoutView: React.FC = () => {
         {/* Left Column (Forms & Payment) */}
         <div className="lg:col-span-7 space-y-6">
           {/* Step 1: Customer Information */}
-          <div className="bg-white border border-[#dfdfdf] rounded-2xl p-6 shadow-xs">
+          <div className="bg-white border border-[var(--mf-hairline)] rounded-2xl p-6 shadow-xs">
             <div className="flex items-center gap-2 mb-4 pb-3 border-b border-zinc-200">
               <span className="w-6 h-6 rounded-full bg-black text-white text-xs font-bold flex items-center justify-center">1</span>
               <h3 className="text-base font-bold text-black">Shipping Address</h3>
@@ -281,7 +281,7 @@ export const CheckoutView: React.FC = () => {
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
                   placeholder="الاسم"
-                  className="w-full bg-[#f9f9f9] border border-zinc-300 rounded-lg px-4 py-2.5 text-sm text-black focus:outline-none focus:border-black text-right"
+                  className="w-full bg-[var(--mf-surface-soft)] border border-zinc-300 rounded-lg px-4 py-2.5 text-sm text-black focus:outline-none focus:border-black text-right"
                 />
                 {formErrors.customerName && (
                   <p className="text-red-600 text-xs mt-1">{formErrors.customerName}</p>
@@ -299,7 +299,7 @@ export const CheckoutView: React.FC = () => {
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="01200000000"
-                    className="w-full bg-[#f9f9f9] border border-zinc-300 rounded-lg px-4 py-2.5 text-sm text-black focus:outline-none focus:border-black font-mono text-right"
+                    className="w-full bg-[var(--mf-surface-soft)] border border-zinc-300 rounded-lg px-4 py-2.5 text-sm text-black focus:outline-none focus:border-black font-mono text-right"
                   />
                   {formErrors.phone && (
                     <p className="text-red-600 text-xs mt-1">{formErrors.phone}</p>
@@ -315,7 +315,7 @@ export const CheckoutView: React.FC = () => {
                     value={altPhone}
                     onChange={(e) => setAltPhone(e.target.value)}
                     placeholder="01200000000"
-                    className="w-full bg-[#f9f9f9] border border-zinc-300 rounded-lg px-4 py-2.5 text-sm text-black focus:outline-none focus:border-black font-mono text-right"
+                    className="w-full bg-[var(--mf-surface-soft)] border border-zinc-300 rounded-lg px-4 py-2.5 text-sm text-black focus:outline-none focus:border-black font-mono text-right"
                   />
                 </div>
               </div>
@@ -328,7 +328,7 @@ export const CheckoutView: React.FC = () => {
                   <select
                     value={governorate}
                     onChange={(e) => setGovernorate(e.target.value)}
-                    className="w-full bg-[#f9f9f9] border border-zinc-300 rounded-lg px-4 py-2.5 text-sm text-black focus:outline-none focus:border-black text-right"
+                    className="w-full bg-[var(--mf-surface-soft)] border border-zinc-300 rounded-lg px-4 py-2.5 text-sm text-black focus:outline-none focus:border-black text-right"
                   >
                     {EGYPT_GOVERNORATES.map((g) => (
                       <option key={g.name} value={g.name}>
@@ -347,7 +347,7 @@ export const CheckoutView: React.FC = () => {
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
                     placeholder="مثال: مدينة نصر، المعادي، سموحة، المنصورة..."
-                    className="w-full bg-[#f9f9f9] border border-zinc-300 rounded-lg px-4 py-2.5 text-sm text-black focus:outline-none focus:border-black text-right"
+                    className="w-full bg-[var(--mf-surface-soft)] border border-zinc-300 rounded-lg px-4 py-2.5 text-sm text-black focus:outline-none focus:border-black text-right"
                   />
                 </div>
               </div>
@@ -362,7 +362,7 @@ export const CheckoutView: React.FC = () => {
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                   placeholder="Street name, building number, apartment, floor, landmark..."
-                  className="w-full bg-[#f9f9f9] border border-zinc-300 rounded-lg px-4 py-2.5 text-sm text-black focus:outline-none focus:border-black"
+                  className="w-full bg-[var(--mf-surface-soft)] border border-zinc-300 rounded-lg px-4 py-2.5 text-sm text-black focus:outline-none focus:border-black"
                 />
                 {formErrors.address && (
                   <p className="text-red-600 text-xs mt-1">{formErrors.address}</p>
@@ -378,14 +378,14 @@ export const CheckoutView: React.FC = () => {
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="e.g. Please call before arrival"
-                  className="w-full bg-[#f9f9f9] border border-zinc-300 rounded-lg px-4 py-2 text-xs text-black focus:outline-none focus:border-black"
+                  className="w-full bg-[var(--mf-surface-soft)] border border-zinc-300 rounded-lg px-4 py-2 text-xs text-black focus:outline-none focus:border-black"
                 />
               </div>
             </div>
           </div>
 
           {/* Step 2: Payment Method */}
-          <div className="bg-white border border-[#dfdfdf] rounded-2xl p-6 shadow-xs">
+          <div className="bg-white border border-[var(--mf-hairline)] rounded-2xl p-6 shadow-xs">
             <div className="flex items-center gap-2 mb-4 pb-3 border-b border-zinc-200">
               <span className="w-6 h-6 rounded-full bg-black text-white text-xs font-bold flex items-center justify-center">2</span>
               <h3 className="text-base font-bold text-black">Payment Method (طريقة الدفع)</h3>
@@ -679,7 +679,7 @@ export const CheckoutView: React.FC = () => {
 
         {/* Right Column (Order Summary) */}
         <div className="lg:col-span-5 space-y-6">
-          <div className="bg-white border border-[#dfdfdf] rounded-2xl p-6 shadow-xs sticky top-28">
+          <div className="bg-white border border-[var(--mf-hairline)] rounded-2xl p-6 shadow-xs sticky top-28">
             <h3 className="text-base font-bold text-black mb-4 pb-3 border-b border-zinc-200">
               Order Summary ({cart.length} items)
             </h3>
@@ -691,7 +691,7 @@ export const CheckoutView: React.FC = () => {
                   <img
                     src={item.product.images[0]}
                     alt={item.product.titleEn}
-                    className="w-14 h-18 object-cover rounded-xs bg-[#efefef] border border-zinc-200 shrink-0"
+                    className="w-14 h-18 object-cover rounded-xs bg-[var(--mf-surface-soft)] border border-zinc-200 shrink-0"
                   />
                   <div className="flex-1">
                     <h5 className="font-semibold text-black uppercase line-clamp-1">{item.product.titleEn}</h5>
@@ -747,7 +747,7 @@ export const CheckoutView: React.FC = () => {
             <button
               type="button"
               onClick={handleWhatsAppCheckout}
-              className="w-full py-3 bg-[#25D366]/10 hover:bg-[#25D366]/20 text-[#128C7E] border border-[#25D366]/30 font-semibold text-xs rounded-full flex items-center justify-center gap-2 transition-colors"
+              className="w-full py-3 bg-[var(--molfet-maroon)]/10 hover:bg-[var(--molfet-maroon)]/20 text-[var(--molfet-maroon)] border border-[var(--molfet-maroon)]/30 font-semibold text-xs rounded-full flex items-center justify-center gap-2 transition-colors"
             >
               <MessageCircle className="w-4 h-4" />
               <span>Order via WhatsApp</span>

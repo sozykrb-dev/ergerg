@@ -1,0 +1,56 @@
+{%- comment -%}
+  Header: the wordmark, collapsing into the brush-circle icon on scroll.
+  Footer uses the cream lockup on dark brown; favicon and app icon are the
+  cream circle on maroon.
+{%- endcomment -%}
+<header class="mf-header" data-scrolled="false">
+  <div class="mf-header__inner">
+    <nav class="mf-header__nav" aria-label="{{ 'accessibility.primary_nav' | t }}">
+      {%- for link in section.settings.menu.links -%}
+        <a href="{{ link.url }}" class="mf-link" {% if link.active %}aria-current="true"{% endif %}>{{ link.title }}</a>
+      {%- endfor -%}
+    </nav>
+
+    <a href="{{ routes.root_url }}" class="mf-header__logo" aria-label="{{ shop.name }}">
+      <img class="mf-header__wordmark"
+        src="{{ settings.wordmark_on_cream | image_url: width: 420 }}"
+        alt="{{ shop.name }}" width="210" height="42" loading="eager">
+      <img class="mf-header__mark"
+        src="{{ settings.icon_on_cream | image_url: width: 96 }}"
+        alt="" aria-hidden="true" width="36" height="36" loading="eager">
+    </a>
+
+    <div class="mf-header__actions">
+      <button type="button" class="mf-header__icon" data-open-search aria-label="{{ 'search.title' | t }}">
+        <svg viewBox="0 0 20 20" width="19" height="19" fill="none" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.3"/><path d="M13 13l4 4" stroke="currentColor" stroke-width="1.3"/></svg>
+      </button>
+
+      {%- if section.settings.show_language -%}
+        {%- form 'localization', id: 'HeaderLanguageForm', class: 'mf-header__lang' -%}
+          <select name="locale_code" onchange="this.form.submit()" aria-label="{{ 'accessibility.language' | t }}">
+            {%- for locale in localization.available_languages -%}
+              <option value="{{ locale.iso_code }}" {% if locale.iso_code == localization.language.iso_code %}selected{% endif %}>
+                {{ locale.endonym_name }}
+              </option>
+            {%- endfor -%}
+          </select>
+        {%- endform -%}
+      {%- endif -%}
+
+      <button type="button" class="mf-header__icon mf-header__cart" data-open-cart aria-label="{{ 'cart.title' | t }}">
+        <svg viewBox="0 0 20 20" width="19" height="19" fill="none" aria-hidden="true"><path d="M4 6h12l-1 11H5L4 6Z" stroke="currentColor" stroke-width="1.3"/><path d="M7.5 6a2.5 2.5 0 0 1 5 0" stroke="currentColor" stroke-width="1.3"/></svg>
+        <span class="mf-header__count" data-cart-count>{{ cart.item_count }}</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+{% schema %}
+{
+  "name": "Header",
+  "settings": [
+    { "type": "link_list", "id": "menu", "label": "Menu", "default": "main-menu" },
+    { "type": "checkbox", "id": "show_language", "label": "Show language selector", "default": true }
+  ]
+}
+{% endschema %}

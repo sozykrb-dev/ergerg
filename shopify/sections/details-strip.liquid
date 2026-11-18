@@ -1,0 +1,53 @@
+{%- comment -%}
+  Details strip — three macro images (fabric, cut, finish).
+{%- endcomment -%}
+<section class="mf-details">
+  <header class="mf-section-head">
+    <div>
+      <p class="mf-eyebrow">{{ section.settings.eyebrow }}</p>
+      <h2>{{ section.settings.heading }}</h2>
+    </div>
+  </header>
+
+  <div class="mf-details__grid">
+    {%- for block in section.blocks -%}
+      <figure class="mf-details__item" {{ block.shopify_attributes }}>
+        <div class="mf-details__media">
+          {%- if block.settings.image != blank -%}
+            {{ block.settings.image | image_url: width: 800 | image_tag: loading: 'lazy', widths: '400,800', sizes: '(min-width: 900px) 32vw, 92vw', alt: block.settings.label }}
+          {%- endif -%}
+          <figcaption class="mf-details__label"><span>{{ forloop.index | prepend: '0' }}</span>{{ block.settings.label }}</figcaption>
+        </div>
+        <p class="mf-details__line">{{ block.settings.line }}</p>
+      </figure>
+    {%- endfor -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Details strip",
+  "max_blocks": 3,
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Up close" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Fabric, cut and finish — the three things you can feel." }
+  ],
+  "blocks": [
+    {
+      "type": "detail",
+      "name": "Detail",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Macro image" },
+        { "type": "text", "id": "label", "label": "Label", "default": "Fabric" },
+        { "type": "text", "id": "line", "label": "Line", "default": "Egyptian cotton, 270 gsm" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Details strip",
+      "blocks": [{ "type": "detail" }, { "type": "detail" }, { "type": "detail" }]
+    }
+  ]
+}
+{% endschema %}

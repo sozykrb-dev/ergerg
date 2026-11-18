@@ -1,0 +1,6 @@
+{%- if product.compare_at_price > product.price -%}
+  <span class="mf-price mf-price--sale">{{ product.price | money }}</span>
+  <s class="mf-price mf-price--was">{{ product.compare_at_price | money }}</s>
+{%- else -%}
+  <span class="mf-price">{{ product.price | money }}</span>
+{%- endif -%}

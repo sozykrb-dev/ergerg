@@ -4,6 +4,20 @@ export interface ProductColor {
   image?: string;
 }
 
+export type MixSlot = 'top' | 'bottom' | 'outerwear' | 'accessory';
+
+/** A detail hotspot on a product image — the metaobject `detail_point`. */
+export interface DetailPoint {
+  key: 'fabric' | 'cut' | 'finish';
+  x: number; // %
+  y: number; // %
+  titleEn: string;
+  titleAr: string;
+  textEn: string;
+  textAr: string;
+  macro: string;
+}
+
 export interface Product {
   id: string;
   titleAr: string;
@@ -29,6 +43,16 @@ export interface Product {
   rating: number;
   reviewsCount: number;
   createdAt: string;
+
+  /* ---- MOLFET concept fields (all optional: admin-created products still work) ---- */
+  slot?: MixSlot;
+  /** cut-out PNG/WEBP with transparency — the layer that breaks the frame */
+  cutoutUrl?: string;
+  /** the Italian sketch shown inside the lens (layer A) */
+  sketchUrl?: string;
+  /** macro photo of the Egyptian fabric (layer B) */
+  macroUrl?: string;
+  details?: DetailPoint[];
 }
 
 export interface CartItem {
@@ -168,6 +192,10 @@ export interface StoreSettings {
   mobileWebhookUrl?: string;
   enableTelegramNotifications?: boolean;
   enableWebhookNotifications?: boolean;
+  /** BREAK THE FRAME — theme settings */
+  slogan?: string;
+  lensEnabled?: boolean;
+  lookDiscountPercent?: number;
 }
 
-export type ViewMode = 'store' | 'admin' | 'product-detail' | 'track-order' | 'checkout' | 'order-success';
+export type ViewMode = 'store' | 'admin' | 'product-detail' | 'track-order' | 'checkout' | 'order-success' | 'mix' | 'about' | 'cart' | 'notfound';

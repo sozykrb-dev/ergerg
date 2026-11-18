@@ -1,0 +1,18 @@
+{
+  "sections": {
+    "announcement": { "type": "announcement-bar" },
+    "header": { "type": "header" },
+    "main": {
+      "type": "main-product",
+      "blocks": {
+        "shipping": { "type": "accordion", "settings": { "heading": "Shipping & delivery" } },
+        "returns": { "type": "accordion", "settings": { "heading": "Returns & exchange" } },
+        "care": { "type": "accordion", "settings": { "heading": "Fabric & care" } },
+        "mix": { "type": "mix_it" }
+      },
+      "block_order": ["shipping", "returns", "care", "mix"]
+    },
+    "footer": { "type": "footer" }
+  },
+  "order": ["announcement", "header", "main", "footer"]
+}

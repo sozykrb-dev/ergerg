@@ -1,0 +1,71 @@
+{%- comment -%}
+  Cart drawer with the free-shipping progress ring drawn as the brush circle:
+  the stroke fills toward the gap and lights up in cream at the threshold.
+{%- endcomment -%}
+{%- assign threshold = settings.free_shipping_threshold | default: 2900 -%}
+{%- assign subtotal = cart.total_price | divided_by: 100.0 -%}
+{%- assign progress = subtotal | times: 100.0 | divided_by: threshold -%}
+{%- if progress > 100 -%}{%- assign progress = 100 -%}{%- endif -%}
+
+<cart-drawer class="mf-cart-drawer" data-open="false">
+  <div class="mf-cart-drawer__overlay" data-close-cart></div>
+  <aside class="mf-cart-drawer__panel" role="dialog" aria-modal="true" aria-label="{{ 'cart.title' | t }}">
+    <header class="mf-cart-drawer__head">
+      <h2>{{ 'cart.title' | t }}</h2>
+      <button type="button" data-close-cart aria-label="{{ 'accessibility.close' | t }}">{% render 'icon-close' %}</button>
+    </header>
+
+    <div class="mf-shipping-ring-wrap">
+      <svg class="mf-shipping-ring" viewBox="0 0 100 100" fill="none" aria-hidden="true">
+        <circle cx="50" cy="50" r="42" class="mf-ring-track" stroke-width="6" stroke-linecap="round"
+          stroke-dasharray="{{ 2 | times: 3.14159 | times: 42 | times: 0.84 }} 264"
+          transform="rotate(-61 50 50)"/>
+        <circle cx="50" cy="50" r="42" class="mf-ring-fill" stroke-width="6" stroke-linecap="round"
+          stroke-dasharray="222 264"
+          style="--mf-progress: {{ 222 | minus: 222 | times: progress | divided_by: 100.0 }}"
+          transform="rotate(-61 50 50)"/>
+      </svg>
+      <p class="mf-shipping-ring__copy">
+        {{ 'cart.shipping_bar' | t: threshold: threshold | money }}
+        {%- if subtotal >= threshold -%}
+          <strong>{{ 'cart.free_unlocked' | t }}</strong>
+        {%- endif -%}
+      </p>
+    </div>
+
+    {%- if cart.item_count == 0 -%}
+      <div class="mf-cart-drawer__empty">
+        <p>{{ 'cart.empty' | t }}</p>
+        <a class="mf-btn" href="{{ routes.all_products_collection_url }}">{{ 'cart.start_building' | t }}</a>
+      </div>
+    {%- else -%}
+      <form action="{{ routes.cart_url }}" method="post" id="CartDrawerForm" class="mf-cart-drawer__form">
+        <ul class="mf-cart-lines">
+          {%- for item in cart.items -%}
+            <li class="mf-cart-line" data-line="{{ forloop.index }}">
+              <img src="{{ item.image | image_url: width: 160 }}" width="80" height="100" alt="{{ item.title | escape }}" loading="lazy">
+              <div>
+                <p class="mf-cart-line__title">{{ item.product.title }}</p>
+                <p class="mf-cart-line__meta">{{ item.variant.title }}</p>
+                <div class="mf-qty" data-line="{{ forloop.index }}">
+                  <button type="button" data-qty="-1" aria-label="{{ 'cart.decrease' | t }}">&minus;</button>
+                  <input type="number" name="updates[]" value="{{ item.quantity }}" min="0" aria-label="{{ 'cart.quantity' | t }}">
+                  <button type="button" data-qty="1" aria-label="{{ 'cart.increase' | t }}">+</button>
+                </div>
+              </div>
+              <span class="mf-cart-line__price">{{ item.final_line_price | money }}</span>
+            </li>
+          {%- endfor -%}
+        </ul>
+
+        <footer class="mf-cart-drawer__foot">
+          <div class="mf-cart-total">
+            <span>{{ 'cart.subtotal' | t }}</span>
+            <span>{{ cart.total_price | money }}</span>
+          </div>
+          <button type="submit" name="checkout" class="mf-btn mf-btn--wide">{{ 'cart.checkout' | t }}</button>
+        </footer>
+      </form>
+    {%- endif -%}
+  </aside>
+</cart-drawer>

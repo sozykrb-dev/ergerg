@@ -1,0 +1,23 @@
+{%- comment -%}
+  THE FRAME — a 2px line with the logo's gap at the bottom-right.
+  The gap stays bottom-right in Arabic (RTL) too, because the logo never mirrors.
+
+  Accepts:
+    content      the media to place inside the frame
+    tone         'light' (maroon line on cream) or 'dark' (cream line on maroon/brown)
+    gap          opening size in px (default from settings)
+{%- endcomment -%}
+{%- liquid
+  assign frame_tone = tone | default: 'light'
+  assign frame_gap = gap
+  if frame_gap == blank
+    assign frame_gap = settings.frame_gap_px | default: 30
+  endif
+-%}
+<div class="mf-frame{% if frame_tone == 'dark' %} mf-frame--dark{% endif %}" data-tone="{{ frame_tone }}" style="--mf-frame-gap: {{ frame_gap }}px">
+  <span class="mf-frame__top" aria-hidden="true"></span>
+  <span class="mf-frame__left" aria-hidden="true"></span>
+  <span class="mf-frame__right" aria-hidden="true"></span>
+  <span class="mf-frame__bottom" aria-hidden="true"></span>
+  {{ content }}
+</div>

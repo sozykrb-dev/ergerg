@@ -1,0 +1,50 @@
+<section class="mf-cart-page">
+  <h1>{{ 'cart.title' | t }}</h1>
+
+  {%- if cart.item_count == 0 -%}
+    <div class="mf-cart-page__empty">
+      <p class="mf-slogan">{{ 'cart.empty' | t }}</p>
+      <a class="mf-btn" href="{{ routes.all_products_collection_url }}">{{ 'cart.start_building' | t }}</a>
+    </div>
+  {%- else -%}
+    <form action="{{ routes.cart_url }}" method="post" novalidate>
+      <table class="mf-table">
+        <thead>
+          <tr>
+            <th colspan="2">{{ 'cart.product' | t }}</th>
+            <th>{{ 'cart.quantity' | t }}</th>
+            <th>{{ 'cart.total' | t }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {%- for item in cart.items -%}
+            <tr>
+              <td><img src="{{ item.image | image_url: width: 160 }}" width="80" height="100" alt="{{ item.title | escape }}" loading="lazy"></td>
+              <td>
+                <a href="{{ item.url }}">{{ item.product.title }}</a>
+                <p class="mf-muted">{{ item.variant.title }}</p>
+              </td>
+              <td>
+                <input type="number" name="updates[]" value="{{ item.quantity }}" min="0" aria-label="{{ 'cart.quantity' | t }}">
+              </td>
+              <td>{{ item.final_line_price | money }}</td>
+            </tr>
+          {%- endfor -%}
+        </tbody>
+      </table>
+
+      <div class="mf-cart-page__foot">
+        <a class="mf-link" href="{{ routes.all_products_collection_url }}">{{ 'cart.continue' | t }}</a>
+        <div>
+          <p class="mf-cart-page__total">{{ 'cart.subtotal' | t }} · {{ cart.total_price | money }}</p>
+          <button type="submit" name="update" class="mf-btn mf-btn--ghost">{{ 'cart.update' | t }}</button>
+          <button type="submit" name="checkout" class="mf-btn">{{ 'cart.checkout' | t }}</button>
+        </div>
+      </div>
+    </form>
+  {%- endif -%}
+</section>
+
+{% schema %}
+{ "name": "Cart", "settings": [] }
+{% endschema %}

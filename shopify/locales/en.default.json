@@ -1,0 +1,93 @@
+{
+  "general": {
+    "home": "Home",
+    "page": "Page",
+    "404": {
+      "title": "You found the edge of the map. Style doesn't have one.",
+      "cta": "Back to the collection"
+    }
+  },
+  "accessibility": {
+    "skip_to_content": "Skip to content",
+    "close": "Close",
+    "primary_nav": "Primary",
+    "language": "Language",
+    "breadcrumb": "Breadcrumb",
+    "pagination": "Pagination",
+    "back_to_top": "Back to top",
+    "refresh_page": "Choosing a selection results in a full page refresh."
+  },
+  "brand": {
+    "made_badge": "Designed with an Italian mindset. Crafted in Egypt."
+  },
+  "products": {
+    "product": {
+      "add_to_cart": "Add to cart",
+      "sold_out": "Sold out",
+      "quick_add": "Quick add",
+      "size_guide": "Size guide",
+      "whatsapp": "Order on WhatsApp",
+      "detail": "Detail"
+    }
+  },
+  "collections": {
+    "view_all": "View all",
+    "pieces": "pieces",
+    "filters": "Filters",
+    "apply": "Apply",
+    "from": "From",
+    "to": "To",
+    "empty": "Nothing in this corner yet."
+  },
+  "cart": {
+    "title": "Cart",
+    "empty": "Your look has no limits yet. Start building it.",
+    "start_building": "Start building it",
+    "product": "Product",
+    "quantity": "Quantity",
+    "total": "Total",
+    "subtotal": "Subtotal",
+    "update": "Update",
+    "continue": "Continue shopping",
+    "checkout": "Checkout",
+    "decrease": "Decrease quantity",
+    "increase": "Increase quantity",
+    "shipping_bar": "No limits on style. Free shipping from %{threshold}.",
+    "free_unlocked": "Free shipping unlocked."
+  },
+  "mix": {
+    "eyebrow": "Limitless Mix",
+    "title": "Limitless Mix",
+    "heading": "One piece per category. One tap to the cart.",
+    "body": "Pick a top, a bottom, an outer layer and an accessory. The preview stacks them inside the frame. Three pieces or more qualify for the automatic discount at checkout.",
+    "clear": "Clear",
+    "look_total": "Look total",
+    "discount": "Look of 3 pieces or more — %{percent}% automatic discount applied at checkout.",
+    "add_look": "Add the look",
+    "share": "Share",
+    "cta_product": "Mix it — open the studio"
+  },
+  "newsletter": {
+    "email": "Email address",
+    "placeholder": "Your email",
+    "submit": "Subscribe",
+    "success": "You are on the list."
+  },
+  "footer": {
+    "contact": "Visit & call"
+  },
+  "search": {
+    "title": "Search",
+    "placeholder": "Search the collection",
+    "submit": "Search",
+    "no_results": "No results for “%{terms}”.",
+    "results": "%{count} results"
+  },
+  "gift_cards": {
+    "issued": {
+      "title": "Here is your gift card",
+      "subtext": "Use this code at checkout.",
+      "expired": "This gift card is expired."
+    }
+  }
+}

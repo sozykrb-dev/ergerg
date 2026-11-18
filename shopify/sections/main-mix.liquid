@@ -1,0 +1,109 @@
+{%- comment -%}
+  LIMITLESS MIX — dedicated page.
+  The customer picks one piece per category (top, bottom, outerwear, accessory)
+  from swipeable rows. A live preview stacks the images in a frame, colourway
+  chips change the variant, and "Add the look" adds every selected variant in one
+  request to /cart/add.js (items array). Looks are shareable via the URL query
+  string (?look=variant:qty,...).
+{%- endcomment -%}
+<section class="mf-mix" data-mix data-currency="{{ cart.currency.iso_code }}">
+  <header class="mf-mix__head">
+    <p class="mf-eyebrow">{{ 'mix.eyebrow' | t }}</p>
+    <h1>{{ 'mix.heading' | t }}</h1>
+    <p>{{ 'mix.body' | t }}</p>
+    <p class="mf-slogan">{{ settings.slogan | default: 'Style Without Limits' }}</p>
+  </header>
+
+  <div class="mf-mix__layout">
+    <div class="mf-mix__rows">
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'row' -%}
+          {%- assign collection = collections[block.settings.collection] -%}
+          <div class="mf-mix__row" data-slot="{{ block.settings.slot }}" {{ block.shopify_attributes }}>
+            <div class="mf-mix__row-head">
+              <span class="mf-eyebrow">{{ block.settings.label }}</span>
+              <button type="button" class="mf-link" data-mix-clear>{{ 'mix.clear' | t }}</button>
+            </div>
+
+            <div class="mf-mix__rail">
+              {%- for product in collection.products limit: block.settings.count -%}
+                {%- assign cutout = product.metafields.molfet.cutout -%}
+                <button type="button" class="mf-mix__piece"
+                  data-mix-pick
+                  data-slot="{{ block.settings.slot }}"
+                  data-variant="{{ product.selected_or_first_available_variant.id }}"
+                  data-price="{{ product.price }}"
+                  data-title="{{ product.title | escape }}"
+                  data-cutout="{{ cutout | default: product.featured_image | image_url: width: 500 }}"
+                  data-options='{{ product.variants | json }}'
+                  aria-pressed="false">
+                  <img src="{{ cutout | default: product.featured_image | image_url: width: 400 }}" alt="{{ product.title | escape }}" loading="lazy">
+                  <span class="mf-mix__piece-title">{{ product.title }}</span>
+                  <span class="mf-mix__piece-price">{{ product.price | money }}</span>
+                </button>
+              {%- endfor -%}
+            </div>
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+
+    <aside class="mf-mix__preview">
+      {%- capture preview_media -%}
+        <div class="mf-mix__stack" data-mix-stack></div>
+      {%- endcapture -%}
+      {% render 'molfet-frame', content: preview_media, tone: 'light' %}
+
+      <div class="mf-mix__summary">
+        <p class="mf-eyebrow">{{ 'mix.look_total' | t }}</p>
+        <p class="mf-mix__total" data-mix-total>—</p>
+        <p class="mf-mix__discount" data-mix-discount hidden>{{ 'mix.discount' | t: percent: settings.look_discount_percent }}</p>
+
+        <button type="button" class="mf-btn mf-btn--wide" data-mix-add disabled>{{ 'mix.add_look' | t }}</button>
+        <button type="button" class="mf-btn mf-btn--ghost" data-mix-share>{{ 'mix.share' | t }}</button>
+      </div>
+    </aside>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Limitless Mix",
+  "max_blocks": 4,
+  "settings": [],
+  "blocks": [
+    {
+      "type": "row",
+      "name": "Category row",
+      "settings": [
+        {
+          "type": "select",
+          "id": "slot",
+          "label": "Category slot",
+          "options": [
+            { "value": "top", "label": "Top" },
+            { "value": "bottom", "label": "Bottom" },
+            { "value": "outerwear", "label": "Outerwear" },
+            { "value": "accessory", "label": "Accessory" }
+          ],
+          "default": "top"
+        },
+        { "type": "text", "id": "label", "label": "Row label", "default": "Top" },
+        { "type": "collection", "id": "collection", "label": "Collection" },
+        { "type": "range", "id": "count", "label": "Pieces shown", "min": 4, "max": 20, "step": 1, "default": 10 }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Limitless Mix",
+      "blocks": [
+        { "type": "row", "settings": { "slot": "top", "label": "Top" } },
+        { "type": "row", "settings": { "slot": "bottom", "label": "Bottom" } },
+        { "type": "row", "settings": { "slot": "outerwear", "label": "Outerwear" } },
+        { "type": "row", "settings": { "slot": "accessory", "label": "Accessory" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

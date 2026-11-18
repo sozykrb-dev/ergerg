@@ -1,0 +1,79 @@
+{%- comment -%}
+  Framed product card. The cut-out layer (metafield molfet.cutout) steps over
+  the frame line by 8–16px on hover.
+{%- endcomment -%}
+{%- liquid
+  assign cutout = product.metafields.molfet.cutout
+  assign sketch = product.metafields.molfet.sketch_image
+  assign macro = product.metafields.molfet.macro_image
+  assign on_sale = false
+  if product.compare_at_price > product.price
+    assign on_sale = true
+  endif
+-%}
+<article class="mf-card" data-product-id="{{ product.id }}">
+  {%- capture card_media -%}
+    <a href="{{ product.url }}" class="mf-card__media-link" aria-label="{{ product.title | escape }}">
+      <img
+        class="mf-card__photo"
+        src="{{ product.featured_image | image_url: width: 900 }}"
+        srcset="{{ product.featured_image | image_url: width: 450 }} 450w,
+                {{ product.featured_image | image_url: width: 700 }} 700w,
+                {{ product.featured_image | image_url: width: 900 }} 900w"
+        sizes="(min-width: 1100px) 25vw, (min-width: 750px) 33vw, 50vw"
+        width="{{ product.featured_image.width }}"
+        height="{{ product.featured_image.height }}"
+        alt="{{ product.featured_image.alt | escape }}"
+        loading="lazy">
+
+      {%- if cutout != blank -%}
+        <img class="mf-card__cutout mf-break"
+          src="{{ cutout | image_url: width: 800 }}"
+          srcset="{{ cutout | image_url: width: 400 }} 400w, {{ cutout | image_url: width: 800 }} 800w"
+          sizes="(min-width: 1100px) 25vw, 50vw"
+          alt="" aria-hidden="true" loading="lazy">
+      {%- endif -%}
+
+      <span class="mf-card__badges">
+        {%- if on_sale -%}
+          <span class="mf-badge mf-badge--maroon">
+            &minus;{{ product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price }}%
+          </span>
+        {%- endif -%}
+        {%- for tag in product.tags limit: 1 -%}
+          {%- if tag == 'NEW' or tag == 'HOT' or tag == 'LIMITED' -%}
+            <span class="mf-badge">{{ tag }}</span>
+          {%- endif -%}
+        {%- endfor -%}
+      </span>
+
+      {%- if settings.lens_enabled and sketch != blank -%}
+        <span class="mf-card__lens-data"
+          data-sketch="{{ sketch | image_url: width: 500 }}"
+          data-macro="{{ macro | image_url: width: 500 }}"
+          hidden></span>
+      {%- endif -%}
+    </a>
+
+    {%- render 'product-hotspots', product: product -%}
+  {%- endcapture -%}
+
+  {% render 'molfet-frame', content: card_media, tone: 'light' %}
+
+  <div class="mf-card__info">
+    <a href="{{ product.url }}" class="mf-card__title">{{ product.title }}</a>
+    <p class="mf-card__price">
+      <span class="{% if on_sale %}mf-price--sale{% endif %}">{{ product.price | money }}</span>
+      {%- if on_sale -%}<s>{{ product.compare_at_price | money }}</s>{%- endif -%}
+    </p>
+
+    {%- if product.available -%}
+      {%- form 'product', product, class: 'mf-card__quickadd' -%}
+        <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+        <button type="submit" class="mf-card__quickadd-btn" aria-label="{{ 'products.product.quick_add' | t }}">
+          {% render 'icon-plus' %}
+        </button>
+      {%- endform -%}
+    {%- endif -%}
+  </div>
+</article>

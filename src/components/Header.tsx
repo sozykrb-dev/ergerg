@@ -115,7 +115,7 @@ export const Header: React.FC = () => {
   }, [categories, viewMode, activeCategory, setViewMode, setActiveCategory]);
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-white border-b border-zinc-200/70 lg:border-[#e5e5e5] shadow-none lg:shadow-xs">
+    <header className="sticky top-0 z-40 w-full bg-white border-b border-zinc-200/70 lg:border-[var(--mf-surface-soft)] shadow-none lg:shadow-xs">
       {/* 1. Top Announcement Bar */}
       <div className="bg-black text-white py-2 px-4 text-xs font-normal relative z-50 select-none">
         <div className="max-w-[1500px] mx-auto flex items-center justify-between">
@@ -202,10 +202,10 @@ export const Header: React.FC = () => {
                 className="focus:outline-none flex items-center justify-center group cursor-pointer"
               >
                 <span className="flex flex-col items-center leading-none">
-                  <span className="font-serif font-black text-[21px] sm:text-2xl md:text-[28px] tracking-[0.14em] text-[#4F2C0A] group-hover:opacity-75 transition-opacity">
+                  <span className="font-serif font-black text-[21px] sm:text-2xl md:text-[28px] tracking-[0.14em] text-[var(--molfet-maroon)] group-hover:opacity-75 transition-opacity">
                     MOLFET
                   </span>
-                  <span className="hidden sm:block font-sans font-semibold text-[8px] sm:text-[9px] tracking-[0.3em] text-[#6A7743] mt-1 uppercase">
+                  <span className="hidden sm:block font-sans font-semibold text-[8px] sm:text-[9px] tracking-[0.3em] text-[var(--mf-brown-soft)] mt-1 uppercase">
                     For Fashon
                   </span>
                 </span>
@@ -267,8 +267,8 @@ export const Header: React.FC = () => {
             <div>
               <div className="flex items-center justify-between pb-6 border-b border-zinc-200 mb-6">
                 <div>
-                  <span className="font-black text-2xl tracking-wider font-sans block text-[#4F2C0A]">MOLFET</span>
-                  <span className="font-semibold text-[9px] tracking-[0.3em] text-[#6A7743] uppercase">For Fashon</span>
+                  <span className="font-black text-2xl tracking-wider font-sans block text-[var(--molfet-maroon)]">MOLFET</span>
+                  <span className="font-semibold text-[9px] tracking-[0.3em] text-[var(--mf-brown-soft)] uppercase">For Fashon</span>
                 </div>
                 <button 
                   onClick={() => setMobileMenuOpen(false)}

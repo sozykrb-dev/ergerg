@@ -1,0 +1,28 @@
+<section class="mf-newsletter" data-tone="dark">
+  <div class="mf-newsletter__inner">
+    {%- if settings.icon_on_cream != blank -%}
+      <img class="mf-newsletter__mark" src="{{ settings.icon_on_cream | image_url: width: 96 }}" alt="" width="36" height="36" loading="lazy">
+    {%- endif -%}
+    <h2>{{ section.settings.heading }}</h2>
+    <p>{{ section.settings.text }}</p>
+
+    {%- form 'customer', class: 'mf-newsletter__form' -%}
+      <input type="hidden" name="contact[tags]" value="newsletter">
+      <label class="visually-hidden" for="NewsletterEmail">{{ 'newsletter.email' | t }}</label>
+      <input id="NewsletterEmail" type="email" name="contact[email]" placeholder="{{ 'newsletter.placeholder' | t }}" required>
+      <button type="submit" aria-label="{{ 'newsletter.submit' | t }}">{% render 'icon-arrow' %}</button>
+    {%- endform -%}
+    {%- if form.posted_successfully? -%}<p class="mf-newsletter__ok">{{ 'newsletter.success' | t }}</p>{%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Newsletter",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Join the list. No limits, no noise." },
+    { "type": "text", "id": "text", "label": "Text", "default": "Early access to new pieces and the occasional look from the studio." }
+  ],
+  "presets": [{ "name": "Newsletter" }]
+}
+{% endschema %}

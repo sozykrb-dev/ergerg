@@ -1,0 +1,51 @@
+{%- comment -%}
+  Limitless Mix teaser: four stacked cut-outs inside a frame.
+{%- endcomment -%}
+<section class="mf-mix-teaser" data-tone="dark">
+  <div class="mf-mix-teaser__inner">
+    <div>
+      <p class="mf-eyebrow">{{ section.settings.eyebrow }}</p>
+      <h2>{{ section.settings.heading }}</h2>
+      <p>{{ section.settings.text }}</p>
+      <a class="mf-btn mf-btn--cream" href="{{ section.settings.link }}">{{ section.settings.cta_label }}{% render 'icon-arrow' %}</a>
+    </div>
+
+    <div class="mf-mix-teaser__media">
+      {%- capture mix_media -%}
+        <span class="mf-mix-teaser__stack">
+          {%- for block in section.blocks -%}
+            {%- if block.settings.image != blank -%}
+              <img src="{{ block.settings.image | image_url: width: 600 }}" alt="{{ block.settings.alt | escape }}" loading="lazy">
+            {%- endif -%}
+          {%- endfor -%}
+        </span>
+      {%- endcapture -%}
+      {% render 'molfet-frame', content: mix_media, tone: 'dark' %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Limitless Mix teaser",
+  "max_blocks": 4,
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Limitless Mix" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "One piece per category. One look, added in one tap." },
+    { "type": "textarea", "id": "text", "label": "Text", "default": "Pick a top, a bottom, an outer layer and an accessory." },
+    { "type": "text", "id": "cta_label", "label": "Button label", "default": "Build a look" },
+    { "type": "url", "id": "link", "label": "Link to the Mix page" }
+  ],
+  "blocks": [
+    {
+      "type": "piece",
+      "name": "Piece cut-out",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Cut-out" },
+        { "type": "text", "id": "alt", "label": "Alt text" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Limitless Mix teaser", "blocks": [{ "type": "piece" }, { "type": "piece" }, { "type": "piece" }, { "type": "piece" }] }]
+}
+{% endschema %}

@@ -15,7 +15,7 @@ export const HeroSlider: React.FC = () => {
   return (
     <section className="relative w-full overflow-hidden bg-white">
       {/* Wide Editorial Banner matching screenshot */}
-      <div className="relative w-full aspect-[21/9] sm:aspect-[24/8] md:aspect-[3/1] max-h-[420px] min-h-[180px] sm:min-h-[240px] overflow-hidden bg-[#efefef]">
+      <div className="relative w-full aspect-[21/9] sm:aspect-[24/8] md:aspect-[3/1] max-h-[420px] min-h-[180px] sm:min-h-[240px] overflow-hidden bg-[var(--mf-surface-soft)]">
         <img
           src={bannerImageUrl}
           alt={buttonText}
@@ -27,7 +27,7 @@ export const HeroSlider: React.FC = () => {
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <button
             onClick={handleNewArrivalsClick}
-            className="pointer-events-auto px-7 sm:px-9 py-2 sm:py-2.5 rounded-lg border border-[#F0E8D4] bg-[#4F2C0A]/60 hover:bg-[#4F2C0A]/90 text-[#F0E8D4] hover:text-white font-medium text-xs sm:text-sm tracking-wide backdrop-blur-xs transition-all shadow-md active:scale-95 cursor-pointer"
+            className="pointer-events-auto px-7 sm:px-9 py-2 sm:py-2.5 rounded-lg border border-[var(--molfet-cream)] bg-[var(--molfet-maroon)]/60 hover:bg-[var(--molfet-maroon)]/90 text-[var(--molfet-cream)] hover:text-white font-medium text-xs sm:text-sm tracking-wide backdrop-blur-xs transition-all shadow-md active:scale-95 cursor-pointer"
           >
             {buttonText}
           </button>

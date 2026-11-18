@@ -325,7 +325,7 @@ export const AdminAuthGate: React.FC<AdminAuthGateProps> = ({ children, onCancel
           <span className="text-[10px] font-bold tracking-[0.25em] uppercase text-zinc-400 block">
             MOLFET SECURITY GATE
           </span>
-          <h3 className="font-serif font-black text-2xl tracking-wider text-[#4F2C0A]">
+          <h3 className="font-serif font-black text-2xl tracking-wider text-[var(--molfet-maroon)]">
             MOLFET FOR FASHON
           </h3>
           <p className="text-xs text-zinc-500 max-w-xs mx-auto">

@@ -167,7 +167,7 @@ export const TrackOrderModal: React.FC = () => {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="اكتب رقم الطلب أو رقم الهاتف..."
-              className="w-full bg-[#f9f9f9] border border-zinc-300 rounded-xl pl-10 pr-4 py-3 text-sm text-black focus:outline-none focus:border-black focus:bg-white transition-colors"
+              className="w-full bg-[var(--mf-surface-soft)] border border-zinc-300 rounded-xl pl-10 pr-4 py-3 text-sm text-black focus:outline-none focus:border-black focus:bg-white transition-colors"
             />
           </div>
           <button
@@ -266,7 +266,7 @@ export const TrackOrderModal: React.FC = () => {
               )}
 
               {/* Customer & Delivery Information */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-5 bg-[#fafafa] border border-zinc-200 rounded-xl text-xs">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-5 bg-[var(--mf-surface-soft)] border border-zinc-200 rounded-xl text-xs">
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-zinc-500 font-bold uppercase text-[10px]">
                     <MapPin className="w-3.5 h-3.5" />
