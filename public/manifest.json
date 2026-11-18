@@ -1,5 +1,5 @@
 {
-  "name": "MOLFET — Style Without Limits",
+  "name": "MOLFET \u2014 Style Without Limits",
   "short_name": "MOLFET",
   "description": "Egyptian fashion with an Italian design mindset.",
   "start_url": "/",
@@ -10,18 +10,20 @@
     {
       "src": "/img/brand/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "/img/brand/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
-    },
-    {
-      "src": "/img/brand/icon-mark.png",
-      "sizes": "600x596",
       "type": "image/png",
       "purpose": "any"
+    },
+    {
+      "src": "/img/brand/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }

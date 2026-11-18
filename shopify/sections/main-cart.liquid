@@ -3,7 +3,8 @@
 
   {%- if cart.item_count == 0 -%}
     <div class="mf-cart-page__empty">
-      <p class="mf-slogan">{{ 'cart.empty' | t }}</p>
+      <p class="mf-slogan">{{ settings.slogan | default: 'Style Without Limits' }}</p>
+      <p>{{ 'cart.empty' | t }}</p>
       <a class="mf-btn" href="{{ routes.all_products_collection_url }}">{{ 'cart.start_building' | t }}</a>
     </div>
   {%- else -%}

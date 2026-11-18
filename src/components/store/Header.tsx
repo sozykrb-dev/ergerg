@@ -65,8 +65,10 @@ export const Header: React.FC = () => {
 
       {/* announcement bar — the slogan lives here too */}
       <div className="relative z-40 bg-brown text-cream">
-        <div className="mx-auto flex h-9 max-w-[1560px] items-center justify-center px-4">
-          <p className="mf-slogan truncate text-[10px] leading-none text-cream/90" key={annIndex}>
+        <div className="mx-auto flex h-9 max-w-[1560px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-10">
+          {/* the slogan is fixed, never carousel-ed — the limit note sits beside it */}
+          <Slogan className="shrink-0 text-[10px] leading-none text-cream" />
+          <p className="hidden truncate text-[10px] leading-none text-[color-mix(in_srgb,var(--molfet-cream)_72%,var(--molfet-brown))] sm:block">
             {isAr ? current.ar : current.en}
           </p>
         </div>

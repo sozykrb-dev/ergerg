@@ -207,42 +207,87 @@
 
     function setOpen(value) {
       drawer.setAttribute('data-open', value ? 'true' : 'false');
+      drawer.setAttribute('aria-hidden', value ? 'false' : 'true');
       document.body.style.overflow = value ? 'hidden' : '';
-      var focusable = drawer.querySelector('button, [href], input');
-      if (value && focusable) focusable.focus();
+      if (value) {
+        var focusable = drawer.querySelector('button, [href], input');
+        if (focusable) focusable.focus();
+      } else if (lastFocus && document.contains(lastFocus)) {
+        lastFocus.focus();
+      }
+    }
+    var lastFocus = null;
+
+    /* Replaced innerHTML (after an add, a quantity change or a line removal)
+       loses every listener, so the drawer's controls are delegated from the
+       element that stays. This is what keeps quick add → drawer → quantity
+       working without a page reload. */
+    document.addEventListener('click', function (event) {
+      var opener = event.target.closest('[data-open-cart]');
+      if (opener) {
+        event.preventDefault();
+        lastFocus = opener;
+        setOpen(true);
+        return;
+      }
+      if (event.target.closest('[data-close-cart]')) {
+        setOpen(false);
+        return;
+      }
+      var stepper = event.target.closest('[data-qty]');
+      if (stepper && drawer.contains(stepper)) {
+        var qty = stepper.closest('.mf-qty');
+        var input = qty && qty.querySelector('input');
+        var line = qty && qty.getAttribute('data-line');
+        if (!input || !line || line === 'product') return;
+        event.preventDefault();
+        changeLine(parseInt(line, 10), Math.max(0, (parseInt(input.value, 10) || 0) + parseInt(stepper.getAttribute('data-qty'), 10)));
+        return;
+      }
+      var remove = event.target.closest('[data-remove-line]');
+      if (remove && drawer.contains(remove)) {
+        event.preventDefault();
+        changeLine(parseInt(remove.getAttribute('data-remove-line'), 10), 0);
+      }
+    });
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && drawer.getAttribute('data-open') === 'true') setOpen(false);
+    });
+
+    function changeLine(line, quantity) {
+      if (!line) return;
+      fetch(window.Shopify.routes.root + 'cart/change.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ line: line, quantity: quantity })
+      })
+        .then(function (response) { return response.json(); })
+        .then(function () { refreshDrawer(); })
+        .catch(function () { window.location.href = window.Shopify.routes.root + 'cart'; });
     }
 
-    document.querySelectorAll('[data-open-cart]').forEach(function (button) {
-      button.addEventListener('click', function () { setOpen(true); });
-    });
-    document.querySelectorAll('[data-close-cart]').forEach(function (button) {
-      button.addEventListener('click', function () { setOpen(false); });
-    });
-    document.addEventListener('keydown', function (event) {
-      if (event.key === 'Escape') setOpen(false);
-    });
+    /* Fetch the cart-drawer *section* (sections/cart-drawer.liquid) and swap
+       its content in, keeping this element and its listeners. */
+    function refreshDrawer() {
+      return fetch(window.Shopify.routes.root + '?sections=cart-drawer')
+        .then(function (response) { return response.json(); })
+        .then(function (sections) {
+          var html = sections['cart-drawer'];
+          if (!html) return;
+          var parsed = new DOMParser().parseFromString(html, 'text/html');
+          var fresh = parsed.querySelector('cart-drawer');
+          if (fresh) drawer.innerHTML = fresh.innerHTML;
+        })
+        .catch(function () {});
+    }
 
-    /* quantity steppers everywhere */
-    document.querySelectorAll('.mf-qty').forEach(function (qty) {
-      var input = qty.querySelector('input');
-      qty.querySelectorAll('[data-qty]').forEach(function (button) {
-        button.addEventListener('click', function () {
-          var step = parseInt(button.getAttribute('data-qty'), 10);
-          var next = Math.max(0, (parseInt(input.value, 10) || 0) + step);
-          input.value = next;
-          var line = qty.getAttribute('data-line');
-          if (line && line !== 'product' && drawer.contains(qty)) {
-            fetch(window.Shopify.routes.root + 'cart/change.js', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ line: parseInt(line, 10), quantity: next })
-            })
-              .then(function (response) { return response.json(); })
-              .then(function () { window.location.reload(); });
-          }
-        });
-      });
-    });
+    window.MOLFET = window.MOLFET || {};
+    window.MOLFET.setCartOpen = setOpen;
+    window.MOLFET.refreshCart = refreshDrawer;
+    window.MOLFET.openCart = function () {
+      return refreshDrawer().then(function () { setOpen(true); });
+    };
   }
 
   /* ------------------------------------------------------------------ */
@@ -343,20 +388,8 @@
         })
           .then(function (response) { return response.json(); })
           .then(function () {
-            var drawer = document.querySelector('cart-drawer');
-            if (drawer) {
-              fetch(window.location.pathname + '?sections=cart-drawer')
-                .then(function (r) { return r.json(); })
-                .then(function (sections) {
-                  var key = Object.keys(sections)[0];
-                  var html = new DOMParser().parseFromString(sections[key], 'text/html');
-                  var fresh = html.querySelector('cart-drawer');
-                  if (fresh) {
-                    drawer.innerHTML = fresh.innerHTML;
-                  }
-                  drawer.setAttribute('data-open', 'true');
-                })
-                .catch(function () { window.location.href = window.Shopify.routes.root + 'cart'; });
+            if (window.MOLFET && window.MOLFET.openCart) {
+              window.MOLFET.openCart();
             } else {
               window.location.href = window.Shopify.routes.root + 'cart';
             }
@@ -448,6 +481,81 @@
     }
   }
 
+
+  /* ------------------------------------------------------------------ */
+  /* 7b. The subject also steps out on scroll — an IntersectionObserver   */
+  /*     adds .is-breaking once the framed image is in view. CSS does the */
+  /*     movement, so prefers-reduced-motion can switch it off entirely.  */
+  /* ------------------------------------------------------------------ */
+  function initFrameBreak() {
+    var frames = document.querySelectorAll('.mf-frame');
+    if (!frames.length) return;
+
+    if (reduceMotion || !('IntersectionObserver' in window)) {
+      frames.forEach(function (frame) { frame.classList.add('is-breaking'); });
+      return;
+    }
+
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-breaking');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.35 });
+
+    frames.forEach(function (frame) { observer.observe(frame); });
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* 8. Add to cart, without a reload                                    */
+  /*    Quick add on a card and the product form both post to            */
+  /*    /cart/add.js and open the drawer through the shared refresher.   */
+  /* ------------------------------------------------------------------ */
+  function initAddToCart() {
+    function post(form, button) {
+      var data = new FormData(form);
+      var id = data.get('id');
+      var quantity = parseInt(data.get('quantity') || '1', 10) || 1;
+      if (!id) return false;
+
+      if (button) {
+        button.disabled = true;
+        button.setAttribute('aria-busy', 'true');
+      }
+
+      fetch(window.Shopify.routes.root + 'cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ items: [{ id: parseInt(id, 10), quantity: quantity }] })
+      })
+        .then(function (response) {
+          if (!response.ok) throw new Error('add failed');
+          return response.json();
+        })
+        .then(function () {
+          if (window.MOLFET && window.MOLFET.openCart) window.MOLFET.openCart();
+        })
+        .catch(function () { form.submit(); })
+        .finally(function () {
+          if (button) {
+            button.disabled = false;
+            button.removeAttribute('aria-busy');
+          }
+        });
+      return true;
+    }
+
+    document.addEventListener('submit', function (event) {
+      var form = event.target;
+      if (!(form instanceof HTMLFormElement)) return;
+      if (!form.matches('.mf-card__quickadd, #ProductForm')) return;
+      var button = form.querySelector('[type=submit]');
+      if (post(form, button)) event.preventDefault();
+    }, true);
+  }
+
   /* ------------------------------------------------------------------ */
   document.addEventListener('DOMContentLoaded', function () {
     initHeader();
@@ -457,5 +565,7 @@
     initMix();
     initLoader();
     initMisc();
+    initFrameBreak();
+    initAddToCart();
   });
 })();

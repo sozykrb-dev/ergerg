@@ -1,0 +1,14 @@
+{%- comment -%}
+  Cart drawer — a section wrapper around snippets/cart-drawer so the drawer can be
+  refreshed on its own with `?sections=cart-drawer` after any add-to-cart (Look,
+  quick add, sticky add-to-cart) without reloading the page.
+  The empty schema keeps it out of the "Add section" list: it is structural.
+{%- endcomment -%}
+{% render 'cart-drawer' %}
+
+{% schema %}
+{
+  "name": "Cart drawer",
+  "settings": []
+}
+{% endschema %}

@@ -1,76 +1,141 @@
 [
   {
+    "name": "Brand",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "The three brand colours, locked. Every other shade in the theme is a color-mix() of these values. No pure white, no pure black, no other hues."
+      },
+      {
+        "type": "color",
+        "id": "color_maroon",
+        "label": "Maroon — main",
+        "default": "#711518"
+      },
+      {
+        "type": "color",
+        "id": "color_cream",
+        "label": "Cream — surfaces",
+        "default": "#FAED99"
+      },
+      {
+        "type": "color",
+        "id": "color_brown",
+        "label": "Dark brown — contrast",
+        "default": "#321E19"
+      },
+      {
+        "type": "header",
+        "content": "The four official lockups"
+      },
+      {
+        "type": "paragraph",
+        "content": "Upload the supplied PNG/SVG files. Never redraw, stretch, recolor, outline or shadow them. Clear space on every side equals the width of the O ring. Never place the logo on a photo without a solid colour overlay."
+      },
+      {
+        "type": "image_picker",
+        "id": "wordmark_on_cream",
+        "label": "Maroon wordmark + slogan (on cream)"
+      },
+      {
+        "type": "image_picker",
+        "id": "wordmark_on_brown",
+        "label": "Cream wordmark + slogan (on dark brown)"
+      },
+      {
+        "type": "image_picker",
+        "id": "icon_on_maroon",
+        "label": "Cream brush-circle icon (on maroon) — favicon / app icon"
+      },
+      {
+        "type": "image_picker",
+        "id": "icon_on_cream",
+        "label": "Maroon brush-circle icon (on cream)"
+      },
+      {
+        "type": "header",
+        "content": "Slogan"
+      },
+      {
+        "type": "paragraph",
+        "content": "Fixed wording: “Style Without Limits”. Never altered, never translated inside the lockup. Arabic keeps the Latin slogan in the lockup; the Arabic line below is for body copy if the client approves it."
+      },
+      {
+        "type": "text",
+        "id": "slogan",
+        "label": "Slogan",
+        "default": "Style Without Limits",
+        "info": "Set in weight 300 with about 0.25em letter spacing. Appears in the hero, announcement bar, footer, loader, empty cart and 404."
+      },
+      {
+        "type": "text",
+        "id": "slogan_ar",
+        "label": "Slogan (Arabic body copy, optional)",
+        "default": "أسلوب بلا حدود"
+      }
+    ]
+  },
+  {
+    "name": "Colour schemes",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Three schemes, named after the three colours. Every section that offers a colour scheme uses only these. Maroon text never sits on brown (1.4:1)."
+      },
+      {
+        "type": "color_scheme_group",
+        "id": "color_schemes",
+        "definition": [
+          {
+            "label": "Cream",
+            "media": "image",
+            "settings": {
+              "background": "#FAED99",
+              "background_gradient": "",
+              "text": "#321E19",
+              "button": "#711518",
+              "button_label": "#FAED99",
+              "secondary_button_label": "#711518",
+              "shadow": "#321E19"
+            }
+          },
+          {
+            "label": "Maroon",
+            "media": "image",
+            "settings": {
+              "background": "#711518",
+              "background_gradient": "",
+              "text": "#FAED99",
+              "button": "#FAED99",
+              "button_label": "#711518",
+              "secondary_button_label": "#FAED99",
+              "shadow": "#321E19"
+            }
+          },
+          {
+            "label": "Brown",
+            "media": "image",
+            "settings": {
+              "background": "#321E19",
+              "background_gradient": "",
+              "text": "#FAED99",
+              "button": "#FAED99",
+              "button_label": "#321E19",
+              "secondary_button_label": "#FAED99",
+              "shadow": "#711518"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
     "name": "theme_info",
     "theme_name": "MOLFET — Break the Frame",
     "theme_version": "1.0.0",
     "theme_author": "MOLFET",
     "theme_documentation_url": "https://example.com/molfet",
     "theme_support_url": "https://example.com/molfet/support"
-  },
-  {
-    "name": "Brand",
-    "settings": [
-      {
-        "type": "text",
-        "id": "slogan",
-        "label": "Slogan",
-        "default": "Style Without Limits",
-        "info": "Exactly these words, title case. Set in light weight with 0.25em letter spacing."
-      },
-      {
-        "type": "text",
-        "id": "brand_name",
-        "label": "Brand name",
-        "default": "MOLFET",
-        "info": "Always in capitals."
-      },
-      {
-        "type": "header",
-        "content": "Brand colours — the only colours allowed"
-      },
-      {
-        "type": "color",
-        "id": "color_maroon",
-        "label": "Maroon (main, 30%)",
-        "default": "#711518"
-      },
-      {
-        "type": "color",
-        "id": "color_cream",
-        "label": "Cream (secondary, 60%)",
-        "default": "#FAED99"
-      },
-      {
-        "type": "color",
-        "id": "color_brown",
-        "label": "Dark brown (contrast, 10%)",
-        "default": "#321E19"
-      },
-      {
-        "type": "paragraph",
-        "content": "The three colour pickers above are locked to the brand values. All other shades are produced with color-mix() in assets/molfet.css. Never place maroon text on brown (contrast ≈ 1.4:1)."
-      },
-      {
-        "type": "image_picker",
-        "id": "wordmark_on_cream",
-        "label": "Lockup 1 — maroon wordmark on cream (SVG or PNG)"
-      },
-      {
-        "type": "image_picker",
-        "id": "wordmark_on_brown",
-        "label": "Lockup 2 — cream wordmark on dark brown (SVG or PNG)"
-      },
-      {
-        "type": "image_picker",
-        "id": "icon_on_maroon",
-        "label": "Lockup 3 — cream brush-circle icon on maroon"
-      },
-      {
-        "type": "image_picker",
-        "id": "icon_on_cream",
-        "label": "Lockup 4 — maroon brush-circle icon on cream"
-      }
-    ]
   },
   {
     "name": "Concept — Break the Frame",

@@ -1,0 +1,66 @@
+{
+  "current": {
+    "color_maroon": "#711518",
+    "color_cream": "#FAED99",
+    "color_brown": "#321E19",
+    "color_schemes": {
+      "scheme-1": {
+        "settings": {
+          "background": "#FAED99",
+          "background_gradient": "",
+          "text": "#321E19",
+          "button": "#711518",
+          "button_label": "#FAED99",
+          "secondary_button_label": "#711518",
+          "shadow": "#321E19"
+        }
+      },
+      "scheme-2": {
+        "settings": {
+          "background": "#711518",
+          "background_gradient": "",
+          "text": "#FAED99",
+          "button": "#FAED99",
+          "button_label": "#711518",
+          "secondary_button_label": "#FAED99",
+          "shadow": "#321E19"
+        }
+      },
+      "scheme-3": {
+        "settings": {
+          "background": "#321E19",
+          "background_gradient": "",
+          "text": "#FAED99",
+          "button": "#FAED99",
+          "button_label": "#321E19",
+          "secondary_button_label": "#FAED99",
+          "shadow": "#711518"
+        }
+      }
+    },
+    "slogan": "Style Without Limits",
+    "lens_enabled": true,
+    "frame_gap_px": 30,
+    "frame_break_px": 12,
+    "free_shipping_threshold": 2900,
+    "look_discount_percent": 10,
+    "whatsapp_number": "201012345678",
+    "whatsapp_message": "Hello MOLFET, I would like to order",
+    "heading_font": "jost",
+    "slogan_ar": "أسلوب بلا حدود"
+  },
+  "presets": {
+    "Default": {
+      "color_maroon": "#711518",
+      "color_cream": "#FAED99",
+      "color_brown": "#321E19",
+      "slogan": "Style Without Limits",
+      "lens_enabled": true,
+      "frame_gap_px": 30,
+      "frame_break_px": 12,
+      "free_shipping_threshold": 2900,
+      "look_discount_percent": 10,
+      "whatsapp_number": "201012345678"
+    }
+  }
+}

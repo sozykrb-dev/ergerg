@@ -3,6 +3,7 @@ import { useStore } from '../../context/StoreContext';
 import { useLocale } from '../../lib/i18n';
 import { navigate } from '../../lib/router';
 import { Logo, Slogan } from '../brand/Logo';
+import { OpenCircle } from '../brand/OpenCircle';
 import { BRAND, NAV } from '../../data/brand';
 import { SocialIcon } from '../SocialIcon';
 import { ArrowUp } from 'lucide-react';
@@ -143,7 +144,10 @@ export const Footer: React.FC = () => {
               className="grid h-10 w-10 place-items-center border border-cream/25 text-cream/80 transition-colors hover:border-cream hover:text-cream"
               aria-label={t('Back to top', 'أعلى الصفحة')}
             >
-              <img src="/img/brand/icon-mark-cream.webp" alt="" aria-hidden="true" className="h-4 w-4" />
+              <span className="relative grid place-items-center">
+                <OpenCircle size={34} strokeWidth={1.6} className="text-cream/70" />
+                <ArrowUp className="absolute h-3.5 w-3.5" aria-hidden="true" />
+              </span>
             </button>
           </div>
         </div>

@@ -45,33 +45,91 @@
   --color-whatsapp: color-mix(in srgb, var(--molfet-maroon) 70%, var(--molfet-brown));
 
   /* --- Tailwind palette remapped onto the three brand colours ---
-     Any legacy utility (bg-black, text-zinc-500, border-white, bg-emerald-100…)
-     now renders inside the brand. No pure white, no pure black, no other hues. */
-  --color-white: var(--molfet-cream);
+     Any legacy utility (bg-black, text-zinc-500, border-white, bg-emerald-100,
+     red-600, amber-400 …) now resolves inside the brand. No pure white, no pure
+     black, no other hues. Grey scales become cream→brown steps, so a "black"
+     button stays legible and a "white" surface stays cream. */
+  /* white → cream (a hair deeper so cards still read against the cream page) */
+  --color-white: color-mix(in srgb, var(--molfet-cream) 94%, var(--molfet-brown));
   --color-black: var(--molfet-brown);
-  --color-zinc-50: color-mix(in srgb, var(--molfet-cream) 97%, var(--molfet-brown));
+
+
+  --color-zinc-50:  color-mix(in srgb, var(--molfet-cream) 97%, var(--molfet-brown));
   --color-zinc-100: color-mix(in srgb, var(--molfet-cream) 92%, var(--molfet-brown));
-  --color-zinc-200: color-mix(in srgb, var(--molfet-cream) 86%, var(--molfet-brown));
-  --color-zinc-300: color-mix(in srgb, var(--molfet-cream) 78%, var(--molfet-brown));
+  --color-zinc-200: color-mix(in srgb, var(--molfet-cream) 85%, var(--molfet-brown));
+  --color-zinc-300: color-mix(in srgb, var(--molfet-cream) 74%, var(--molfet-brown));
   --color-zinc-400: color-mix(in srgb, var(--molfet-cream) 60%, var(--molfet-brown));
-  --color-zinc-500: color-mix(in srgb, var(--molfet-cream) 44%, var(--molfet-brown));
+  --color-zinc-500: color-mix(in srgb, var(--molfet-cream) 46%, var(--molfet-brown));
   --color-zinc-600: color-mix(in srgb, var(--molfet-cream) 30%, var(--molfet-brown));
   --color-zinc-700: color-mix(in srgb, var(--molfet-cream) 18%, var(--molfet-brown));
   --color-zinc-800: color-mix(in srgb, var(--molfet-cream) 9%, var(--molfet-brown));
   --color-zinc-900: var(--molfet-brown);
-  --color-zinc-950: color-mix(in srgb, var(--molfet-brown) 92%, var(--molfet-maroon));
-  --color-emerald-50: color-mix(in srgb, var(--molfet-cream) 95%, var(--molfet-maroon));
-  --color-emerald-100: color-mix(in srgb, var(--molfet-cream) 88%, var(--molfet-maroon));
-  --color-emerald-400: color-mix(in srgb, var(--molfet-maroon) 55%, var(--molfet-cream));
+  --color-zinc-950: color-mix(in srgb, var(--molfet-brown) 90%, var(--molfet-maroon));
+
+  /* status colours collapse onto the brand: success = maroon, error = maroon,
+     accents = cream */
+  --color-emerald-50:  color-mix(in srgb, var(--molfet-cream) 95%, var(--molfet-maroon));
+  --color-emerald-100: color-mix(in srgb, var(--molfet-cream) 86%, var(--molfet-maroon));
+  --color-emerald-200: color-mix(in srgb, var(--molfet-cream) 76%, var(--molfet-maroon));
+  --color-emerald-300: color-mix(in srgb, var(--molfet-cream) 62%, var(--molfet-maroon));
+  --color-emerald-400: color-mix(in srgb, var(--molfet-maroon) 52%, var(--molfet-cream));
   --color-emerald-500: color-mix(in srgb, var(--molfet-maroon) 72%, var(--molfet-cream));
-  --color-emerald-600: color-mix(in srgb, var(--molfet-maroon) 88%, var(--molfet-cream));
+  --color-emerald-600: color-mix(in srgb, var(--molfet-maroon) 86%, var(--molfet-cream));
   --color-emerald-700: var(--molfet-maroon);
-  --color-emerald-800: color-mix(in srgb, var(--molfet-maroon) 90%, var(--molfet-brown));
-  --color-amber-400: var(--molfet-cream);
-  --color-sky-400: var(--molfet-cream);
-  --color-purple-400: var(--molfet-cream);
+  --color-emerald-800: color-mix(in srgb, var(--molfet-maroon) 92%, var(--molfet-brown));
+  --color-emerald-900: color-mix(in srgb, var(--molfet-maroon) 80%, var(--molfet-brown));
+
+  --color-red-50:  color-mix(in srgb, var(--molfet-cream) 93%, var(--molfet-maroon));
+  --color-red-100: color-mix(in srgb, var(--molfet-cream) 83%, var(--molfet-maroon));
+  --color-red-200: color-mix(in srgb, var(--molfet-cream) 70%, var(--molfet-maroon));
+  --color-red-300: color-mix(in srgb, var(--molfet-maroon) 42%, var(--molfet-cream));
+  --color-red-400: color-mix(in srgb, var(--molfet-maroon) 62%, var(--molfet-cream));
+  --color-red-500: color-mix(in srgb, var(--molfet-maroon) 82%, var(--molfet-cream));
   --color-red-600: var(--molfet-maroon);
-  --color-red-50: color-mix(in srgb, var(--molfet-cream) 92%, var(--molfet-maroon));
+  --color-red-700: color-mix(in srgb, var(--molfet-maroon) 92%, var(--molfet-brown));
+  --color-red-800: color-mix(in srgb, var(--molfet-maroon) 78%, var(--molfet-brown));
+  --color-red-900: color-mix(in srgb, var(--molfet-maroon) 66%, var(--molfet-brown));
+
+  --color-amber-50:  color-mix(in srgb, var(--molfet-cream) 96%, var(--molfet-maroon));
+  --color-amber-100: color-mix(in srgb, var(--molfet-cream) 88%, var(--molfet-maroon));
+  --color-amber-200: color-mix(in srgb, var(--molfet-cream) 78%, var(--molfet-maroon));
+  --color-amber-300: color-mix(in srgb, var(--molfet-cream) 66%, var(--molfet-maroon));
+  --color-amber-400: var(--molfet-cream);
+  --color-amber-500: color-mix(in srgb, var(--molfet-cream) 70%, var(--molfet-maroon));
+  --color-amber-600: color-mix(in srgb, var(--molfet-cream) 45%, var(--molfet-maroon));
+  --color-amber-700: color-mix(in srgb, var(--molfet-cream) 30%, var(--molfet-maroon));
+  --color-amber-800: color-mix(in srgb, var(--molfet-maroon) 86%, var(--molfet-brown));
+  --color-amber-900: color-mix(in srgb, var(--molfet-maroon) 70%, var(--molfet-brown));
+
+  --color-sky-50:  color-mix(in srgb, var(--molfet-cream) 96%, var(--molfet-brown));
+  --color-sky-100: color-mix(in srgb, var(--molfet-cream) 88%, var(--molfet-brown));
+  --color-sky-200: color-mix(in srgb, var(--molfet-cream) 76%, var(--molfet-brown));
+  --color-sky-300: color-mix(in srgb, var(--molfet-cream) 62%, var(--molfet-brown));
+  --color-sky-400: var(--molfet-cream);
+  --color-sky-600: color-mix(in srgb, var(--molfet-brown) 72%, var(--molfet-cream));
+  --color-sky-700: var(--molfet-brown);
+  --color-sky-800: color-mix(in srgb, var(--molfet-brown) 88%, var(--molfet-cream));
+  --color-sky-900: var(--molfet-brown);
+
+  --color-blue-50:  color-mix(in srgb, var(--molfet-cream) 96%, var(--molfet-brown));
+  --color-blue-100: color-mix(in srgb, var(--molfet-cream) 86%, var(--molfet-brown));
+  --color-blue-200: color-mix(in srgb, var(--molfet-cream) 72%, var(--molfet-brown));
+  --color-blue-300: color-mix(in srgb, var(--molfet-cream) 58%, var(--molfet-brown));
+  --color-blue-500: color-mix(in srgb, var(--molfet-brown) 70%, var(--molfet-cream));
+  --color-blue-600: color-mix(in srgb, var(--molfet-brown) 84%, var(--molfet-cream));
+  --color-blue-700: var(--molfet-brown);
+  --color-blue-800: var(--molfet-brown);
+  --color-blue-900: var(--molfet-brown);
+
+  --color-purple-50:  color-mix(in srgb, var(--molfet-cream) 96%, var(--molfet-maroon));
+  --color-purple-100: color-mix(in srgb, var(--molfet-cream) 88%, var(--molfet-maroon));
+  --color-purple-200: color-mix(in srgb, var(--molfet-cream) 76%, var(--molfet-maroon));
+  --color-purple-300: color-mix(in srgb, var(--molfet-cream) 62%, var(--molfet-maroon));
+  --color-purple-400: var(--molfet-cream);
+  --color-purple-600: color-mix(in srgb, var(--molfet-maroon) 74%, var(--molfet-cream));
+  --color-purple-700: var(--molfet-maroon);
+  --color-purple-800: color-mix(in srgb, var(--molfet-maroon) 90%, var(--molfet-brown));
+  --color-purple-900: color-mix(in srgb, var(--molfet-maroon) 78%, var(--molfet-brown));
 
   --mf-ease: cubic-bezier(.22, .61, .36, 1);
   --mf-frame-gap: 30px;
@@ -284,7 +342,8 @@ html[dir="rtl"] .mf-link::after { transform-origin: right center; }
   vector-effect: non-scaling-stroke;
 }
 
-/* the cut-out subject that steps over the line */
+/* the cut-out subject that steps over the line.
+   In view: 8px out of the frame. Hover/focus: the full 16px of the brief. */
 .mf-break {
   position: relative;
   z-index: 2;
@@ -292,9 +351,17 @@ html[dir="rtl"] .mf-link::after { transform-origin: right center; }
   will-change: transform;
 }
 
+.mf-frame.is-breaking .mf-break { transform: translate3d(0, -8px, 0); }
+
 @media (hover: hover) {
-  .mf-frame:hover .mf-break { transform: translate3d(-6px, -10px, 0); }
-  html[dir="rtl"] .mf-frame:hover .mf-break { transform: translate3d(6px, -10px, 0); }
+  .mf-frame:hover .mf-break,
+  .mf-frame:focus-within .mf-break,
+  .mf-frame.is-breaking:hover .mf-break,
+  .mf-frame.is-breaking:focus-within .mf-break { transform: translate3d(-7px, -16px, 0); }
+  html[dir="rtl"] .mf-frame:hover .mf-break,
+  html[dir="rtl"] .mf-frame:focus-within .mf-break,
+  html[dir="rtl"] .mf-frame.is-breaking:hover .mf-break,
+  html[dir="rtl"] .mf-frame.is-breaking:focus-within .mf-break { transform: translate3d(7px, -16px, 0); }
 }
 
 .mf-frame-inner { position: relative; z-index: 1; }
@@ -308,11 +375,12 @@ html[dir="rtl"] .mf-link::after { transform-origin: right center; }
   height: 26px;
   z-index: 4;
   pointer-events: none;
-  background:
-    linear-gradient(135deg, transparent 0 49%, var(--mf-surface) 50% 100%);
+  background: var(--mf-surface);
+  /* the corner bites out of the frame with a solid brand fill, not a gradient */
+  clip-path: polygon(0 0, 100% 100%, 0 100%);
 }
 [data-tone="dark"] .mf-frame-notch {
-  background: linear-gradient(135deg, transparent 0 49%, var(--molfet-brown) 50% 100%);
+  background: var(--molfet-brown);
 }
 
 /* ==========================================================================

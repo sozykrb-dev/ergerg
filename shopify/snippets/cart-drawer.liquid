@@ -6,6 +6,10 @@
 {%- assign subtotal = cart.total_price | divided_by: 100.0 -%}
 {%- assign progress = subtotal | times: 100.0 | divided_by: threshold -%}
 {%- if progress > 100 -%}{%- assign progress = 100 -%}{%- endif -%}
+{%- assign ring_length = 221.7 -%}
+{%- assign ring_drawn = ring_length | times: progress | divided_by: 100.0 -%}
+{%- assign ring_offset = ring_length | minus: ring_drawn -%}
+{%- assign threshold_money = threshold | times: 100 | money -%}
 
 <cart-drawer class="mf-cart-drawer" data-open="false">
   <div class="mf-cart-drawer__overlay" data-close-cart></div>
@@ -18,15 +22,15 @@
     <div class="mf-shipping-ring-wrap">
       <svg class="mf-shipping-ring" viewBox="0 0 100 100" fill="none" aria-hidden="true">
         <circle cx="50" cy="50" r="42" class="mf-ring-track" stroke-width="6" stroke-linecap="round"
-          stroke-dasharray="{{ 2 | times: 3.14159 | times: 42 | times: 0.84 }} 264"
+          stroke-dasharray="{{ ring_length }} 264"
           transform="rotate(-61 50 50)"/>
-        <circle cx="50" cy="50" r="42" class="mf-ring-fill" stroke-width="6" stroke-linecap="round"
-          stroke-dasharray="222 264"
-          style="--mf-progress: {{ 222 | minus: 222 | times: progress | divided_by: 100.0 }}"
+        <circle cx="50" cy="50" r="42" class="mf-ring-fill {% if subtotal >= threshold %}is-complete{% endif %}" stroke-width="6" stroke-linecap="round"
+          stroke-dasharray="{{ ring_length }} 264"
+          style="--mf-progress: {{ ring_offset }}"
           transform="rotate(-61 50 50)"/>
       </svg>
       <p class="mf-shipping-ring__copy">
-        {{ 'cart.shipping_bar' | t: threshold: threshold | money }}
+        {{ 'cart.shipping_bar' | t: threshold: threshold_money }}
         {%- if subtotal >= threshold -%}
           <strong>{{ 'cart.free_unlocked' | t }}</strong>
         {%- endif -%}
@@ -35,6 +39,7 @@
 
     {%- if cart.item_count == 0 -%}
       <div class="mf-cart-drawer__empty">
+        <p class="mf-slogan">{{ settings.slogan | default: 'Style Without Limits' }}</p>
         <p>{{ 'cart.empty' | t }}</p>
         <a class="mf-btn" href="{{ routes.all_products_collection_url }}">{{ 'cart.start_building' | t }}</a>
       </div>
