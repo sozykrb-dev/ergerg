@@ -40,7 +40,7 @@ export function mapProductRowToProduct(row: any): Product {
     gsm: row.gsm || '270 GSM',
     fitType: row.fit_type || 'Relaxed',
     sizes: Array.isArray(row.sizes) ? row.sizes : ['S', 'M', 'L', 'XL', '2XL'],
-    colors: Array.isArray(row.colors) ? row.colors : [{ name: 'Standard', hex: '#000000' }],
+    colors: Array.isArray(row.colors) ? row.colors : [{ name: 'Standard', hex: '#321E19' }],
     thumbnailUrl: row.thumbnail_url || (Array.isArray(row.images) && row.images[0]) || '',
     images: Array.isArray(row.images) && row.images.length > 0
       ? row.images

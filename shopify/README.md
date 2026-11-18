@@ -190,3 +190,9 @@ the back-to-top button.
   lockup. An Arabic rendering (`أسلوب بلا حدود`) is available in the copy deck for
   the announcement bar if the client approves it.
 - The automatic look discount is created in Shopify; the theme only announces it.
+- Colourway chips in the Mix studio come from the variant option swatches (Shopify
+  variant swatch / Search & Discovery), because the brief locks the *interface* to
+  three colours while the garments themselves are photographed in their real
+  colourways; a chip is a product fact, not a UI colour.
+- Cash on delivery, the local payment gateways and EGP are store settings in
+  Shopify admin (Settings → Payments, Settings → Store details), not theme code.
