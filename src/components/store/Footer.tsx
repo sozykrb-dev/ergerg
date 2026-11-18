@@ -27,6 +27,7 @@ export const Footer: React.FC = () => {
       links: [
         { label: t('All pieces', 'كل القطع'), href: '#/shop' },
         { label: t('Limitless Mix', 'تنسيق بلا حدود'), href: '#/mix' },
+        { label: t('Rack view', 'عرض الشماعة'), href: '#/rack' },
         { label: t('The brand', 'العلامة'), href: '#/about' },
         { label: t('Track an order', 'تتبع طلب'), href: '#/track' },
       ],

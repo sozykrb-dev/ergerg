@@ -351,6 +351,89 @@ html[dir="rtl"] .mf-cart-drawer__panel { transform: translateX(-100%); }
 .mf-footer__bottom p { margin: 0; font-size: .625rem; text-transform: uppercase; letter-spacing: .14em; color: color-mix(in srgb, var(--molfet-cream) 45%, transparent); }
 .mf-back-to-top { width: 40px; height: 40px; display: grid; place-items: center; border: 1px solid color-mix(in srgb, var(--molfet-cream) 25%, transparent); }
 
+/* ==========================================================================
+   RACK VIEW — the collection as a clothing rail (mirrors src/ components)
+   ========================================================================== */
+.mf-rack-page { max-width: 1560px; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; }
+.mf-rack-page__head { margin-bottom: 1.75rem; }
+.mf-rack-page__head h1 { font-size: clamp(2rem, 4.4vw, 3.4rem); line-height: 1; }
+.mf-rack-page__intro { margin-top: 1rem; max-width: 52ch; font-size: .78rem; line-height: 1.7; color: var(--mf-brown-soft); }
+.mf-rack-page__hint { margin: 1.5rem 0 0; text-align: center; font-size: .625rem; text-transform: uppercase; letter-spacing: .18em; color: var(--mf-brown-muted); }
+
+.mf-rack { position: relative; }
+.mf-rack__post { position: absolute; top: 12px; bottom: 46px; width: 3px; background: var(--molfet-maroon); z-index: 3; }
+.mf-rack__post--start { left: 2px; }
+.mf-rack__post--end { right: 2px; }
+.mf-rack__bar { display: block; position: absolute; top: 9px; left: 0; right: 0; height: 6px; background: var(--molfet-maroon); border-radius: 3px; z-index: 4; pointer-events: none; }
+.mf-rack__scroller {
+  position: relative; z-index: 1; overflow-x: auto; overflow-y: visible;
+  padding: 0 14px 18px; scrollbar-width: none; cursor: grab;
+  outline: none; scroll-behavior: smooth;
+}
+.mf-rack__scroller::-webkit-scrollbar { display: none; }
+.mf-rack__scroller[data-dragging="true"] { cursor: grabbing; }
+.mf-rack__scroller:focus-visible { outline: 2px solid var(--molfet-maroon); outline-offset: 4px; }
+.mf-rack__items { display: flex; align-items: flex-start; gap: .5rem; margin: 0; padding: 0 0 0 4px; list-style: none; }
+
+.mf-rack-item { flex: 0 0 auto; width: 188px; transform-origin: top center; animation: mf-sway 5.2s ease-in-out infinite; animation-delay: var(--sway-delay, 0s); }
+@media (min-width: 750px) { .mf-rack-item { width: 216px; } }
+@keyframes mf-sway { 0%, 100% { transform: rotate(-.5deg); } 50% { transform: rotate(.5deg); } }
+
+.mf-rack-item__hang { position: relative; display: grid; justify-items: center; transform-origin: top center; }
+.mf-rack-item__hanger { position: relative; z-index: 5; width: 82px; height: 60px; margin-top: 0; color: var(--molfet-brown); pointer-events: none; }
+.mf-rack-item__stage {
+  position: relative; z-index: 2; width: 100%; height: 268px; margin-top: -14px;
+  display: grid; place-items: center; perspective: 900px; cursor: grab; touch-action: pan-y;
+}
+.mf-rack-item__stage:active { cursor: grabbing; }
+@media (min-width: 750px) { .mf-rack-item__stage { height: 310px; } }
+.mf-rack-item__turn {
+  position: relative; width: 100%; height: 100%; display: grid; place-items: center;
+  transform-style: preserve-3d; transition: transform .7s var(--mf-ease);
+}
+.mf-rack-item__turn[data-dragging="true"] { transition: none; }
+.mf-rack-item__turn img {
+  max-width: 100%; max-height: 100%; width: auto; height: 100%;
+  object-fit: contain; user-select: none; -webkit-user-drag: none;
+}
+@media (hover: hover) {
+  .mf-rack-item__stage:hover .mf-rack-item__turn:not([data-dragging="true"]) { transform: rotateY(28deg); }
+}
+.mf-rack-item__spin {
+  position: absolute; z-index: 4; inset-block-end: 4px; inset-inline-end: 8px;
+  display: grid; place-items: center; width: 30px; height: 30px;
+  border: 1px solid var(--mf-hairline-strong); background: var(--molfet-cream); color: var(--molfet-maroon);
+  opacity: 0; transform: translateY(4px);
+  transition: opacity .25s var(--mf-ease), transform .25s var(--mf-ease), border-color .25s var(--mf-ease);
+}
+.mf-rack-item:hover .mf-rack-item__spin,
+.mf-rack-item__spin:focus-visible { opacity: 1; transform: translateY(0); }
+.mf-rack-item__spin:hover { border-color: var(--molfet-maroon); }
+@media (hover: none) { .mf-rack-item__spin { opacity: 1; transform: none; } }
+
+.mf-rack-item__label { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--mf-hairline); text-align: start; }
+.mf-rack-item__title { display: block; font-size: .6875rem; line-height: 1.35; text-transform: uppercase; letter-spacing: .07em; color: var(--molfet-brown); }
+.mf-rack-item__title:hover { color: var(--molfet-maroon); }
+.mf-rack-item__meta { display: flex; align-items: baseline; justify-content: space-between; gap: 6px; margin-top: 5px; font-size: .6875rem; color: var(--molfet-brown); }
+.mf-rack-item__sizes { font-size: .5625rem; letter-spacing: .12em; color: var(--mf-brown-muted); }
+.mf-rack__empty { padding: 4rem 1rem; font-size: .8125rem; color: var(--mf-brown-soft); }
+
+/* header button */
+.mf-header__rack {
+  display: inline-flex; align-items: center; gap: .4rem; height: 34px; padding: 0 .7rem;
+  border: 1px solid var(--mf-hairline-strong); color: var(--molfet-brown);
+  font-size: .625rem; text-transform: uppercase; letter-spacing: .14em;
+  transition: border-color .3s var(--mf-ease), color .3s var(--mf-ease);
+}
+.mf-header__rack:hover { border-color: var(--molfet-maroon); color: var(--molfet-maroon); }
+@media (max-width: 749px) { .mf-header__rack span { display: none; } .mf-header__rack { padding: 0; width: 34px; justify-content: center; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .mf-rack-item { animation: none !important; }
+  .mf-rack__scroller { scroll-behavior: auto; }
+  .mf-rack-item__turn { transition-duration: .001ms; }
+}
+
 /* ---------- collection ---------- */
 .mf-collection__head { margin-bottom: 2rem; }
 .mf-collection__head h1 { font-size: clamp(1.9rem, 4vw, 3.2rem); }

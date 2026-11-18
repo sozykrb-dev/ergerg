@@ -556,6 +556,113 @@
     }, true);
   }
 
+
+  /* ------------------------------------------------------------------ */
+  /* 9. RACK VIEW — garments turn on their hangers, the rail is pullable */
+  /* ------------------------------------------------------------------ */
+  function initRack() {
+    var root = document.querySelector('[data-rack]');
+    if (!root) return;
+
+    var scroller = root.querySelector('[data-rack-scroller]');
+    var rtl = document.documentElement.dir === 'rtl';
+
+    /* --- a garment turns: drag it, press the button, double-click it --- */
+    root.querySelectorAll('.mf-rack-item').forEach(function (item) {
+      var stage = item.querySelector('[data-rack-stage]');
+      var turner = item.querySelector('[data-rack-turn]');
+      var spinButton = item.querySelector('[data-rack-spin]');
+      if (!stage || !turner) return;
+
+      var angle = 0;
+      var drag = null;
+
+      function apply() {
+        turner.style.transform = 'rotateY(' + angle + 'deg)';
+      }
+
+      function nudge(direction) {
+        angle = Math.round(angle / 360) * 360 + 360 * direction;
+        apply();
+      }
+
+      stage.addEventListener('pointerdown', function (event) {
+        if (event.target.closest('button, a')) return;
+        drag = { x: event.clientX, base: angle };
+        turner.setAttribute('data-dragging', 'true');
+        if (stage.setPointerCapture) stage.setPointerCapture(event.pointerId);
+      });
+
+      stage.addEventListener('pointermove', function (event) {
+        if (!drag) return;
+        var delta = (event.clientX - drag.x) * (rtl ? -0.8 : 0.8);
+        angle = drag.base + delta;
+        apply();
+      });
+
+      function release() {
+        if (!drag) return;
+        drag = null;
+        turner.removeAttribute('data-dragging');
+        angle = Math.round(angle / 360) * 360;
+        apply();
+      }
+      stage.addEventListener('pointerup', release);
+      stage.addEventListener('pointercancel', release);
+
+      stage.addEventListener('dblclick', function (event) {
+        if (event.target.closest('button, a')) return;
+        nudge(1);
+      });
+
+      if (spinButton) {
+        spinButton.addEventListener('click', function (event) {
+          event.preventDefault();
+          nudge(1);
+        });
+      }
+    });
+
+    if (!scroller) return;
+
+    /* --- the rail itself: drag it, or walk it with the arrow keys --- */
+    var railDrag = null;
+
+    scroller.addEventListener('pointerdown', function (event) {
+      if (event.target.closest('button, a')) return;
+      railDrag = { x: event.clientX, left: scroller.scrollLeft };
+      scroller.setAttribute('data-dragging', 'true');
+      if (scroller.setPointerCapture) scroller.setPointerCapture(event.pointerId);
+    });
+
+    scroller.addEventListener('pointermove', function (event) {
+      if (!railDrag) return;
+      scroller.scrollLeft = railDrag.left - (event.clientX - railDrag.x);
+      var sway = root.querySelector('[data-rack-sway]');
+      if (sway) sway.setAttribute('data-moved', 'true');
+    });
+
+    function railRelease() {
+      railDrag = null;
+      scroller.removeAttribute('data-dragging');
+    }
+    scroller.addEventListener('pointerup', railRelease);
+    scroller.addEventListener('pointercancel', railRelease);
+    scroller.addEventListener('pointerleave', railRelease);
+
+    scroller.addEventListener('keydown', function (event) {
+      var step = Math.max(220, scroller.clientWidth * 0.6);
+      if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        scroller.scrollBy({ left: step * (rtl ? -1 : 1), behavior: 'smooth' });
+      }
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        scroller.scrollBy({ left: step * (rtl ? 1 : -1), behavior: 'smooth' });
+      }
+    });
+  }
+
   /* ------------------------------------------------------------------ */
   document.addEventListener('DOMContentLoaded', function () {
     initHeader();
@@ -567,5 +674,6 @@
     initMisc();
     initFrameBreak();
     initAddToCart();
+    initRack();
   });
 })();

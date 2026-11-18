@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 /**
  * Tiny hash router: #/ , #/shop , #/product/{id} , #/mix , #/about , #/cart ,
- * #/checkout , #/track , #/admin , #/404
+ * #/checkout , #/track , #/admin , #/rack , #/404
  * Hash routing keeps deep links shareable without a server rewrite rule.
  */
 export type Route =
@@ -10,6 +10,7 @@ export type Route =
   | { name: 'shop'; category?: string }
   | { name: 'product'; id: string }
   | { name: 'mix'; look?: string }
+  | { name: 'rack' }
   | { name: 'about' }
   | { name: 'cart' }
   | { name: 'checkout' }
@@ -33,6 +34,8 @@ export const parseRoute = (rawHash: string): Route => {
       return segments[1] ? { name: 'product', id: decodeURIComponent(segments[1]) } : { name: 'shop' };
     case 'mix':
       return { name: 'mix', look: query.get('look') || undefined };
+    case 'rack':
+      return { name: 'rack' };
     case 'about':
       return { name: 'about' };
     case 'cart':

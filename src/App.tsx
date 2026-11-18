@@ -9,6 +9,7 @@ import { HomePage } from './components/store/HomePage';
 import { ShopPage } from './components/store/ShopPage';
 import { ProductPage } from './components/store/ProductPage';
 import { MixPage } from './components/store/MixPage';
+import { RackPage } from './components/store/RackPage';
 import { AboutPage } from './components/store/AboutPage';
 import { CartDrawer } from './components/store/CartDrawer';
 
@@ -102,6 +103,9 @@ const Storefront: React.FC = () => {
       break;
     case 'mix':
       content = <MixPage />;
+      break;
+    case 'rack':
+      content = <RackPage />;
       break;
     case 'about':
       content = <AboutPage />;

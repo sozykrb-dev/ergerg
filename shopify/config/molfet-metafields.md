@@ -13,12 +13,16 @@ No app is required.
 | `sketch_image` | File (image) | **Layer A** of the Lens — the Italian technical flat, cream lines on maroon. |
 | `macro_image` | File (image) | **Layer B** of the Lens — macro photo of the Egyptian fabric and stitching. |
 | `detail_points` | List of metaobjects (`detail_point`) | Up to three hotspots: Fabric, Cut, Finish. |
+| `slot` | Single line text (one value) | `top`, `bottom`, `outerwear` or `accessory`. **Required by Rack view**: accessories are kept off the rail. |
 
 ### Creating them
 1. Settings → Custom data → **Products** → Add definition.
 2. Namespace and key: `molfet.cutout` — type **File / Image**.
 3. Repeat for `molfet.sketch_image` and `molfet.macro_image`.
 4. Create `molfet.detail_points` — type **Metaobject**, reference: `detail_point`, **List of entries: yes**, limit 3.
+5. Create `molfet.slot` — type **Single line text**, one value, with the allowed values
+   `top`, `bottom`, `outerwear`, `accessory`. The Rack view page reads it: everything
+   except `accessory` hangs on the rail. Without it, a product is treated as a top.
 
 ---
 
@@ -66,6 +70,7 @@ Every other shade is `color-mix(in srgb, …)` of those three. Nothing else is a
 | --- | --- | --- |
 | Limitless Mix | `limitless-mix` | `page.limitless-mix` |
 | The Brand | `about` | `page.about` |
+| The rack | `rack` | `page.rack` |
 
 ---
 
@@ -91,9 +96,22 @@ Create four collections, one per slot, and pick them in the Mix section:
 
 ---
 
-## 7. Demo content
+## 7. Rack view page
 
-`demo/products.csv` can be imported with **Products → Import** to create the
-eight sample pieces (with their metafields filled where Shopify supports it).
-The Lens and the Mix work with any product that has the metafields above;
-products without them still render, with the Lens showing the macro layer only.
+1. **Pages → Add page** → title **The rack** → under *Theme template* pick
+   **page.rack** → Save.
+2. **Online Store → Navigation → main-menu**: add *Rack view* pointing at that page
+   (the header button is automatic; the menu link is optional).
+3. **Theme editor → Header** → tick *Show the Rack view button* and pick the page.
+4. **Theme editor → The rack page → Rack view section** → choose the collection to
+   hang (e.g. *All clothing*). Only `top`, `bottom` and `outerwear` products hang;
+   `accessory` is skipped.
+
+## 8. Demo content
+
+The eight sample pieces live in the React storefront (`src/data/constants.ts`) and
+their images in `public/img/products/`. Most images already have a `-cut.webp`
+transparent version — use those as `molfet.cutout` so the garments turn cleanly on
+the hangers. The Lens, the Mix and the Rack all work with any product that has the
+metafields above; products without them still render (the Lens shows the macro
+layer only, the Rack uses the featured image).

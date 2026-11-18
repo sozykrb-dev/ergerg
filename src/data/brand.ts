@@ -38,6 +38,7 @@ export const BRUSH_CIRCLE_PATH =
 export const NAV = [
   { key: 'shop', href: '#/shop', en: 'Shop', ar: 'المتجر' },
   { key: 'mix', href: '#/mix', en: 'Limitless Mix', ar: 'تنسيق بلا حدود' },
+  { key: 'rack', href: '#/rack', en: 'Rack View', ar: 'الشماعة' },
   { key: 'about', href: '#/about', en: 'The Brand', ar: 'العلامة' },
   { key: 'track', href: '#/track', en: 'Track Order', ar: 'تتبع الطلب' },
 ] as const;

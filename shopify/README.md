@@ -42,6 +42,7 @@ shopify/
 │  ├─ cart-drawer.liquid       section wrapper: ?sections=cart-drawer refresh
 │  ├─ main-cart.liquid         drawer alternative page
 │  ├─ main-mix.liquid          the Limitless Mix studio
+│  ├─ main-rack.liquid         Rack view — garments on hangers, turning
 │  ├─ main-about.liquid
 │  ├─ main-page.liquid · main-search.liquid · main-404.liquid
 ├─ snippets/
@@ -53,8 +54,9 @@ shopify/
 │  ├─ page-loader.liquid       the circle draws itself in 600ms
 │  ├─ size-guide.liquid · price.liquid · icon-plus/close/arrow
 └─ templates/                  JSON templates (index, product, collection, cart,
-                               page, page.about, page.limitless-mix, 404, search,
-                               list-collections, password) + gift_card.liquid
+                               page, page.about, page.limitless-mix, page.rack,
+                               404, search, list-collections, password)
+                               + gift_card.liquid
 ```
 
 ---
@@ -177,8 +179,29 @@ the back-to-top button.
 - [ ] Keyboard: skip link, focus rings maroon on cream / cream on brown.
 - [ ] Lighthouse mobile: LCP < 2.5s on 4G, CLS ≈ 0 (width/height on every image).
 - [ ] No colour outside the three in the rendered page (spot-check with a colour picker).
+- [ ] Rack view: only tops, bottoms and outerwear hang; no accessory on the rail.
+- [ ] Rack view: drag a garment → it turns; button and double-click turn it too.
+- [ ] Rack view: pull the rail, arrow keys walk it, Arabic drags the other way.
 
 ---
+
+### The Rack view
+
+`sections/main-rack.liquid` + `assets/molfet.js#initRack` (+ the styles in the Rack
+block of `molfet.css.liquid`). The header shows a **Rack view** button; it opens the
+page using the `page.rack` template.
+
+- Only clothing hangs: products whose `molfet.slot` metafield is `top`, `bottom` or
+  `outerwear`. `accessory` is filtered out of the loop.
+- Each piece hangs from a drawn hanger (hook over the rail, triangle shoulders) on a
+  6px maroon rail with end posts. The garments sway a little; the rail is pulled
+  with the pointer or the arrow keys.
+- Every garment turns on the hanger: drag it (0.8°/px), press the turn button, or
+  double-click. Hover on a pointer device shows a 28° turn. The turn direction is
+  flipped in Arabic so the drag feels the same in RTL.
+- The turning layer is `molfet.cutout` (transparent PNG/WEBP), falling back to the
+  featured image. No shadows, no gradients — depth comes from the turn alone.
+- Reduced motion: no sway, no drift, the turn still happens when asked for.
 
 ## 6. Assumptions
 

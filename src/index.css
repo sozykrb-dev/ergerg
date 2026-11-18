@@ -384,6 +384,224 @@ html[dir="rtl"] .mf-link::after { transform-origin: right center; }
 }
 
 /* ==========================================================================
+   RACK VIEW — the shop as a clothing rail
+   The rail is a solid maroon bar, the hangers are drawn, and every garment
+   turns on its hanger (rotateY) so the cut-out reads as a real piece of
+   clothing. No shadows, no gradients: depth comes from the turn alone.
+   ========================================================================== */
+.mf-rack {
+  position: relative;
+}
+
+/* end posts that hold the bar — physical left/right, the rack is an object,
+   not a sentence, so it does not mirror in Arabic */
+.mf-rack__post {
+  position: absolute;
+  top: 12px;
+  bottom: 46px;
+  width: 3px;
+  background: var(--molfet-maroon);
+  z-index: 3;
+}
+.mf-rack__post--start { left: 2px; }
+.mf-rack__post--end { right: 2px; }
+
+.mf-rack__scroller {
+  position: relative;
+  z-index: 1;
+  overflow-x: auto;
+  overflow-y: visible;
+  padding: 0 14px 18px;
+  scrollbar-width: none;
+  cursor: grab;
+  outline: none;
+  scroll-behavior: smooth;
+}
+.mf-rack__scroller::-webkit-scrollbar { display: none; }
+.mf-rack__scroller[data-dragging="true"] { cursor: grabbing; }
+.mf-rack__scroller:focus-visible {
+  outline: 2px solid var(--molfet-maroon);
+  outline-offset: 4px;
+}
+
+/* the bar itself: a 6px maroon rail that spans the rack. It sits outside the
+   scroller, at the height of the hanger's hook ring, so the hooks read as
+   hanging from it while the garments slide underneath. */
+.mf-rack__bar {
+  display: block;
+  position: absolute;
+  top: 9px;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: var(--molfet-maroon);
+  border-radius: 3px;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.mf-rack__items {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0;
+  padding: 0 0 0 4px;
+  list-style: none;
+}
+
+/* ---------- a garment on its hanger ---------- */
+.mf-rack-item {
+  flex: 0 0 auto;
+  width: 188px;
+  transform-origin: top center;
+  animation: mf-sway 5.2s ease-in-out infinite;
+  animation-delay: var(--sway-delay, 0s);
+}
+@media (min-width: 750px) { .mf-rack-item { width: 216px; } }
+
+@keyframes mf-sway {
+  0%, 100% { transform: rotate(-0.5deg); }
+  50% { transform: rotate(0.5deg); }
+}
+
+.mf-rack-item__hang {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  transform-origin: top center;
+}
+.mf-rack-item[data-swaying="true"] .mf-rack-item__hang { animation: mf-sway 2.6s ease-in-out 2; }
+
+.mf-rack-item__hanger {
+  position: relative;
+  z-index: 5;
+  width: 82px;
+  height: 60px;
+  margin-top: 0;
+  color: var(--molfet-brown);
+  pointer-events: none;
+}
+
+/* the stage is the hanger's shoulders; the garment turns inside it */
+.mf-rack-item__stage {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 268px;
+  margin-top: -14px;
+  display: grid;
+  place-items: center;
+  perspective: 900px;
+  cursor: grab;
+  touch-action: pan-y;
+}
+.mf-rack-item__stage:active { cursor: grabbing; }
+@media (min-width: 750px) { .mf-rack-item__stage { height: 310px; } }
+
+.mf-rack-item__turn {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  transform-style: preserve-3d;
+  transition: transform .7s cubic-bezier(.22, .61, .36, 1);
+  backface-visibility: visible;
+}
+.mf-rack-item__turn[data-dragging="true"] { transition: none; }
+
+.mf-rack-item__turn img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+  /* a garment seen edge-on should dim, not vanish into nothing */
+  backface-visibility: visible;
+}
+
+.mf-rack-item__empty {
+  width: 72%;
+  height: 88%;
+  background: var(--mf-surface);
+  border: 2px dashed var(--mf-hairline-strong);
+}
+
+/* hover on a pointer device turns the piece — but a drag wins */
+@media (hover: hover) {
+  .mf-rack-item__stage:hover .mf-rack-item__turn:not([data-dragging="true"]) {
+    transform: rotateY(28deg) !important;
+  }
+}
+.mf-rack-item__stage:hover .mf-rack-item__stage:focus-within .mf-rack-item__turn { transition-duration: .05s; }
+
+.mf-rack-item__spin {
+  position: absolute;
+  z-index: 4;
+  inset-block-end: 4px;
+  inset-inline-end: 8px;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--mf-hairline-strong);
+  background: var(--molfet-cream);
+  color: var(--molfet-maroon);
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity .25s var(--mf-ease), transform .25s var(--mf-ease), border-color .25s var(--mf-ease);
+}
+.mf-rack-item:hover .mf-rack-item__spin,
+.mf-rack-item__stage:focus-within ~ .mf-rack-item__spin,
+.mf-rack-item__spin:focus-visible { opacity: 1; transform: translateY(0); }
+.mf-rack-item__spin:hover { border-color: var(--molfet-maroon); }
+@media (hover: none) {
+  .mf-rack-item__spin { opacity: 1; transform: none; }
+}
+
+.mf-rack-item__label {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--mf-hairline);
+  text-align: start;
+}
+.mf-rack-item__title {
+  display: block;
+  width: 100%;
+  text-align: start;
+  font-size: 11px;
+  line-height: 1.35;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: var(--molfet-brown);
+}
+.mf-rack-item__title:hover { color: var(--molfet-maroon); }
+.mf-rack-item__meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px;
+  margin-top: 5px;
+  font-size: 11px;
+  color: var(--molfet-brown);
+}
+.mf-rack-item__sizes {
+  font-size: 9px;
+  letter-spacing: .12em;
+  color: var(--mf-brown-muted);
+}
+
+/* reduced motion: hangers rest, the turn still happens on request (no drift) */
+@media (prefers-reduced-motion: reduce) {
+  .mf-rack-item { animation: none !important; }
+  .mf-rack-item[data-swaying="true"] .mf-rack-item__hang { animation: none !important; }
+  .mf-rack__scroller { scroll-behavior: auto; }
+  .mf-rack-item__turn { transition-duration: .001ms; }
+}
+
+/* ==========================================================================
    OPEN CIRCLE UI — loader, ring, spinner, back-to-top
    ========================================================================== */
 @keyframes mf-draw {

@@ -5,7 +5,7 @@ import { navigate } from '../../lib/router';
 import { Logo, CircleMark, Slogan } from '../brand/Logo';
 import { ProgressRing } from '../brand/OpenCircle';
 import { BRAND, NAV } from '../../data/brand';
-import { Menu, X, Search, ShoppingBag, Globe, ChevronRight } from 'lucide-react';
+import { Menu, X, Search, ShoppingBag, Globe, ChevronRight, Shirt } from 'lucide-react';
 
 /**
  * Header
@@ -127,8 +127,28 @@ export const Header: React.FC = () => {
             </span>
           </button>
 
-          {/* right: search / language / cart */}
+          {/* right: rack view / search / language / cart */}
           <div className="flex flex-1 items-center justify-end gap-1 sm:gap-2">
+            <button
+              type="button"
+              onClick={() => go('#/rack')}
+              className="hidden h-10 items-center gap-1.5 border border-[var(--mf-hairline-strong)] px-3 text-[10px] font-medium uppercase tracking-[0.14em] text-brown transition-colors hover:border-maroon hover:text-maroon md:flex"
+              aria-label={t('Rack view — the clothes on a rail', 'عرض الشماعة — الهدوم على الشماعة')}
+            >
+              <Shirt className="h-3.5 w-3.5" strokeWidth={1.4} aria-hidden="true" />
+              {t('Rack view', 'الشماعة')}
+            </button>
+
+            {/* mobile: icon only, same route */}
+            <button
+              type="button"
+              onClick={() => go('#/rack')}
+              className="grid h-10 w-10 place-items-center text-brown transition-opacity hover:opacity-60 md:hidden"
+              aria-label={t('Rack view — the clothes on a rail', 'عرض الشماعة — الهدوم على الشماعة')}
+            >
+              <Shirt className="h-[19px] w-[19px]" strokeWidth={1.2} aria-hidden="true" />
+            </button>
+
             <button
               type="button"
               onClick={() => setIsSearchOpen(true)}
@@ -192,6 +212,14 @@ export const Header: React.FC = () => {
                   <ChevronRight className="h-4 w-4 opacity-50 rtl:rotate-180" strokeWidth={1.4} />
                 </button>
               ))}
+              <button
+                type="button"
+                onClick={() => go('#/rack')}
+                className="flex w-full items-center justify-between border-b border-[var(--mf-hairline)] px-3 py-4 text-start text-[15px] text-brown"
+              >
+                <span>{t('Rack view', 'عرض الشماعة')}</span>
+                <Shirt className="h-4 w-4 opacity-50" strokeWidth={1.4} aria-hidden="true" />
+              </button>
               <button
                 type="button"
                 onClick={() => { setMenuOpen(false); toggleLang(); }}

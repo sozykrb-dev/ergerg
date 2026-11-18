@@ -36,6 +36,7 @@ Set `GEMINI_API_KEY` only if you use the AI Studio helper endpoints.
 | `#/shop` | Collection with filters and Lens-enabled cards |
 | `#/product/:id` | Product — Lens gallery, Fabric/Cut/Finish hotspots, Mix it, sticky add-to-cart |
 | `#/mix` | Limitless Mix studio (shareable `?look=` URLs) |
+| `#/rack` | Rack view — clothes on a rail; drag a garment to turn it on its hanger |
 | `#/about` | The brand and the three colours |
 | `#/checkout` · `#/success` · `#/track` | Existing order flow, restyled |
 | `#/ar/...` | Opens any route in Arabic (RTL) |
@@ -48,6 +49,7 @@ Set `GEMINI_API_KEY` only if you use the AI Studio helper endpoints.
 | **The Frame** | `src/components/brand/Frame.tsx` — four rules, right and bottom stop short of the bottom-right corner so the gap never mirrors |
 | **The Lens** | `src/components/brand/Lens.tsx` — brush-circle cursor at 34px, opens to 168px over a product, layer A (Italian sketch SVG) under layer B (macro fabric), up to three hotspots, press-and-hold + Detail button on touch |
 | **Limitless Mix** | `src/components/store/MixItModule.tsx` — one piece per category, stacked preview, variant chips, one batched add, `?look=` share links, 3-piece discount message |
+| **Rack View** | `src/components/store/RackPage.tsx` — garments only (no accessories), drawn hangers whose open-ring hook the maroon rail runs through, 3D turn on drag / button / double-click, draggable rail, arrow keys, RTL-aware drag |
 | **The Open Circle UI** | `src/components/brand/OpenCircle.tsx` — 620ms page loader, free-shipping ring filling toward the gap, spinners, back-to-top |
 | **Brand rules** | `src/index.css` — the three colours as CSS custom properties, every other shade `color-mix()`, the whole Tailwind palette remapped so no utility can emit an outside colour |
 | **Languages** | `src/lib/i18n.tsx` — EN/AR, `dir` switching, CSS logical properties, Cairo for Arabic |
@@ -59,5 +61,6 @@ Set `GEMINI_API_KEY` only if you use the AI Studio helper endpoints.
 npx vitest run
 ```
 
-13 checks: hero, shop grid, product page, Lens hotspots, Mix builder and its
-discount message, 404 microcopy, brand page, and the Arabic/RTL switch.
+19 checks: hero, shop grid, product page, Lens hotspots, Mix builder and its
+discount message, 404 microcopy, brand page, the Arabic/RTL switch, and the Rack
+view (route, header button, garments-only filtering, turning, slot filter, Arabic).

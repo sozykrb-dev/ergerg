@@ -89,5 +89,16 @@
       "subtext": "Use this code at checkout.",
       "expired": "This gift card is expired."
     }
+  },
+  "rack": {
+    "eyebrow": "Rack view",
+    "title": "The rack",
+    "heading": "Everything on the rail",
+    "intro": "Clothes only, hanging exactly as they would in the studio. Drag a piece to turn it, or pull the rail across.",
+    "rail": "Clothing rail",
+    "turn": "Turn %{title}",
+    "turn_around": "Turn %{title} around",
+    "hint": "Drag to turn · pull the rail · arrows work too",
+    "empty": "The rail is empty in this corner."
   }
 }
