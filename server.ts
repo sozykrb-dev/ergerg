@@ -216,6 +216,9 @@ ${itemsText || '  (منتجات الطلب)'}
         // the platform serves the app under a proxied preview host
         allowedHosts: true as any,
         hmr: { port: 24678, host: '0.0.0.0', clientPort: 443, protocol: 'wss' },
+        // the Shopify theme is a separate deliverable: editing it should not
+        // reload the React preview
+        watch: { ignored: ['**/shopify/**', '**/*.zip'] },
       },
       appType: 'spa',
     });
