@@ -419,21 +419,59 @@ Accessibility: the figures are out of the focus order, and one real link in the
 HUD names the piece at the front. Prev/next and the arrow keys work regardless,
 in both directions of text.
 
-#### White, not cream
+#### White, and no cream at all
 
-The page sits on `#fff`. Cream is an accent now — the hairline under the front
-piece, the slogan, the small marks — rather than the ground under every section.
-Two consequences were handled rather than assumed:
+Cream is gone from the theme — there is no yellow left in a colour, a setting
+default, or a schema label. The token keeps the name `--molfet-cream` (about
+forty rules pair maroon and brown against it, and renaming all of them would
+have been churn for no gain), but its value is `#FFFFFF`.
 
-- photography mats and placeholders became `--mf-surface-tint` (cream at 26% on
-  white), so a cut-out still reads as a cut-out;
-- `--mf-brown-muted` moved from 56% to 66% brown, because the old value measured
-  **4.26** against white — below the 4.5 that body text needs. It is 5.7 on
-  white and 4.8 on cream now, so it works on both surfaces.
+Two things had to be *split out* before that could work, because they were
+being derived from cream and would have gone invisible along with it:
 
-The header is white glass, not cream glass. No gradients anywhere: the brand
-forbids them, and the one that crept into the ring's shine was a solid cream
-hairline within a minute of being written.
+- **hairlines and borders** — `--mf-hairline` and `--mf-hairline-strong` are now
+  mixed from brown toward white. Derived from cream they would have been white
+  rules on a white page.
+- **image mats and placeholders** — `--mf-surface-tint` is a 4% brown wash. A
+  cut-out still needs a surface faintly darker than the page to sit on, and
+  white-on-white has none.
+
+A handful of components were riding on cream as their *only* contrast and were
+repaired rather than left bare: the badge (now outlined), the cream button (now
+an outline button), the mobile menu panel (given a seam), the mix discount, the
+password gate, the loader, the size-guide dialog, and the mix/cart image mats.
+
+Contrast, measured on the new palette: brown 15.7:1, maroon 11.5:1, brown-soft
+7.2:1, brown-muted 5.2:1, white-on-maroon 11.5:1. The hairlines sit at 1.4:1,
+which is right for a rule and too low for text — they are not used for text.
+
+#### The rack sizes itself
+
+The piece width is **derived from the number of garments**, not fixed. With
+`n` pieces `360/n` apart, the near neighbour's centre sits at
+`(rail/2)·sin(step)`; if two pieces' half-widths add up to more than that they
+overlap into a wall of clothes. So `measure()` solves for the widest piece that
+still leaves 10px of air, and if the count is high enough that even the floor
+overlaps, it widens the rail instead:
+
+| pieces | piece | gap  |
+|--------|-------|------|
+| 4      | 126px | 46px |
+| 5      | 126px | 32px |
+| 6      | 126px | 15px |
+| 7      | 115px | 10px |
+| 8      | 101px | 10px |
+| 9      | 90px  | 10px |
+| 10     | 81px  | 10px |
+
+Six pieces is what the catalogue holds and the look the design settled on.
+
+**One hanger, not six.** The hook and the shoulder bar are drawn on the front
+piece only. Drawn on every piece they are seen edge-on and at every angle at
+once, which reads as a tangle of strokes across the clothes rather than as
+hangers. The rail follows the same logic: its back arc is drawn in full, and the
+near arc only at its two ends, because the near arc passes exactly where the
+shoulders are.
 
 #### How the rail is scrolled
 

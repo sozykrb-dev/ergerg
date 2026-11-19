@@ -1,16 +1,16 @@
 {
   "current": {
     "color_maroon": "#711518",
-    "color_cream": "#FAED99",
+    "color_cream": "#FFFFFF",
     "color_brown": "#321E19",
     "color_schemes": {
       "scheme-1": {
         "settings": {
-          "background": "#FAED99",
+          "background": "#FFFFFF",
           "background_gradient": "",
           "text": "#321E19",
           "button": "#711518",
-          "button_label": "#FAED99",
+          "button_label": "#FFFFFF",
           "secondary_button_label": "#711518",
           "shadow": "#321E19"
         }
@@ -19,10 +19,10 @@
         "settings": {
           "background": "#711518",
           "background_gradient": "",
-          "text": "#FAED99",
-          "button": "#FAED99",
+          "text": "#FFFFFF",
+          "button": "#FFFFFF",
           "button_label": "#711518",
-          "secondary_button_label": "#FAED99",
+          "secondary_button_label": "#FFFFFF",
           "shadow": "#321E19"
         }
       },
@@ -30,10 +30,10 @@
         "settings": {
           "background": "#321E19",
           "background_gradient": "",
-          "text": "#FAED99",
-          "button": "#FAED99",
+          "text": "#FFFFFF",
+          "button": "#FFFFFF",
           "button_label": "#321E19",
-          "secondary_button_label": "#FAED99",
+          "secondary_button_label": "#FFFFFF",
           "shadow": "#711518"
         }
       }
@@ -53,7 +53,7 @@
   "presets": {
     "Default": {
       "color_maroon": "#711518",
-      "color_cream": "#FAED99",
+      "color_cream": "#FFFFFF",
       "color_brown": "#321E19",
       "slogan": "Style Without Limits",
       "lens_enabled": true,

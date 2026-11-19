@@ -743,16 +743,46 @@
     if (totalEl) totalEl.textContent = pad(count);
 
     /* --- sizing: the rail is as wide as the room it has --------------- */
+    /* Sizing.
+       The rail is as wide as the room it has. What is not free is the *pieces*:
+       with n pieces 360/n apart, the near neighbour's centre sits at
+       (rail/2)·sin(step), and if two pieces' half-widths add up to more than
+       that they overlap into a wall. So the piece width is derived from the
+       count rather than fixed — the rack fits whether the catalogue holds five
+       garments or nine.
+
+         count 5 -> pieces 3.8x apart, roomy
+         count 6 -> 2.6x apart, the look the design settled on
+         count 7 -> 1.6x apart, tight but readable
+         count 8 -> the rail widens to keep them apart
+    */
     function measure() {
       var width = (stage && stage.clientWidth) || root.clientWidth || 360;
-      /* The rail has to leave room for the near pieces' shoulders, which hang
-         past the ends of it. 330 of a 390px phone is the fit that looks right;
-         the caps stop a desktop from turning into a frieze. */
-      var rail = Math.min(340, Math.max(240, width * 0.87));
+
+      /* the air that has to be left between one piece and its neighbour */
+      var AIR = 10;
+      var gapAngle = (2 * Math.PI) / count;
+      /* both of the near pair are scaled by their own depth */
+      var scaleNear = 0.70 + 0.34 * Math.cos(gapAngle);
+
+      var rail = Math.min(348, Math.max(236, width * 0.87));
+      var reach = (rail / 2) * Math.sin(gapAngle);   // centre to centre, px
+      var maxPiece = ((reach - AIR) * 2) / (1.04 + scaleNear);
+
+      /* never smaller than a photograph still reads, never bigger than the
+         look the design settled on */
+      var piece = Math.min(126, Math.max(78, maxPiece));
+
+      /* If the count is high enough that even the floor overlaps, widen the
+         rail instead of letting the clothes collide. */
+      if (maxPiece < 78) {
+        rail = Math.min(width - 16, ((78 / 2) * (1.04 + scaleNear) + AIR) / Math.sin(gapAngle) * 2);
+        piece = 78;
+      }
+
       root.style.setProperty('--rack-w', rail.toFixed(0) + 'px');
       root.style.setProperty('--rack-h', Math.round(rail * 0.176) + 'px');
       root.style.setProperty('--rack-drop', Math.round(rail * 0.103) + 'px');
-      var piece = Math.min(126, Math.max(96, rail * 0.358));
       root.style.setProperty('--piece-w', piece.toFixed(0) + 'px');
       root.style.setProperty('--piece-h', (piece * 1.372).toFixed(0) + 'px');
     }

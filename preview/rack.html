@@ -7,9 +7,10 @@
 <style>
   :root {
     --maroon: #711518;
-    --cream: #FAED99;
+    --cream: #ffffff;
     --brown: #321E19;
     --white: #fff;
+    --wash: color-mix(in srgb, #321E19 4%, #fff);
     --hairline: color-mix(in srgb, #321E19 16%, transparent);
     --hairline-strong: color-mix(in srgb, #321E19 34%, transparent);
     --ease: cubic-bezier(.22,.61,.36,1);
@@ -88,8 +89,10 @@
   /* the far half of the rail is behind the clothes: a second, fainter arc */
   .mf-rack__rail--back {
     border-color: color-mix(in srgb, var(--maroon) 13%, transparent);
-    border-left-color: transparent; border-right-color: transparent;
+    border-bottom-color: transparent;
   }
+  /* the near half would pass exactly where the shoulders are, so only its ends are drawn */
+  .mf-rack__rail--front { border-top-color: transparent; }
 
   .mf-rack__item {
     position: absolute;
@@ -113,8 +116,12 @@
     position: relative;
   }
   /* the hook over the rail */
+  .mf-rack__hang::before,
+  .mf-rack__hang::after { content: ""; position: absolute; opacity: 0; transition: opacity .35s var(--ease); }
+  .mf-rack__item[data-front="true"] .mf-rack__hang::before,
+  .mf-rack__item[data-front="true"] .mf-rack__hang::after { opacity: 1; }
   .mf-rack__hang::before {
-    content: ""; position: absolute; left: 50%; top: -4px;
+    left: 50%; top: -4px;
     width: 7px; height: 9px; margin-left: -3.5px;
     border: 1px solid color-mix(in srgb, var(--brown) 62%, transparent);
     border-bottom-color: transparent;
@@ -122,7 +129,7 @@
   }
   /* the shoulder bar */
   .mf-rack__hang::after {
-    content: ""; position: absolute; left: 6%; right: 6%; top: calc(var(--rack-drop) - 7px);
+    left: 27%; right: 27%; top: calc(var(--rack-drop) - 7px);
     height: 7px;
     border-top: 2px solid var(--maroon);
     transform: perspective(40px) rotateX(46deg);
@@ -132,7 +139,7 @@
   .mf-rack__figure {
     display: block; position: relative;
     width: 100%; height: var(--piece-h);
-    background: color-mix(in srgb, var(--cream) 26%, #fff);
+    background: var(--wash);
     border: 1px solid color-mix(in srgb, var(--maroon) 18%, transparent);
     overflow: hidden;
   }
@@ -147,7 +154,7 @@
   .mf-rack__ghost::before {
     content: ""; position: absolute; left: 50%; top: 8%;
     width: 74%; height: 84%; margin-left: -37%;
-    background: color-mix(in srgb, var(--cream) 60%, #fff);
+    background: var(--wash);
     clip-path: polygon(28% 0, 72% 0, 100% 22%, 86% 44%, 66% 34%, 66% 100%, 34% 100%, 34% 34%, 14% 44%, 0 22%);
   }
   .mf-rack__ghost b {
@@ -279,7 +286,7 @@
       </li>
     </ul>
 
-    <span class="mf-rack__rail" aria-hidden="true"></span>
+    <span class="mf-rack__rail mf-rack__rail--front" aria-hidden="true"></span>
   </div>
 
   <div class="mf-rack__hud">

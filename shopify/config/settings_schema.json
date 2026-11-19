@@ -15,8 +15,8 @@
       {
         "type": "color",
         "id": "color_cream",
-        "label": "Cream — surfaces",
-        "default": "#FAED99"
+        "label": "Accent — white",
+        "default": "#FFFFFF"
       },
       {
         "type": "color",
@@ -35,23 +35,23 @@
       {
         "type": "image_picker",
         "id": "wordmark_on_cream",
-        "label": "Maroon wordmark + slogan (on cream)"
+        "label": "Maroon wordmark + slogan (on white)"
       },
       {
         "type": "image_picker",
         "id": "wordmark_on_brown",
-        "label": "Cream wordmark + slogan (on dark brown)"
+        "label": "White wordmark + slogan (on dark brown)"
       },
       {
         "type": "image_picker",
         "id": "icon_on_maroon",
-        "label": "Cream brush-circle icon (on maroon) — favicon / app icon",
-        "info": "Square export for the app icon / social avatar. The browser tab icon is the cream lockup above."
+        "label": "White brush-circle icon (on maroon) — favicon / app icon",
+        "info": "Square export for the app icon / social avatar. The browser tab icon is the white lockup above."
       },
       {
         "type": "image_picker",
         "id": "icon_on_cream",
-        "label": "Maroon brush-circle icon (on cream)"
+        "label": "Maroon brush-circle icon (on white)"
       },
       {
         "type": "header",
@@ -91,11 +91,11 @@
             "label": "Cream",
             "media": "image",
             "settings": {
-              "background": "#FAED99",
+              "background": "#FFFFFF",
               "background_gradient": "",
               "text": "#321E19",
               "button": "#711518",
-              "button_label": "#FAED99",
+              "button_label": "#FFFFFF",
               "secondary_button_label": "#711518",
               "shadow": "#321E19"
             }
@@ -106,10 +106,10 @@
             "settings": {
               "background": "#711518",
               "background_gradient": "",
-              "text": "#FAED99",
-              "button": "#FAED99",
+              "text": "#FFFFFF",
+              "button": "#FFFFFF",
               "button_label": "#711518",
-              "secondary_button_label": "#FAED99",
+              "secondary_button_label": "#FFFFFF",
               "shadow": "#321E19"
             }
           },
@@ -119,10 +119,10 @@
             "settings": {
               "background": "#321E19",
               "background_gradient": "",
-              "text": "#FAED99",
-              "button": "#FAED99",
+              "text": "#FFFFFF",
+              "button": "#FFFFFF",
               "button_label": "#321E19",
-              "secondary_button_label": "#FAED99",
+              "secondary_button_label": "#FFFFFF",
               "shadow": "#711518"
             }
           }

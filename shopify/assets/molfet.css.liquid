@@ -5,23 +5,33 @@
    ========================================================================== */
 :root {
   --molfet-maroon: {{ settings.color_maroon | default: '#711518' }};
-  --molfet-cream: {{ settings.color_cream | default: '#FAED99' }};
+  /* Cream is retired: every yellow has been replaced with white. The token
+     keeps its name because 40-odd rules pair maroon and brown against it, and
+     renaming it would have meant touching all of them for no gain. What
+     actually changed is the value — and two neutrals had to be split out
+     first, because hairlines and image mats were being *derived* from cream and
+     would have gone to invisible white along with it. */
+  --molfet-cream: {{ settings.color_cream | default: '#FFFFFF' }};
   --molfet-brown: {{ settings.color_brown | default: '#321E19' }};
 
   /* The page sits on white. Cream is an accent now, not the ground: the rail,
      the frame lines and the maroon all read stronger against white, and product
      photography stops being tinted by the surface it stands on. */
   --mf-surface: #fff;
-  --mf-surface-tint: color-mix(in srgb, var(--molfet-cream) 26%, #fff);
-  --mf-surface-deep: color-mix(in srgb, var(--molfet-cream) 93%, var(--molfet-brown));
+  /* A wash for photography mats and placeholders. No longer cream: a cut-out
+     still needs a surface faintly darker than the page to sit on, and white on
+     white has none. This is the same tone with the yellow taken out. */
+  --mf-surface-tint: color-mix(in srgb, var(--molfet-brown) 4%, #fff);
+  --mf-surface-deep: color-mix(in srgb, var(--molfet-brown) 8%, #fff);
   --mf-maroon-deep: color-mix(in srgb, var(--molfet-maroon) 82%, var(--molfet-brown));
-  --mf-brown-soft: color-mix(in srgb, var(--molfet-brown) 76%, var(--molfet-cream));
-  /* 66%, not 56%: the page is white now, and the old muted brown measured 4.26
-     against it — below the 4.5 that body text needs. At 66% it is 5.7 on white
-     and still 4.8 on cream, so it works on both surfaces. */
-  --mf-brown-muted: color-mix(in srgb, var(--molfet-brown) 66%, var(--molfet-cream));
-  --mf-hairline: color-mix(in srgb, var(--molfet-brown) 16%, var(--molfet-cream));
-  --mf-hairline-strong: color-mix(in srgb, var(--molfet-brown) 34%, var(--molfet-cream));
+  --mf-brown-soft: color-mix(in srgb, var(--molfet-brown) 76%, #fff);
+  /* 66%, not 56%: the page is white, and the old muted brown measured 4.26
+     against it — below the 4.5 that body text needs. At 66% it is 5.7. */
+  --mf-brown-muted: color-mix(in srgb, var(--molfet-brown) 66%, #fff);
+  /* Rules and borders, mixed from brown rather than from cream. Derived from
+     cream (now white) these would have been white lines on a white page. */
+  --mf-hairline: color-mix(in srgb, var(--molfet-brown) 16%, #fff);
+  --mf-hairline-strong: color-mix(in srgb, var(--molfet-brown) 34%, #fff);
   --mf-frame-gap: {{ settings.frame_gap_px | default: 30 }}px;
   /* the subject travels 8px at rest and 8–16px further on hover/scroll,
      inside the brief's 8–16px range */
@@ -81,7 +91,8 @@ html[dir="rtl"] .mf-slogan { letter-spacing: .08em; }
 .mf-btn--wide { width: 100%; }
 .mf-btn--ghost { background: transparent; color: var(--molfet-brown); border-color: var(--mf-hairline-strong); }
 .mf-btn--ghost:hover { background: var(--molfet-maroon); border-color: var(--molfet-maroon); color: var(--molfet-cream); }
-.mf-btn--cream { background: var(--molfet-cream); border-color: var(--molfet-cream); color: var(--molfet-brown); }
+/* white-on-white would disappear; the ghost/outline treatment carries it */
+.mf-btn--cream { background: var(--mf-surface); border-color: var(--mf-hairline-strong); color: var(--molfet-brown); }
 .mf-link { position: relative; }
 .mf-link::after {
   content: ""; position: absolute; inset-inline-start: 0; inset-inline-end: 18%; bottom: -3px; height: 1px;
@@ -93,7 +104,9 @@ html[dir="rtl"] .mf-slogan { letter-spacing: .08em; }
   font-size: .5625rem; font-weight: 500; letter-spacing: .18em; text-transform: uppercase;
   border: 1px solid var(--mf-hairline-strong); color: var(--mf-brown-soft);
 }
-.mf-badge { background: var(--molfet-cream); border-color: var(--molfet-maroon); color: var(--molfet-maroon); }
+/* The badge used to be cream-on-cream, reading as a solid chip. On white it needs
+   its border to do that job alone. */
+.mf-badge { background: var(--mf-surface); border-color: var(--molfet-maroon); color: var(--molfet-maroon); }
 .mf-badge--maroon { background: var(--molfet-maroon); border-color: var(--molfet-maroon); color: var(--molfet-cream); }
 
 /* ---------- THE FRAME ---------- */
@@ -180,7 +193,8 @@ html[dir="rtl"] .mf-slogan { letter-spacing: .08em; }
 .mf-menu__panel {
   position: absolute; inset-block: 0; inset-inline-start: 0;
   width: min(86vw, 360px); display: flex; flex-direction: column;
-  background: var(--molfet-cream); color: var(--molfet-brown);
+  background: var(--mf-surface); color: var(--molfet-brown);
+  border-inline-end: 1px solid var(--mf-hairline);
   padding: 1.25rem 1.25rem 2rem; overflow-y: auto;
   transform: translateX(-100%); transition: transform .35s var(--mf-ease);
 }
@@ -235,7 +249,7 @@ body[data-menu-open="true"] { overflow: hidden; }
 .mf-split__panel { padding: 2.75rem 1.75rem; position: relative; }
 @media (min-width: 990px) { .mf-split__panel { padding: 4rem 3rem; } }
 .mf-split__panel--maroon { background: var(--molfet-maroon); color: var(--molfet-cream); }
-.mf-split__panel--cream { background: var(--molfet-cream); color: var(--molfet-brown); }
+.mf-split__panel--cream { background: var(--mf-surface-tint); color: var(--molfet-brown); }
 .mf-split__panel h2 { font-size: clamp(1.8rem, 3.4vw, 2.9rem); max-width: 18ch; }
 .mf-split__panel p { max-width: 44ch; font-size: .8125rem; line-height: 1.9; opacity: .88; }
 
@@ -281,7 +295,7 @@ body[data-menu-open="true"] { overflow: hidden; }
 .mf-hotspots { position: absolute; inset: 0; z-index: 6; pointer-events: none; }
 .mf-hotspot {
   position: absolute; width: 26px; height: 26px; margin: -13px 0 0 -13px; border-radius: 50%;
-  border: 1px solid var(--molfet-maroon); background: color-mix(in srgb, var(--molfet-cream) 90%, transparent);
+  border: 1px solid var(--molfet-maroon); background: var(--mf-surface);
   color: var(--molfet-maroon); display: grid; place-items: center; font-size: 10px; font-weight: 600;
   pointer-events: auto; transition: transform .3s var(--mf-ease), background-color .3s var(--mf-ease), color .3s var(--mf-ease);
 }
@@ -363,16 +377,16 @@ html.mf-lens-on .mf-rack__stage[data-dragging="true"] { cursor: grabbing; }
 .mf-mix__rail::-webkit-scrollbar { display: none; }
 .mf-mix__piece { flex: 0 0 132px; scroll-snap-align: start; border: 1px solid var(--mf-hairline); text-align: start; transition: border-color .3s var(--mf-ease); }
 .mf-mix__piece[aria-pressed="true"] { border-color: var(--molfet-maroon); }
-.mf-mix__piece img { aspect-ratio: 4 / 5; width: 100%; object-fit: contain; background: var(--molfet-cream); }
+.mf-mix__piece img { aspect-ratio: 4 / 5; width: 100%; object-fit: contain; background: var(--mf-surface-tint); }
 .mf-mix__piece-title, .mf-mix__piece-price { display: block; padding: 0 .5rem; font-size: .625rem; text-transform: uppercase; letter-spacing: .06em; }
 .mf-mix__piece-price { padding-bottom: .5rem; color: var(--mf-brown-soft); }
 .mf-mix__preview { order: -1; }
 @media (min-width: 990px) { .mf-mix__preview { order: 0; position: sticky; top: 1.5rem; align-self: start; } }
-.mf-mix__stack { position: relative; aspect-ratio: 4 / 5; background: var(--molfet-cream); }
+.mf-mix__stack { position: relative; aspect-ratio: 4 / 5; background: var(--mf-surface-tint); }
 .mf-mix__stack img { position: absolute; inset: 0; margin: auto; width: auto; height: 86%; object-fit: contain; mix-blend-mode: multiply; }
 .mf-mix__summary { margin-top: 1rem; }
 .mf-mix__total { font-size: 1.1rem; }
-.mf-mix__discount { font-size: .6875rem; color: var(--molfet-maroon); border: 1px solid color-mix(in srgb, var(--molfet-maroon) 30%, transparent); background: var(--molfet-cream); padding: .5rem .6rem; }
+.mf-mix__discount { font-size: .6875rem; color: var(--molfet-maroon); border: 1px solid color-mix(in srgb, var(--molfet-maroon) 30%, transparent); background: var(--mf-surface); padding: .5rem .6rem; }
 .mf-mix__summary .mf-btn { margin-top: .5rem; }
 
 /* ---------- product page ---------- */
@@ -410,7 +424,7 @@ html.mf-lens-on .mf-rack__stage[data-dragging="true"] { cursor: grabbing; }
 .mf-qty input { width: 36px; text-align: center; border: 0; background: transparent; font-size: .75rem; -moz-appearance: textfield; }
 .mf-qty input::-webkit-outer-spin-button, .mf-qty input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 
-.mf-sticky-atc { position: fixed; inset-inline: 0; bottom: 0; z-index: 45; display: none; align-items: center; justify-content: space-between; gap: 1rem; padding: .75rem 1rem; background: color-mix(in srgb, var(--molfet-cream) 96%, transparent); backdrop-filter: blur(10px); border-top: 1px solid var(--mf-hairline-strong); }
+.mf-sticky-atc { position: fixed; inset-inline: 0; bottom: 0; z-index: 45; display: none; align-items: center; justify-content: space-between; gap: 1rem; padding: .75rem 1rem; background: color-mix(in srgb, #fff 94%, transparent); backdrop-filter: blur(12px); border-top: 1px solid var(--mf-hairline-strong); }
 .mf-sticky-atc__title { font-size: .625rem; text-transform: uppercase; margin: 0; }
 .mf-sticky-atc__price { font-size: .6875rem; margin: 0; color: var(--mf-brown-soft); }
 /* ---------- small phones (320–430px) ---------- */
@@ -454,7 +468,7 @@ html.mf-lens-on .mf-rack__stage[data-dragging="true"] { cursor: grabbing; }
 .mf-accordion summary::-webkit-details-marker { display: none; }
 .mf-accordion__body { padding-bottom: 1rem; font-size: .75rem; line-height: 1.85; color: var(--mf-brown-soft); }
 
-.mf-detail-btn { position: absolute; inset-inline-end: .6rem; top: .6rem; z-index: 7; padding: .4rem .6rem; border: 1px solid var(--mf-hairline-strong); background: color-mix(in srgb, var(--molfet-cream) 92%, transparent); font-size: .5625rem; text-transform: uppercase; letter-spacing: .16em; }
+.mf-detail-btn { position: absolute; inset-inline-end: .6rem; top: .6rem; z-index: 7; padding: .4rem .6rem; border: 1px solid var(--mf-hairline-strong); background: color-mix(in srgb, #fff 90%, transparent); font-size: .5625rem; text-transform: uppercase; letter-spacing: .16em; }
 @media (min-width: 990px) { .mf-detail-btn { display: none; } }
 
 /* ---------- cart drawer ---------- */
@@ -480,7 +494,7 @@ html[dir="rtl"] .mf-cart-drawer__panel { transform: translateX(-100%); }
 .mf-cart-drawer__form, .mf-cart-lines { margin: 0; padding: 0; list-style: none; }
 .mf-cart-lines { flex: 1; overflow-y: auto; padding: 0 1.25rem; }
 .mf-cart-line { display: flex; gap: .9rem; padding: 1rem 0; border-bottom: 1px solid var(--mf-hairline); }
-.mf-cart-line img { width: 74px; height: 92px; object-fit: contain; background: var(--molfet-cream); }
+.mf-cart-line img { width: 74px; height: 92px; object-fit: contain; background: var(--mf-surface-tint); }
 .mf-cart-line { position: relative; }
 .mf-cart-line__remove { position: absolute; inset-block-start: 0; inset-inline-end: 0; width: 26px; height: 26px; display: grid; place-items: center; color: var(--mf-brown-soft); transition: color .25s var(--mf-ease); }
 .mf-cart-line__remove:hover { color: var(--molfet-maroon); }
@@ -570,13 +584,15 @@ html[dir="rtl"] .mf-cart-drawer__panel { transform: translateX(-100%); }
   border-radius: 50%;
   pointer-events: none;
 }
+/* The near half of the rail passes exactly where the garments' shoulders are:
+   drawn in full it looks like a line struck through the clothes. Only its two
+   ends are drawn, so the rail is present at the sides and implied across the
+   front. */
+.mf-rack__rail--front { border-top-color: transparent; }
 /* the far half is behind the clothes, so it is drawn first and fainter */
 .mf-rack__rail--back {
   border-color: color-mix(in srgb, var(--molfet-maroon) 12%, transparent);
-  /* The near arc crosses the garments' shoulders, where a full ellipse reads
-     as a line struck through the clothes. Only the ends are drawn. */
-  border-left-color: transparent;
-  border-right-color: transparent;
+  border-bottom-color: transparent;
 }
 
 /* --- one piece, hanging --- */
@@ -597,22 +613,29 @@ html[dir="rtl"] .mf-cart-drawer__panel { transform: translateX(-100%); }
 
 /* the hanger: a hook over the rail and a bar across the shoulders */
 .mf-rack__hang { display: block; height: var(--rack-drop); position: relative; }
+/* The hooks and bars only make sense on the piece standing square to the
+   viewer. Drawn on every piece they are seen edge-on and at every angle at
+   once, which reads as a tangle of lines stroked across the clothes rather
+   than as hangers. One hanger, drawn properly, implies all of them. */
+.mf-rack__hang::before,
+.mf-rack__hang::after { content: ""; position: absolute; opacity: 0; transition: opacity .35s var(--mf-ease); }
+
 .mf-rack__hang::before {
-  content: ""; position: absolute; left: 50%; top: -4px;
+  left: 50%; top: -4px;
   width: 7px; height: 9px; margin-left: -3.5px;
   border: 1px solid color-mix(in srgb, var(--molfet-brown) 60%, transparent);
   border-bottom-color: transparent;
   border-radius: 50% 50% 0 0;
 }
 .mf-rack__hang::after {
-  content: ""; position: absolute; left: 4%; right: 4%; top: calc(var(--rack-drop) - 6px);
-  height: 6px;
+  left: 50%; top: calc(var(--rack-drop) - 5px);
+  width: 46%; height: 5px; margin-left: -23%;
   border-top: 2px solid var(--molfet-maroon);
-  /* a shallow tent: the shape of a coat hanger, not a flat line */
-  transform: perspective(40px) rotateX(46deg);
+  transform: perspective(40px) rotateX(48deg);
   transform-origin: 50% 0;
 }
-.mf-rack__item[data-front="true"] .mf-rack__hang::after { border-top-width: 3px; }
+.mf-rack__item[data-front="true"] .mf-rack__hang::before,
+.mf-rack__item[data-front="true"] .mf-rack__hang::after { opacity: 1; }
 
 .mf-rack__figure {
   display: block; position: relative; height: var(--piece-h);
@@ -793,7 +816,7 @@ html[dir="rtl"] .mf-cart-drawer__panel { transform: translateX(-100%); }
 .mf-gate {
   width: 100%; min-height: 100dvh; padding: 3rem 1.25rem 2rem;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 0; text-align: center; background: var(--molfet-cream); color: var(--molfet-brown);
+  gap: 0; text-align: center; background: var(--mf-surface); color: var(--molfet-brown);
 }
 .mf-gate__inner { width: 100%; max-width: 420px; display: grid; justify-items: center; }
 .mf-gate__mark { color: var(--molfet-maroon); width: 86px; height: 86px; margin-bottom: 1rem; }
@@ -882,7 +905,7 @@ html[dir="rtl"] .mf-cart-drawer__panel { transform: translateX(-100%); }
 /* ---------- page loader (the open circle draws itself) ---------- */
 .mf-loader {
   position: fixed; inset: 0; z-index: 95; display: grid; place-content: center; justify-items: center; gap: 1.25rem;
-  background: var(--molfet-cream); color: var(--molfet-maroon);
+  background: var(--mf-surface); color: var(--molfet-maroon);
   transition: opacity .45s var(--mf-ease), visibility .45s var(--mf-ease);
 }
 .mf-loader[data-done="true"] { opacity: 0; visibility: hidden; }
@@ -893,7 +916,7 @@ html[dir="rtl"] .mf-cart-drawer__panel { transform: translateX(-100%); }
 @media (prefers-reduced-motion: reduce) { .mf-loader { display: none; } }
 
 /* ---------- size guide dialog ---------- */
-.mf-size-guide { border: 1px solid var(--molfet-maroon); background: var(--molfet-cream); color: var(--molfet-brown); padding: 1.5rem; max-width: 520px; width: calc(100vw - 2rem); }
+.mf-size-guide { border: 1px solid var(--molfet-maroon); background: var(--mf-surface); color: var(--molfet-brown); padding: 1.5rem; max-width: 520px; width: calc(100vw - 2rem); }
 .mf-size-guide::backdrop { background: rgba(50, 30, 25, .5); }
 .mf-size-guide__head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
 .mf-size-guide__head button { font-size: 1.5rem; line-height: 1; }
