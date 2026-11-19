@@ -34,7 +34,8 @@
     <p class="mf-rack-page__intro">{{ 'rack.intro' | t }}</p>
   </header>
 
-  {% render 'molfet-rack-rail', products: garments %}
+  {% render 'molfet-rack-rail', products: garments,
+     eyebrow: 'rack.eyebrow' | t %}
 </section>
 
 {% schema %}

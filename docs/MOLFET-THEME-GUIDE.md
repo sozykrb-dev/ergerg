@@ -369,6 +369,52 @@ opens that page instead. The grid button always stays the catalogue.
 `sections/main-rack.liquid` (the dedicated page) now renders the same snippet,
 so the rail behaves identically in both places.
 
+#### The ring
+
+The rail is a straight line; this is the same rail bent into a circle.
+
+Pieces stand around a ring, and the one at the front faces the viewer. Two
+things turn it: **scrolling** and **dragging**. One scroll-span equals one
+complete turn, and when the ring has gone all the way round it stops — the page
+carries on to the next section rather than turning forever.
+
+The maths, which is all of it: each piece sits at
+`rotateY((i - active) × step) translateZ(radius)`, and the ring itself is turned
+by `-active × step`. A piece therefore arrives at 0° — facing the viewer and
+nearest the eye — exactly when it becomes the active one. `translateZ` is what
+makes the front piece bigger; the stage's `perspective` is what makes that read
+as depth rather than as resizing.
+
+The rotation is written to the DOM and **CSS animates it** (`.55s` on the ring).
+An earlier version eased the value in a `requestAnimationFrame` loop; it settled
+a degree short and left the ring visibly off-centre, so it was replaced with the
+browser's own easing, which lands exactly and costs no frames.
+
+**On a phone the panel is pinned.** `position: sticky; top: 0; height: 100dvh`
+holds the ring still while the page scrolls through `.mf-circle__span` — a spacer
+one turn tall. The screen does not move; the clothes do. Landscape phones with
+little height unpin rather than crop the ring.
+
+Accessibility: the individual figures are hidden from the focus order, and a
+single real link in the HUD names the piece at the front. The previous/next
+buttons and the arrow keys work regardless.
+
+#### White, not cream
+
+The page sits on `#fff`. Cream is an accent now — the hairline under the front
+piece, the slogan, the small marks — rather than the ground under every section.
+Two consequences were handled rather than assumed:
+
+- photography mats and placeholders became `--mf-surface-tint` (cream at 26% on
+  white), so a cut-out still reads as a cut-out;
+- `--mf-brown-muted` moved from 56% to 66% brown, because the old value measured
+  **4.26** against white — below the 4.5 that body text needs. It is 5.7 on
+  white and 4.8 on cream now, so it works on both surfaces.
+
+The header is white glass, not cream glass. No gradients anywhere: the brand
+forbids them, and the one that crept into the ring's shine was a solid cream
+hairline within a minute of being written.
+
 #### How the rail is scrolled
 
 The rail is `overflow-x: auto` with no scrollbar, so it needs three ways in and

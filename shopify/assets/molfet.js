@@ -625,218 +625,227 @@
     else rackInitialised.push(root);
   }
 
+  /* ------------------------------------------------------------------ */
+  /* 9. THE RING — the rail bent into a circle                          */
+  /* ------------------------------------------------------------------ */
+  var CIRCLE_STEP = 36;      // degrees between two neighbouring pieces
+
   function initRackFor(root) {
     if (!root || rackSeen(root)) return;
     rackMark(root);
 
-    var scroller = root.querySelector('[data-rack-scroller]');
+    var ring = root.querySelector('[data-circle-ring]');
+    var stage = root.querySelector('[data-circle-stage]');
+    var items = Array.prototype.slice.call(root.querySelectorAll('[data-circle-item]'));
+    var dotsBox = root.querySelector('[data-circle-dots]');
+    var frontLink = root.querySelector('[data-circle-front]');
+    var indexEl = root.querySelector('[data-circle-index]');
+    var totalEl = root.querySelector('[data-circle-total]');
+    var priceEl = root.querySelector('[data-circle-price]');
+    if (!ring || !items.length) return;
+
+    var count = items.length;
+    var active = 0;
+    var current = 0;       // where the ring is, in "items"
+    var target = 0;        // where it was asked to go
     var rtl = document.documentElement.dir === 'rtl';
 
-    /* A claim threshold shared by the garments and the rail. A gesture is only
-       ours once it is clearly horizontal: below it we do nothing at all, so the
-       browser pans the rail normally on touch and a click stays a click. */
-    var AXIS_LOCK = 6;
+    // the scroll distance for one full turn: roughly one screen, so a wheel on
+    // a desktop and a finger on a phone both cover the ring in a few gestures
+    var turnSpan = 0;
 
-    /* A garment turns when dragged, and pressing the button or double-clicking
-       turns it too. It never claims the pointer on pointerdown — doing that is
-       what used to swallow the pan. */
-    root.querySelectorAll('.mf-rack-item').forEach(function (item) {
-      var stage = item.querySelector('[data-rack-stage]');
-      var turner = item.querySelector('[data-rack-turn]');
-      var spinButton = item.querySelector('[data-rack-spin]');
-      if (!stage || !turner) return;
+    function measure() {
+      turnSpan = Math.max(320, window.innerHeight * 0.85);
+      root.style.setProperty('--mf-ring-span', turnSpan + 'px');
+      // step is tighter for a big ring and looser for a small one, so the ends
+      // never overlap and the front never has a gap around it
+      var step = Math.min(CIRCLE_STEP, 320 / Math.max(count, 1));
+      root.style.setProperty('--mf-ring-step', step.toFixed(2) + 'deg');
+      var radius = Math.max(220, (stage && stage.clientWidth ? stage.clientWidth : 720) * 0.42);
+      root.style.setProperty('--mf-ring-radius', radius.toFixed(0) + 'px');
+    }
 
-      var angle = 0;
-      var drag = null;
+    function pad(n) { return (n < 10 ? '0' : '') + n; }
 
-      function apply() {
-        turner.style.transform = 'rotateY(' + angle + 'deg)';
+    function render() {
+      ring.style.transform = 'rotateY(' + (-current * parseFloat(
+        (root.style.getPropertyValue('--mf-ring-step') || '36').replace('deg', ''))) + 'deg)';
+
+      var nearest = Math.round(current);
+      var wrapped = ((nearest % count) + count) % count;
+      // index `count` is the same piece as index 0: the ring closed the loop
+      if (wrapped !== active) {
+        active = wrapped;
+        var product = items[active];
+        if (frontLink) {
+          var anchor = product.querySelector('a');
+          if (anchor) {
+            frontLink.setAttribute('href', anchor.getAttribute('href'));
+            frontLink.textContent = anchor.querySelector('img')
+              ? anchor.querySelector('img').getAttribute('alt')
+              : frontLink.textContent;
+          }
+        }
+        if (indexEl) indexEl.textContent = pad(active + 1);
+        if (priceEl) {
+          var price = product.getAttribute('data-price');
+          priceEl.textContent = price || '';
+        }
+        dotsBox && Array.prototype.forEach.call(dotsBox.children, function (dot, i) {
+          dot.setAttribute('data-active', i === active ? 'true' : 'false');
+        });
+        items.forEach(function (item, i) {
+          item.setAttribute('data-front', i === active ? 'true' : 'false');
+        });
       }
 
-      function nudge(direction) {
-        angle = Math.round(angle / 360) * 360 + 360 * direction;
-        apply();
-      }
+      // opacity by depth: the front is solid, the far side fades into the ring
+      items.forEach(function (item, i) {
+        var offset = Math.abs((((i - current) % count) + count * 1.5) % count - count / 2);
+        item.style.opacity = offset > count / 2.2 ? '.25' : '';
+      });
+    }
 
+    /* The ring is turned by writing `current`, and CSS animates the change.
+       The browser's easing is smoother than a hand-rolled spring, it costs no
+       frames, and it lands exactly on the target — the frame loop this replaces
+       settled a degree short and left the ring visibly off-centre. */
+    function go(n) {
+      target = n;
+      current = n;
+      render();
+    }
+
+    function step(direction) {
+      // snap to the next whole piece from wherever the ring actually is
+      go(Math.round(target) + direction);
+    }
+
+    /* --- dots: one per piece, so the ring has a length --- */
+    // Built once. A rail that is re-initialised (the collection toggle) would
+    // otherwise stack a second set of dots on top of the first.
+    if (dotsBox && !dotsBox.children.length) {
+      for (var dotIndex = 0; dotIndex < count; dotIndex++) {
+        var dot = document.createElement('span');
+        dot.className = 'mf-circle__dot';
+        dot.setAttribute('data-active', dotIndex === 0 ? 'true' : 'false');
+        dotsBox.appendChild(dot);
+      }
+    }
+    if (totalEl) totalEl.textContent = pad(count);
+    if (indexEl) indexEl.textContent = pad(1);
+
+    // the first piece faces the viewer before anything turns, so the ring has a
+    // front from the first frame instead of waiting for the first scroll
+    items.forEach(function (item, i) {
+      item.setAttribute('data-front', i === 0 ? 'true' : 'false');
+      if (i === 0) {
+        var anchor = item.querySelector('a');
+        if (frontLink && anchor) {
+          frontLink.setAttribute('href', anchor.getAttribute('href'));
+          var img = anchor.querySelector('img');
+          if (img) frontLink.textContent = img.getAttribute('alt');
+        }
+        if (priceEl) priceEl.textContent = item.getAttribute('data-price') || '';
+      }
+    });
+
+    /* --- scrolling turns the ring ------------------------------------
+       On a phone the section is pinned and the page's own scroll is the
+       control; on a desktop the wheel over the stage is. Both feed the same
+       target, so the two can never disagree about where the ring is. */
+    function fromScroll() {
+      /* The panel is pinned by CSS: its top is held at 0 while its own height
+         is being scrolled through. `data-ring-start` is where that stretch
+         begins in the document, so the ring turns from 0 to a full loop across
+         exactly that distance and then stops — the page carries on after. */
+      var start = parseFloat(root.getAttribute('data-ring-start'));
+      if (isNaN(start)) {
+        var box = root.getBoundingClientRect();
+        start = (window.scrollY || window.pageYOffset) + box.top;
+        root.setAttribute('data-ring-start', String(start));
+      }
+      var travelled = (window.scrollY || window.pageYOffset) - start;
+      if (travelled <= 0) { go(0); return; }
+      /* One span = one complete turn. Using `count` rather than `count - 1`
+         makes the ring come back to the piece it started on, so the loop closes
+         instead of stopping one short and looking broken. */
+      if (travelled >= turnSpan) { go(count); return; }
+      go(travelled / turnSpan * count);
+    }
+
+    var ticking = false;
+    window.addEventListener('scroll', function () {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(function () {
+        ticking = false;
+        // a ring inside a hidden panel has no geometry worth reading
+        if (root.closest('[hidden]')) return;
+        fromScroll(window.scrollY || window.pageYOffset);
+      });
+    }, { passive: true });
+
+    /* --- dragging it ------------------------------------------------ */
+    var drag = null;
+    if (stage) {
       stage.addEventListener('pointerdown', function (event) {
         if (event.target.closest('button, a')) return;
-        drag = { x: event.clientX, y: event.clientY, base: angle, turning: false };
+        drag = { x: event.clientX, base: target, moved: false };
+        stage.setPointerCapture && stage.setPointerCapture(event.pointerId);
       });
-
       stage.addEventListener('pointermove', function (event) {
         if (!drag) return;
         var dx = event.clientX - drag.x;
-        var dy = event.clientY - drag.y;
-
-        if (!drag.turning) {
-          if (Math.abs(dx) < AXIS_LOCK) return;
-          // a mostly-vertical pull belongs to the page, not to the hanger
-          if (Math.abs(dy) > Math.abs(dx) * 1.5) { drag = null; return; }
-          drag.turning = true;
-          turner.setAttribute('data-dragging', 'true');
-          if (stage.setPointerCapture) stage.setPointerCapture(event.pointerId);
-        }
-
-        angle = drag.base + dx * (rtl ? -0.8 : 0.8);
-        apply();
+        if (!drag.moved && Math.abs(dx) < 6) return;
+        drag.moved = true;
+        stage.setAttribute('data-dragging', 'true');
+        go(drag.base + (rtl ? dx : -dx) / 90);
       });
-
       function release(event) {
-        if (stage.releasePointerCapture && event && stage.hasPointerCapture &&
-            stage.hasPointerCapture(event.pointerId)) {
+        if (stage.hasPointerCapture && event && stage.hasPointerCapture(event.pointerId)) {
           stage.releasePointerCapture(event.pointerId);
         }
         if (!drag) return;
-        var wasTurning = drag.turning;
+        stage.removeAttribute('data-dragging');
+        if (drag.moved) go(Math.round(target));
         drag = null;
-        turner.removeAttribute('data-dragging');
-        if (wasTurning) {
-          angle = Math.round(angle / 360) * 360;
-          apply();
-        }
       }
       stage.addEventListener('pointerup', release);
       stage.addEventListener('pointercancel', release);
+      stage.addEventListener('pointerleave', release);
 
-      stage.addEventListener('dblclick', function (event) {
-        if (event.target.closest('button, a')) return;
-        nudge(1);
-      });
-
-      if (spinButton) {
-        spinButton.addEventListener('click', function (event) {
-          event.preventDefault();
-          nudge(1);
-        });
-      }
-    });
-
-    if (!scroller) return;
-
-    /* --- the rail itself: drag it, or walk it with the arrow keys --- */
-    var railDrag = null;
-    var progress = root.querySelector('[data-rack-progress]');
-    var sway = root.querySelector('[data-rack-sway]');
-
-    function paintProgress() {
-      if (!progress) return;
-      var max = scroller.scrollWidth - scroller.clientWidth;
-      var track = progress.parentElement;
-      if (max <= 1) {
-        // nothing to pull: the cue would be a hairline that never moves
-        track.style.display = 'none';
-        return;
-      }
-      track.style.display = '';
-      // RTL reports -max..0 in Chrome/Safari, 0..max in Firefox.
-      var raw = scroller.scrollLeft;
-      var distance = raw < 0 ? -raw : raw;
-      var visible = Math.min(1, scroller.clientWidth / scroller.scrollWidth);
-      var width = Math.max(visible * 100, 8);
-      var ratio = Math.min(1, Math.max(0, distance / max));
-      progress.style.width = width + '%';
-      // inset-inline-start keeps the fill on the correct edge in both
-      // directions, so the hairline grows the way the content moves.
-      progress.style.insetInlineStart = (ratio * (100 - width)) + '%';
-    }
-
-    scroller.addEventListener('scroll', paintProgress, { passive: true });
-    window.addEventListener('resize', paintProgress);
-    // Images arrive after the first paint and change scrollWidth, so the thumb
-    // would otherwise keep the width it measured on an empty rail.
-    scroller.addEventListener('load', paintProgress, true);
-    if (window.ResizeObserver) {
-      new ResizeObserver(paintProgress).observe(scroller.firstElementChild || scroller);
-    }
-    paintProgress();
-
-    scroller.addEventListener('pointerdown', function (event) {
-      if (event.target.closest('button, a')) return;
-      railDrag = { x: event.clientX, y: event.clientY, left: scroller.scrollLeft, moving: false };
-    });
-
-    scroller.addEventListener('pointermove', function (event) {
-      if (!railDrag) return;
-      var dx = event.clientX - railDrag.x;
-      var dy = event.clientY - railDrag.y;
-
-      if (!railDrag.moving) {
-        if (Math.abs(dx) < AXIS_LOCK) return;
-        if (Math.abs(dy) > Math.abs(dx) * 1.5) { railDrag = null; return; }
-        railDrag.moving = true;
-        scroller.setAttribute('data-dragging', 'true');
-        if (scroller.setPointerCapture) scroller.setPointerCapture(event.pointerId);
-      }
-
-      // RTL: Chrome and Safari report scrollLeft as 0 / -max, Firefox as 0 / max.
-      scroller.scrollLeft = railDrag.left - dx;
-      if (sway) sway.setAttribute('data-moved', 'true');
-    });
-
-    function railRelease(event) {
-      if (scroller.releasePointerCapture && event && scroller.hasPointerCapture &&
-          scroller.hasPointerCapture(event.pointerId)) {
-        scroller.releasePointerCapture(event.pointerId);
-      }
-      if (!railDrag) return;
-      railDrag = null;
-      scroller.removeAttribute('data-dragging');
-    }
-    scroller.addEventListener('pointerup', railRelease);
-    scroller.addEventListener('pointercancel', railRelease);
-    scroller.addEventListener('pointerleave', railRelease);
-
-    /* A mouse has no pan gesture: a vertical wheel over the rail would scroll
-       the page and the rail would look stuck. Translate the wheel to the rail
-       when there is somewhere to go, and let it through at the ends so the page
-       still scrolls past the rack. */
-    scroller.addEventListener('wheel', function (event) {
-      if (event.ctrlKey) return;
-      var max = scroller.scrollWidth - scroller.clientWidth;
-      if (max <= 0) return;
-      var delta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
-      if (!delta) return;
-      /* Assigning scrollLeft already means "scroll forward" in the document
-         direction, which is what the browser does for the wheel too. So the
-         wheel value is used as-is; all that is needed is to normalise how far
-         along the rail we are, because RTL reports -max..0 in Chrome/Safari and
-         0..max in Firefox. */
-      var current = scroller.scrollLeft;
-      var travelled = current < 0 ? -current : current;
-      var next = Math.min(max, Math.max(0, travelled + delta));
-      // At the very end: do not swallow the event, let the page take over so
-      // the visitor is never trapped on the rail.
-      if (next === travelled) return;
-      event.preventDefault();
-      // Keep the engine's own sign convention so RTL keeps working.
-      scroller.scrollLeft = current < 0 ? -next : next;
-    }, { passive: false });
-
-    scroller.addEventListener('keydown', function (event) {
-      var step = Math.max(220, scroller.clientWidth * 0.6);
-      if (event.key === 'ArrowRight') {
+      stage.addEventListener('wheel', function (event) {
+        if (event.ctrlKey) return;
+        var delta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
+        if (!delta) return;
+        // a wheel over the ring turns it, one notch at a time
         event.preventDefault();
-        scroller.scrollBy({ left: step * (rtl ? -1 : 1), behavior: 'smooth' });
-      }
-      if (event.key === 'ArrowLeft') {
-        event.preventDefault();
-        scroller.scrollBy({ left: step * (rtl ? 1 : -1), behavior: 'smooth' });
-      }
+        go(Math.round(target) + (delta > 0 ? 1 : -1));
+      }, { passive: false });
+    }
+
+    var prev = root.querySelector('[data-circle-prev]');
+    var next = root.querySelector('[data-circle-next]');
+    if (prev) prev.addEventListener('click', function () { step(rtl ? 1 : -1); });
+    if (next) next.addEventListener('click', function () { step(rtl ? -1 : 1); });
+
+    root.addEventListener('keydown', function (event) {
+      if (event.key === 'ArrowRight') { event.preventDefault(); step(rtl ? -1 : 1); }
+      if (event.key === 'ArrowLeft') { event.preventDefault(); step(rtl ? 1 : -1); }
     });
 
-    // Hidden rails measure zero, so repaint once the panel is actually on
-    // screen; the view switch fires this when it swaps views.
-    function repaint() {
-      var thumb = root.querySelector('[data-rack-progress]');
-      var track = thumb && thumb.parentElement;
-      var max = scroller.scrollWidth - scroller.clientWidth;
-      if (!track) return;
-      if (max > 1) {
-        track.style.display = '';
-        scroller.dispatchEvent(new Event('scroll'));
-      }
-    }
-    root.addEventListener('molfet:rack-shown', repaint, false);
+    window.addEventListener('resize', function () { measure(); render(); });
+
+    measure();
+    render();
+  }
+
+  function initRack() {
+    document.querySelectorAll('[data-rack]').forEach(function (root) {
+      if (root.closest('[hidden]')) return;
+      initRackFor(root);
+    });
   }
 
   function initRack() {
