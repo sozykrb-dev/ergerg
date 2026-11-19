@@ -98,15 +98,34 @@ uploader needs. This is the only option that avoids a second repository.
 
 ### Option B — a dedicated theme repository
 
-Create an empty repository on GitHub (no README), then run, in this folder:
+The screenshot case: in **Connect theme** the panel offers
+`Repository: ergerg` with branches `arena/cc11c532-ergerg` and `main`, and
+**Connect** is greyed out with *"Branch isn't a valid theme"*. That is correct —
+it is reading the wrong repository. `ergerg` is the React app; its root holds
+`package.json`, `src/` and `server.ts`, and the theme is one folder down in
+`shopify/`. Shopify never looks inside a subfolder, so **no branch of that
+repository will ever connect**.
+
+You need a repository whose root *is* the theme. One command:
 
 ```bash
-node scripts/export-theme-repo.mjs <your-name>/molfet-theme main
+node scripts/publish-theme-repo.mjs <your-name>/molfet-theme main
 ```
 
-It copies the theme contents, commits them as the root of that repository and
-pushes — theme files only, no app, no docs, no zip. Then connect that repository
-and branch.
+It creates the repository (or reuses an empty one), copies the theme contents,
+commits them at the root and pushes. Then in the Shopify panel pick
+`Repository: molfet-theme`, `Branch: main`, and **Connect** becomes available.
+
+If the GitHub login cannot create repositories, the command prints a
+one-click link that opens GitHub's new-repository form already filled in; create
+it empty (no README), run the command again, and it pushes.
+
+It never force-pushes: Shopify's integration is two-way, so edits made in the
+theme editor are committed back to that branch by a bot, and a forced push would
+throw them away.
+
+`node scripts/export-theme-repo.mjs <owner/repo> [branch]` does the same push
+without needing `gh` to exist, if you prefer to create the repository yourself.
 
 ### Checking any folder before you push
 
