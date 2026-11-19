@@ -11,8 +11,18 @@
   Data: product.metafields.molfet.cutout (transparent PNG/WEBP) for the turning
   layer, the featured image otherwise.
 {%- endcomment -%}
+{%- comment -%}
+  With no collection chosen, hang everything the store has rather than showing
+  an empty rail — a merchant who has not configured the section yet still sees
+  their clothing turning on hangers.
+{%- endcomment -%}
 {%- assign rack_collection = collections[section.settings.collection] -%}
-{%- assign garments = rack_collection.products | where: 'available', true -%}
+{%- assign rack_products = rack_collection.products -%}
+{%- if rack_products == blank or rack_products.size == 0 -%}
+  {%- assign rack_all = collections['all'] -%}
+  {%- assign rack_products = rack_all.products -%}
+{%- endif -%}
+{%- assign garments = rack_products | where: 'available', true -%}
 
 <section class="mf-rack-page" data-rack>
   <header class="mf-rack-page__head">
@@ -31,6 +41,7 @@
 
     <div class="mf-rack__scroller" data-rack-scroller tabindex="0" role="list" aria-label="{{ 'rack.rail' | t }}">
       <ul class="mf-rack__items">
+        {%- capture rack_items -%}
         {%- for product in garments -%}
           {%- assign slot = product.metafields.molfet.slot.value | default: 'top' -%}
           {%- if slot == 'accessory' -%}{%- continue -%}{%- endif -%}
@@ -81,9 +92,13 @@
               </div>
             </div>
           </li>
-        {%- else -%}
-          <li class="mf-rack__empty">{{ 'rack.empty' | t }}</li>
         {%- endfor -%}
+        {%- endcapture -%}
+        {{- rack_items -}}
+        {%- assign rack_items_check = rack_items | strip -%}
+        {%- if rack_items_check == blank -%}
+          <li class="mf-rack__empty">{{ 'rack.empty' | t }}</li>
+        {%- endif -%}
       </ul>
     </div>
   </div>

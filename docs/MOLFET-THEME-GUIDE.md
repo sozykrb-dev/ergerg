@@ -340,6 +340,43 @@ page using the `page.rack` template.
   featured image. No shadows, no gradients — depth comes from the turn alone.
 - Reduced motion: no sway, no drift, the turn still happens when asked for.
 
+#### Making the Rack view reachable
+
+The button in the header resolves its link in three steps, so it is never a dead
+end:
+
+1. the **Rack page** picked in the section settings (Header → Rack page),
+2. otherwise a page whose handle is `rack`,
+3. otherwise `/collections/all`.
+
+To get the real rail: **Online Store → Pages → Add page**, title it, and set its
+template to `page.rack`. That template renders `main-rack`. Then pick the same
+page in **Header → Rack page** (or leave it empty — step 2 finds it by handle).
+
+`main-rack` hangs the chosen collection; with no collection chosen — or one whose
+handle no longer exists, or one with no products — it falls back to
+*catalogue, all products*, so the rail is never empty on a fresh install. Only
+`available` products whose `molfet.slot` is `top`, `bottom` or `outerwear` hang.
+
+### The duplicate header / footer rule
+
+`layout/theme.liquid` renders `announcement-bar`, `header`, `footer` and
+`cart-drawer` once, around `{{ content_for_layout }}`. **A JSON template must
+never list those four section types**, or the page renders two of each. Sections
+inside a template should be page content only (`main-product`, `hero-frame`,
+`featured-collection`, …).
+
+### The brush cursor and the stray ring
+
+The Lens cursor is the brush circle; the native arrow is hidden by
+`html.mf-lens-on`, a class the script adds **after** the lens is mounted. Both
+fixed elements are parked at `-9999px` so they cannot be seen before the first
+`pointermove` — a `position: fixed` element with no `top`/`left` otherwise paints
+at its place in the flow, which is under the footer, in the bottom-right corner.
+The circle hides on `pointerleave`, `pointerout` (no related target), window
+`blur` and tab hide, and is `display:none` at `(hover: none), (pointer: coarse)`
+and under reduced motion.
+
 ## 6. Assumptions
 
 - Photography is supplied on solid brand-colour surfaces; the cut-out layer is a

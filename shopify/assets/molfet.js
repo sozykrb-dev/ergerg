@@ -36,6 +36,11 @@
     var lens = template.content.firstElementChild.cloneNode(true);
     document.body.appendChild(lens);
 
+    // Only now hide the native arrow — the brush circle is the cursor, and it
+    // must never sit underneath a visible arrow. Add the class after mounting so
+    // a failure above leaves the normal cursor in place.
+    document.documentElement.classList.add('mf-lens-on');
+
     var pos = { x: -200, y: -200 };
     var raf = 0;
     var open = false;
@@ -87,15 +92,41 @@
 
     document.addEventListener('pointermove', function (event) {
       move(event);
-      var stage = event.target.closest('[data-lens-stage], .mf-card__media-link, .mf-product__slides');
+      // target can be the document itself (synthetic events, some assistive
+      // tech) and Document has no closest(); guard before asking.
+      var target = event.target;
+      var stage = target && target.closest
+        ? target.closest('[data-lens-stage], .mf-card__media-link, .mf-product__slides')
+        : null;
       setLens(stage);
     }, { passive: true });
 
-    document.addEventListener('pointerleave', function () {
+    // Leaving the window does not reliably fire pointerleave on document (it
+    // does not fire at all when the pointer exits onto browser chrome), which
+    // used to strand the ring on screen. Hide on every "pointer is gone" event;
+    // park the brush circle off-viewport too so it cannot be found at rest.
+    function dismiss() {
       cursor.setAttribute('data-visible', 'false');
       lens.setAttribute('data-open', 'false');
       open = false;
+    }
+
+    function park() {
+      dismiss();
+      cursor.style.transform = 'translate3d(-9999px,-9999px,0)';
+      lens.style.left = '-9999px';
+      lens.style.top = '-9999px';
+    }
+
+    document.addEventListener('pointerleave', dismiss);
+    document.addEventListener('pointerout', function (event) {
+      if (!event.relatedTarget) dismiss();
     });
+    window.addEventListener('blur', dismiss);
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) dismiss();
+    });
+    park();
 
     /* hotspots: moving the lens over a hotspot shows its callout;
        the macro layer fades in as the pointer rests on it */

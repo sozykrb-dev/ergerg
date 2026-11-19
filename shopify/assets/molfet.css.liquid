@@ -215,7 +215,11 @@ html[dir="rtl"] .mf-slogan { letter-spacing: .08em; }
 
 /* ---------- THE LENS ---------- */
 .mf-lens-cursor {
+  /* Same trap as .mf-lens: parked outside the viewport until JS translates it,
+     because a fixed element with no user-space offset paints at its static
+     position — the bottom right corner, on top of the footer. */
   position: fixed; top: 0; left: 0; width: 34px; height: 34px; margin: -17px 0 0 -17px;
+  transform: translate3d(-9999px,-9999px,0);
   pointer-events: none; z-index: 90; color: var(--molfet-maroon); opacity: 0;
   transition: opacity .25s var(--mf-ease);
 }
@@ -223,8 +227,28 @@ html[dir="rtl"] .mf-slogan { letter-spacing: .08em; }
 .mf-lens-cursor[data-tone="dark"] { color: var(--molfet-cream); }
 .mf-lens-cursor__icon { width: 100%; height: 100%; }
 
+/* The brush circle IS the cursor: while it runs, the arrow must not sit on top
+   of it. The class is added by JS only after the lens is actually mounted, so a
+   browser that skipped the script keeps its normal cursor. Text fields and the
+   rail keep a real cursor — a caret and a grab hand are information. */
+html.mf-lens-on,
+html.mf-lens-on * { cursor: none; }
+html.mf-lens-on input,
+html.mf-lens-on textarea,
+html.mf-lens-on select,
+html.mf-lens-on [contenteditable="true"] { cursor: auto; }
+html.mf-lens-on .mf-rack__scroller,
+html.mf-lens-on .mf-rack-item__stage { cursor: grab; }
+html.mf-lens-on .mf-rack__scroller[data-dragging="true"],
+html.mf-lens-on .mf-rack-item__stage:active { cursor: grabbing; }
+
 .mf-lens {
-  position: fixed; width: 160px; height: 160px; margin: -80px 0 0 -80px; border-radius: 50%;
+  /* Parked off-viewport until the first pointermove writes left/top. A fixed
+     element with no offsets falls back to its place in the flow — i.e. after
+     the footer — so without this the brush circle sits in the bottom corner
+     before the visitor has moved the mouse once. */
+  position: fixed; top: -9999px; left: -9999px;
+  width: 160px; height: 160px; margin: -80px 0 0 -80px; border-radius: 50%;
   overflow: hidden; pointer-events: none; z-index: 89; background: var(--molfet-maroon);
   clip-path: circle(50% at 50% 50%); opacity: 0; transform: scale(.6);
   transition: opacity .3s var(--mf-ease), transform .45s var(--mf-ease);
@@ -525,6 +549,12 @@ html[dir="rtl"] .mf-cart-drawer__panel { transform: translateX(-100%); }
   *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
   .mf-break, .mf-frame:hover .mf-break { transform: none !important; }
   .mf-lens-cursor { display: none !important; }
+}
+
+/* The brush circle is a pointer affordance; on a finger there is no pointer to
+   replace, so it must never appear even if a stray event gets through. */
+@media (hover: none), (pointer: coarse) {
+  .mf-lens-cursor, .mf-lens { display: none !important; }
 }
 
 /* ---------- page loader (the open circle draws itself) ---------- */

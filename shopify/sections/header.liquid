@@ -39,7 +39,25 @@
 
     <div class="mf-header__actions">
       {%- if section.settings.show_rack -%}
-        <a class="mf-header__rack" href="{{ section.settings.rack_page.url | default: routes.root_url }}">
+        {%- comment -%}
+          Falls back to a page with the handle "rack" (template page.rack), so the
+          button works as soon as that page exists, without touching settings.
+        {%- endcomment -%}
+        {%- assign rack_href = section.settings.rack_page.url -%}
+        {%- if rack_href == blank -%}
+          {%- assign rack_page = pages['rack'] -%}
+          {%- if rack_page != blank -%}
+            {%- assign rack_href = rack_page.url -%}
+          {%- else -%}
+            {%- comment -%}
+              No Rack page yet: send the visitor to the catalogue instead of the
+              homepage. /collections/all exists on every store, so the button is
+              never a dead link even before the merchant creates the page.
+            {%- endcomment -%}
+            {%- assign rack_href = routes.all_products_collection_url | default: routes.root_url -%}
+          {%- endif -%}
+        {%- endif -%}
+        <a class="mf-header__rack" href="{{ rack_href }}">
           <svg viewBox="0 0 20 20" width="15" height="15" fill="none" aria-hidden="true">
             <path d="M3 5h14M5 5v2.5c0 .8.6 1.5 1.4 1.5h7.2c.8 0 1.4-.7 1.4-1.5V5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
             <path d="M7 9v7M13 9v7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" opacity="0.55"/>
