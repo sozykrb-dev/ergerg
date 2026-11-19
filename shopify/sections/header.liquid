@@ -38,23 +38,32 @@
     </a>
 
     <div class="mf-header__actions">
+      {%- comment -%}
+        TWO WAYS TO SHOP — the shop and the rail.
+
+        Both point at the catalogue: /collections/all shows the framed grid, and
+        ?view=rack asks the same page for the rail. Nothing has to be created in
+        the admin first, which is why these buttons work on a brand new theme.
+
+        A dedicated rack page is still honoured if the merchant makes one: then
+        the rail button opens that instead, and the shop button stays the grid.
+      {%- endcomment -%}
+      {%- assign shop_href = routes.all_products_collection_url | default: routes.root_url -%}
+      <a class="mf-header__rack mf-header__rack--shop" href="{{ shop_href }}">
+        <svg viewBox="0 0 20 20" width="15" height="15" fill="none" aria-hidden="true">
+          <path d="M4 6h12v10H4zM4 10h12M8 6v10M12 6v10" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" opacity="0.9"/>
+        </svg>
+        <span>{{ 'collections.view_grid' | t }}</span>
+      </a>
+
       {%- if section.settings.show_rack -%}
-        {%- comment -%}
-          Falls back to a page with the handle "rack" (template page.rack), so the
-          button works as soon as that page exists, without touching settings.
-        {%- endcomment -%}
         {%- assign rack_href = section.settings.rack_page.url -%}
         {%- if rack_href == blank -%}
           {%- assign rack_page = pages['rack'] -%}
           {%- if rack_page != blank -%}
             {%- assign rack_href = rack_page.url -%}
           {%- else -%}
-            {%- comment -%}
-              No Rack page yet: send the visitor to the catalogue instead of the
-              homepage. /collections/all exists on every store, so the button is
-              never a dead link even before the merchant creates the page.
-            {%- endcomment -%}
-            {%- assign rack_href = routes.all_products_collection_url | default: routes.root_url -%}
+            {%- assign rack_href = shop_href | append: '?view=rack' -%}
           {%- endif -%}
         {%- endif -%}
         <a class="mf-header__rack" href="{{ rack_href }}">

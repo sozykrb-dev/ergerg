@@ -8,12 +8,35 @@
     </nav>
     <h1>{{ collection.title }}</h1>
     <p class="mf-collection__count">{{ collection.products_count }} {{ 'collections.pieces' | t }}</p>
+
+    {%- comment -%}
+      The two views the brand is built on: the grid, and the rail. Both live on
+      this page, so switching is instant and needs no second template, no extra
+      page to create, and no round trip. The choice is remembered per visitor.
+    {%- endcomment -%}
+    <div class="mf-viewswitch" role="group" aria-label="{{ 'collections.view' | t }}">
+      <button type="button" class="mf-viewswitch__btn is-active"
+        data-view-toggle="grid" aria-pressed="true">
+        <svg viewBox="0 0 16 16" width="14" height="14" fill="none" aria-hidden="true">
+          <path d="M2 2h5v5H2zM9 2h5v5H9zM2 9h5v5H2zM9 9h5v5H9z" stroke="currentColor" stroke-width="1.3"/>
+        </svg>
+        <span>{{ 'collections.view_grid' | t }}</span>
+      </button>
+      <button type="button" class="mf-viewswitch__btn"
+        data-view-toggle="rack" aria-pressed="false">
+        <svg viewBox="0 0 20 20" width="14" height="14" fill="none" aria-hidden="true">
+          <path d="M3 5h14M5 5v2.5c0 .8.6 1.5 1.4 1.5h7.2c.8 0 1.4-.7 1.4-1.5V5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+          <path d="M7 9v7M13 9v7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" opacity="0.55"/>
+        </svg>
+        <span>{{ 'collections.view_rack' | t }}</span>
+      </button>
+    </div>
     {%- if collection.description != blank -%}<div class="mf-collection__desc">{{ collection.description }}</div>{%- endif -%}
   </header>
 
   <div class="mf-collection__layout {% if section.settings.enable_filtering %}has-filters{% endif %}">
     {%- if section.settings.enable_filtering -%}
-      <aside class="mf-filters" aria-label="{{ 'collections.filters' | t }}">
+      <aside class="mf-filters" aria-label="{{ 'collections.filters' | t }}" data-view-panel="filters">
         <form id="FacetFiltersForm">
           {%- for filter in collection.filters -%}
             <details class="mf-filter" open>
@@ -43,7 +66,7 @@
       </aside>
     {%- endif -%}
 
-    <div class="mf-collection__results">
+    <div class="mf-collection__results" data-view-panel="grid">
       {%- paginate collection.products by section.settings.products_per_page -%}
         <div class="mf-product-grid">
           {%- for product in collection.products -%}
@@ -59,6 +82,16 @@
           </nav>
         {%- endif -%}
       {%- endpaginate -%}
+    </div>
+
+    {%- comment -%}
+      The rail, on the same collection. It is hidden until asked for, and the
+      products come from the collection on screen, so a filtered or paginated
+      view still hangs the pieces the visitor is looking at.
+    {%- endcomment -%}
+    <div class="mf-collection__results mf-collection__results--rack"
+      data-view-panel="rack" data-rack hidden>
+      {% render 'molfet-rack-rail', products: collection.products %}
     </div>
   </div>
 </section>

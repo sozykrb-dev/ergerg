@@ -40,7 +40,10 @@
     "apply": "Apply",
     "from": "From",
     "to": "To",
-    "empty": "Nothing in this corner yet."
+    "empty": "Nothing in this corner yet.",
+    "view": "Choose a view",
+    "view_grid": "Grid",
+    "view_rack": "The rail"
   },
   "cart": {
     "apply": "Apply",

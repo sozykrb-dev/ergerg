@@ -607,9 +607,27 @@
   /* ------------------------------------------------------------------ */
   /* 9. RACK VIEW — garments turn on their hangers, the rail is pullable */
   /* ------------------------------------------------------------------ */
-  function initRack() {
-    var root = document.querySelector('[data-rack]');
-    if (!root) return;
+  /* `initRack` used to grab the first `[data-rack]` on the page. A collection
+     can now hold one behind a toggle as well as the dedicated rack page, so the
+     root is passed in, and a rail that was initialised once is remembered — the
+     view switch calls back in when its panel becomes visible and must not bind
+     a second set of listeners. */
+  var rackRoots = typeof WeakSet === 'function' ? new WeakSet() : null;
+  var rackInitialised = [];
+
+  function rackSeen(root) {
+    if (rackRoots) return rackRoots.has(root);
+    return rackInitialised.indexOf(root) !== -1;
+  }
+
+  function rackMark(root) {
+    if (rackRoots) rackRoots.add(root);
+    else rackInitialised.push(root);
+  }
+
+  function initRackFor(root) {
+    if (!root || rackSeen(root)) return;
+    rackMark(root);
 
     var scroller = root.querySelector('[data-rack-scroller]');
     var rtl = document.documentElement.dir === 'rtl';
@@ -805,8 +823,96 @@
         scroller.scrollBy({ left: step * (rtl ? 1 : -1), behavior: 'smooth' });
       }
     });
+
+    // Hidden rails measure zero, so repaint once the panel is actually on
+    // screen; the view switch fires this when it swaps views.
+    function repaint() {
+      var thumb = root.querySelector('[data-rack-progress]');
+      var track = thumb && thumb.parentElement;
+      var max = scroller.scrollWidth - scroller.clientWidth;
+      if (!track) return;
+      if (max > 1) {
+        track.style.display = '';
+        scroller.dispatchEvent(new Event('scroll'));
+      }
+    }
+    root.addEventListener('molfet:rack-shown', repaint, false);
   }
 
+  function initRack() {
+    document.querySelectorAll('[data-rack]').forEach(function (root) {
+      // a rail inside a hidden panel is initialised when it is revealed, not now
+      if (root.closest('[hidden]')) return;
+      initRackFor(root);
+    });
+  }
+
+
+  /* ------------------------------------------------------------------ */
+  /* 9b. COLLECTION VIEWS — grid ⇄ rack, on the same page                */
+  /* ------------------------------------------------------------------ */
+  function initCollectionViews() {
+    var toggles = document.querySelectorAll('[data-view-toggle]');
+    if (!toggles.length) return;
+
+    var STORE_KEY = 'molfet:collection-view';
+    var panels = document.querySelectorAll('[data-view-panel]');
+
+    function show(view) {
+      panels.forEach(function (panel) {
+        var name = panel.getAttribute('data-view-panel');
+        // The filter column belongs to the grid: a rail has nothing to filter.
+        var mine = name === view || (name === 'filters' && view === 'grid');
+        // `hidden` is what a screen reader honours; display:none alone leaves
+        // the panel in the accessibility tree on some engines.
+        if (mine) {
+          panel.removeAttribute('hidden');
+          panel.removeAttribute('data-rack-dormant');
+        } else {
+          panel.setAttribute('hidden', '');
+          if (panel.hasAttribute('data-rack')) panel.setAttribute('data-rack-dormant', '');
+        }
+      });
+
+      toggles.forEach(function (button) {
+        var on = button.getAttribute('data-view-toggle') === view;
+        button.classList.toggle('is-active', on);
+        button.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+
+      // The rail parked at -9999px measures zero while hidden, so its thumb
+      // and its drag maths are recalculated the moment it becomes visible.
+      if (view === 'rack') {
+        // `data-rack` sits on the panel itself, not on a child, so the selector
+        // has to be a compound on the same element.
+        var rail = document.querySelector('[data-view-panel="rack"][data-rack]') ||
+                   document.querySelector('[data-view-panel="rack"] [data-rack]');
+        if (rail) {
+          initRackFor(rail);
+          rail.dispatchEvent(new CustomEvent('molfet:rack-shown', { bubbles: true }));
+        }
+      }
+
+      try { window.sessionStorage.setItem(STORE_KEY, view); } catch (error) {}
+    }
+
+    toggles.forEach(function (button) {
+      button.addEventListener('click', function () {
+        show(button.getAttribute('data-view-toggle'));
+      });
+    });
+
+    // A link that asks for the rail directly (/collections/all?view=rack) is how
+    // the header button lands on a working rail without a second page.
+    var requested = '';
+    try {
+      requested = new URLSearchParams(window.location.search).get('view') || '';
+    } catch (error) {}
+    if (!requested) {
+      try { requested = window.sessionStorage.getItem(STORE_KEY) || ''; } catch (error) {}
+    }
+    if (requested === 'rack' || requested === 'grid') show(requested);
+  }
 
   /* ------------------------------------------------------------------ */
   /* 10. VARIANT PICKER — options resolve to the real variant            */
@@ -946,6 +1052,7 @@
     initFrameBreak();
     initAddToCart();
     initRack();
+    initCollectionViews();
     initVariantPicker();
     initCdnFallback();
   }

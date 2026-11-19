@@ -340,6 +340,35 @@ page using the `page.rack` template.
   featured image. No shadows, no gradients — depth comes from the turn alone.
 - Reduced motion: no sway, no drift, the turn still happens when asked for.
 
+#### Two views, one page (no page to create)
+
+The shop and the rail live on the **collection** page. Two buttons at the top
+of the grid — `Grid` and `The rail` — swap between them instantly:
+
+- the rail is `snippets/molfet-rack-rail.liquid`, rendered inside the collection
+  template and hidden with `hidden` until asked for;
+- the choice is remembered in `sessionStorage`, and `?view=rack` / `?view=grid`
+  opens on a given view, which is how the header buttons deep-link;
+- the rail is initialised **lazily**, the first time its panel is revealed,
+  because a hidden rail measures zero width and its drag maths and progress
+  thumb would be wrong;
+- the filter column belongs to the grid and hides with it — there is nothing to
+  filter on a rail.
+
+The header carries the same two buttons:
+
+| Button | Goes to |
+| --- | --- |
+| Grid | `/collections/all` |
+| The rail | `/collections/all?view=rack` |
+
+Both work on a brand-new install. If the merchant *does* create a page using the
+`page.rack` template and picks it in **Header → Rack page**, the rail button
+opens that page instead. The grid button always stays the catalogue.
+
+`sections/main-rack.liquid` (the dedicated page) now renders the same snippet,
+so the rail behaves identically in both places.
+
 #### How the rail is scrolled
 
 The rail is `overflow-x: auto` with no scrollbar, so it needs three ways in and
@@ -377,9 +406,11 @@ end:
 2. otherwise a page whose handle is `rack`,
 3. otherwise `/collections/all`.
 
-To get the real rail: **Online Store → Pages → Add page**, title it, and set its
-template to `page.rack`. That template renders `main-rack`. Then pick the same
-page in **Header → Rack page** (or leave it empty — step 2 finds it by handle).
+**You do not have to create anything.** The rail is already on every collection
+page behind the "The rail" button. Creating a page is optional and only useful
+if you want a standalone rack URL: **Online Store → Pages → Add page**, then set
+its template to `page.rack`. Pick that page in **Header → Rack page** and the
+rail button opens it instead of `/collections/all?view=rack`.
 
 `main-rack` hangs the chosen collection; with no collection chosen — or one whose
 handle no longer exists, or one with no products — it falls back to

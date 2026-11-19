@@ -497,6 +497,34 @@ html[dir="rtl"] .mf-cart-drawer__panel { transform: translateX(-100%); }
 .mf-rack-item__sizes { font-size: .5625rem; letter-spacing: .12em; color: var(--mf-brown-muted); }
 .mf-rack__empty { padding: 4rem 1rem; font-size: .8125rem; color: var(--mf-brown-soft); }
 
+/* ---------- collection view switch (grid / rail) ---------- */
+.mf-viewswitch {
+  display: inline-flex; margin-top: 1rem;
+  border: 1px solid var(--mf-hairline-strong);
+}
+.mf-viewswitch__btn {
+  display: inline-flex; align-items: center; gap: .4rem;
+  height: 36px; padding: 0 .8rem;
+  font-size: .625rem; text-transform: uppercase; letter-spacing: .14em;
+  color: var(--mf-brown-soft);
+  transition: background-color .25s var(--mf-ease), color .25s var(--mf-ease);
+}
+.mf-viewswitch__btn + .mf-viewswitch__btn { border-inline-start: 1px solid var(--mf-hairline-strong); }
+.mf-viewswitch__btn:hover { color: var(--molfet-maroon); }
+.mf-viewswitch__btn.is-active { background: var(--molfet-maroon); color: var(--molfet-cream); }
+.mf-viewswitch__btn:focus-visible { outline: 2px solid var(--molfet-maroon); outline-offset: 2px; }
+@media (max-width: 479px) { .mf-viewswitch__btn span { display: none; } .mf-viewswitch__btn { padding: 0 .7rem; } }
+
+/* The rail is a full-width object: it must not be squeezed into the results
+   column beside the filters, or the hangers would have nowhere to hang. The
+   layout is a grid only once filtering is on, so span every column there; with
+   no filters it is a plain block and needs nothing. */
+.mf-collection__layout.has-filters > .mf-collection__results--rack {
+  grid-column: 1 / -1; padding-top: 0;
+}
+.mf-collection__results--rack { padding-top: 0; }
+[data-view-panel][hidden] { display: none !important; }
+
 /* header button */
 .mf-header__rack {
   display: inline-flex; align-items: center; gap: .4rem; height: 34px; padding: 0 .7rem;
