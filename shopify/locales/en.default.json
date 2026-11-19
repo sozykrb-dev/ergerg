@@ -5,7 +5,9 @@
     "404": {
       "title": "You found the edge of the map. Style doesn't have one.",
       "cta": "Back to the collection"
-    }
+    },
+    "menu_shop": "Shop all",
+    "menu_rack": "Rack view"
   },
   "accessibility": {
     "skip_to_content": "Skip to content",
@@ -15,7 +17,9 @@
     "breadcrumb": "Breadcrumb",
     "pagination": "Pagination",
     "back_to_top": "Back to top",
-    "refresh_page": "Choosing a selection results in a full page refresh."
+    "refresh_page": "Choosing a selection results in a full page refresh.",
+    "open_menu": "Open menu",
+    "close_menu": "Close menu"
   },
   "brand": {
     "made_badge": "Designed with an Italian mindset. Crafted in Egypt.",

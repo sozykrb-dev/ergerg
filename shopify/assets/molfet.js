@@ -849,6 +849,104 @@
 
 
   /* ------------------------------------------------------------------ */
+  /* 9a. MOBILE MENU — the only navigation a phone gets                 */
+  /* ------------------------------------------------------------------ */
+  function initMenu() {
+    var menu = document.getElementById('MolfetMobileMenu');
+    var openers = document.querySelectorAll('[data-open-menu]');
+    if (!menu || !openers.length) return;
+
+    var panel = menu.querySelector('.mf-menu__panel');
+    var closers = menu.querySelectorAll('[data-close-menu]');
+    var lastFocus = null;
+    var FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])';
+
+    function focusables() {
+      return Array.prototype.slice.call(panel.querySelectorAll(FOCUSABLE))
+        .filter(function (el) { return el.offsetParent !== null; });
+    }
+
+    function open() {
+      lastFocus = document.activeElement;
+      menu.removeAttribute('hidden');
+      // one frame so the transition runs from the closed position
+      window.requestAnimationFrame(function () {
+        menu.setAttribute('data-open', 'true');
+      });
+      document.body.setAttribute('data-menu-open', 'true');
+      openers.forEach(function (button) {
+        button.setAttribute('aria-expanded', 'true');
+        // the burger is now a close button; saying "Open menu" would be a lie
+        var closeLabel = button.getAttribute('data-label-close');
+        if (closeLabel) button.setAttribute('aria-label', closeLabel);
+      });
+      var first = focusables()[0];
+      if (first) first.focus();
+    }
+
+    function close() {
+      menu.removeAttribute('data-open');
+      document.body.removeAttribute('data-menu-open');
+      openers.forEach(function (button) {
+        button.setAttribute('aria-expanded', 'false');
+        var openLabel = button.getAttribute('data-label-open');
+        if (openLabel) button.setAttribute('aria-label', openLabel);
+      });
+      var done = function () {
+        menu.setAttribute('hidden', '');
+        menu.removeEventListener('transitionend', done);
+      };
+      // no transition (reduced motion) still has to hide it
+      if (reduceMotion) done();
+      else menu.addEventListener('transitionend', done);
+      if (lastFocus && lastFocus.focus) lastFocus.focus();
+    }
+
+    function isOpen() {
+      return menu.getAttribute('data-open') === 'true';
+    }
+
+    openers.forEach(function (button) {
+      button.addEventListener('click', function () {
+        if (isOpen()) close(); else open();
+      });
+    });
+    closers.forEach(function (button) { button.addEventListener('click', close); });
+
+    // a link inside the menu is a navigation: let it happen, but close first so
+    // the panel is not left hanging when the browser restores this page
+    panel.querySelectorAll('a').forEach(function (link) {
+      link.addEventListener('click', function () { close(); });
+    });
+
+    document.addEventListener('keydown', function (event) {
+      if (!isOpen()) return;
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        close();
+        return;
+      }
+      if (event.key !== 'Tab') return;
+
+      var items = focusables();
+      if (!items.length) return;
+      var first = items[0];
+      var last = items[items.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault(); last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault(); first.focus();
+      }
+    });
+
+    // leaving the tab while the menu is open would trap the next visit behind
+    // a body that cannot scroll
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden && isOpen()) close();
+    });
+  }
+
+  /* ------------------------------------------------------------------ */
   /* 9b. COLLECTION VIEWS — grid ⇄ rack, on the same page                */
   /* ------------------------------------------------------------------ */
   function initCollectionViews() {
@@ -1051,6 +1149,7 @@
     initMisc();
     initFrameBreak();
     initAddToCart();
+    initMenu();
     initRack();
     initCollectionViews();
     initVariantPicker();

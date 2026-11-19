@@ -436,6 +436,33 @@ The circle hides on `pointerleave`, `pointerout` (no related target), window
 `blur` and tab hide, and is `display:none` at `(hover: none), (pointer: coarse)`
 and under reduced motion.
 
+### On a phone
+
+The desktop nav is hidden below 990px, and it used to be hidden with **nothing in
+its place** — on a phone the store had no navigation at all. `header.liquid` now
+renders a burger and a real menu: a `role="dialog"` panel that slides in from the
+start edge (from the right in Arabic), with the same link list as the desktop
+nav so the two cannot drift, plus the two shopping buttons at the foot.
+
+It behaves like a dialog: focus moves into the panel on open and wraps at both
+ends, Escape closes it, the scrim closes it, and the page behind cannot scroll
+while it is up. The burger itself swaps between "Open menu" and "Close menu" and
+says so with `aria-expanded`.
+
+The rest of the phone pass:
+
+| Problem | Fix |
+| --- | --- |
+| Sticky add-to-cart covered the end of the page | `.mf-product` reserves 7rem; the footer 5.5rem |
+| Two buttons side by side on a 320px line | `__buy` and `__secondary` stack below 480px |
+| iOS zoomed the page on every field focus | form inputs are 16px below 750px |
+| The size chart pushed the page wide | `overflow: auto` on the guide and its table |
+| A long word in product copy widened the layout | `overflow-wrap: anywhere` on body copy |
+| The rail showed one and a half hangers | pieces are 152px, stage 226px below 480px |
+| The view switch overflowed the header | it goes full width with equal halves |
+| The cart drawer had a 100vw sliver on some phones | full width below 480px |
+| Panels ignored the phone's gesture area | `max-height: 100dvh` where supported |
+
 ### The password page
 
 A store that is not open yet shows `templates/password.json` on every URL. It

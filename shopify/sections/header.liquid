@@ -38,6 +38,16 @@
     </a>
 
     <div class="mf-header__actions">
+      <button type="button" class="mf-header__burger" data-open-menu
+        aria-label="{{ 'accessibility.open_menu' | t }}"
+        data-label-open="{{ 'accessibility.open_menu' | t }}"
+        data-label-close="{{ 'accessibility.close_menu' | t }}"
+        aria-expanded="false" aria-controls="MolfetMobileMenu">
+        <span class="mf-header__burger-box" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </span>
+      </button>
+
       {%- comment -%}
         TWO WAYS TO SHOP — the shop and the rail.
 
@@ -98,6 +108,51 @@
     </div>
   </div>
 </header>
+
+{%- comment -%}
+  The mobile menu. The desktop nav is hidden below 990px, and it used to be
+  hidden with no replacement at all — so on a phone the store had no navigation.
+  A real dialog: focus is trapped, Escape closes it, and the same link list as
+  the desktop nav is rendered so the two can never drift apart.
+{%- endcomment -%}
+<div class="mf-menu" id="MolfetMobileMenu" data-menu hidden
+  role="dialog" aria-modal="true" aria-label="{{ 'accessibility.primary_nav' | t }}">
+  <div class="mf-menu__scrim" data-close-menu></div>
+
+  <div class="mf-menu__panel">
+    <div class="mf-menu__head">
+      <span class="mf-menu__eyebrow">{{ 'accessibility.primary_nav' | t }}</span>
+      <button type="button" class="mf-menu__close" data-close-menu
+        aria-label="{{ 'accessibility.close' | t }}">
+        <svg viewBox="0 0 16 16" width="16" height="16" fill="none" aria-hidden="true">
+          <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.4"/>
+        </svg>
+      </button>
+    </div>
+
+    <nav class="mf-menu__nav" aria-label="{{ 'accessibility.primary_nav' | t }}">
+      {%- for link in section.settings.menu.links -%}
+        <a href="{{ link.url }}" {% if link.active %}aria-current="true"{% endif %}>{{ link.title }}</a>
+      {%- endfor -%}
+    </nav>
+
+    <div class="mf-menu__foot">
+      <a class="mf-menu__cta" href="{{ routes.all_products_collection_url | default: routes.root_url }}">
+        <span>{{ 'general.menu_shop' | t }}</span>
+        <svg viewBox="0 0 16 16" width="14" height="14" fill="none" aria-hidden="true">
+          <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+      <a class="mf-menu__cta mf-menu__cta--ghost" href="{{ routes.all_products_collection_url | default: routes.root_url }}?view=rack">
+        <span>{{ 'general.menu_rack' | t }}</span>
+        <svg viewBox="0 0 20 20" width="15" height="15" fill="none" aria-hidden="true">
+          <path d="M3 5h14M5 5v2.5c0 .8.6 1.5 1.4 1.5h7.2c.8 0 1.4-.7 1.4-1.5V5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+          <path d="M7 9v7M13 9v7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" opacity="0.55"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+</div>
 
 {% schema %}
 {

@@ -128,11 +128,73 @@ html[dir="rtl"] .mf-slogan { letter-spacing: .08em; }
 .mf-header__count { position: absolute; top: 2px; inset-inline-end: 0; min-width: 17px; height: 17px; display: grid; place-items: center; border-radius: 999px; background: var(--molfet-maroon); color: var(--molfet-cream); font-size: 9px; padding: 0 4px; }
 .mf-header__lang select { border: 1px solid var(--mf-hairline-strong); background: transparent; padding: .3rem .4rem; font-size: .625rem; }
 
+/* ---------- burger ---------- */
+.mf-header__burger {
+  display: none; place-items: center; width: 40px; height: 40px;
+  margin-inline-start: -.25rem; color: var(--molfet-brown);
+}
+.mf-header__burger-box { display: grid; gap: 4px; width: 18px; }
+.mf-header__burger-box span {
+  display: block; height: 1.5px; width: 100%; background: currentColor;
+  transition: transform .3s var(--mf-ease), opacity .2s var(--mf-ease);
+}
+.mf-header__burger[aria-expanded="true"] .mf-header__burger-box span:nth-child(1) { transform: translateY(5.5px) rotate(45deg); }
+.mf-header__burger[aria-expanded="true"] .mf-header__burger-box span:nth-child(2) { opacity: 0; }
+.mf-header__burger[aria-expanded="true"] .mf-header__burger-box span:nth-child(3) { transform: translateY(-5.5px) rotate(-45deg); }
+
 @media (max-width: 989px) {
   .mf-header__nav { display: none; }
-  .mf-header__inner { grid-template-columns: 1fr auto 1fr; height: 58px; }
-  .mf-header__wordmark { height: 20px; }
+  .mf-header__burger { display: grid; }
+  /* Four controls now share a 58px bar with the wordmark, so the grid gives the
+     actions cluster its own column instead of letting it push the logo. */
+  .mf-header__inner { height: 58px; padding: 0 .75rem; gap: .5rem; }
+  .mf-header__wordmark { height: 19px; }
+  .mf-header__actions { gap: 0; }
+  .mf-header__icon, .mf-header__rack { width: 36px; height: 36px; }
+  .mf-header__icon svg { width: 18px; height: 18px; }
 }
+
+/* ---------- mobile menu ---------- */
+.mf-menu { position: fixed; inset: 0; z-index: 80; }
+.mf-menu[hidden] { display: none; }
+/* The panel slides; the scrim fades. `visibility` rather than `display` so the
+   transition has something to run on, and so a closed menu cannot be tabbed
+   into even for the frame before `hidden` lands. */
+.mf-menu[data-open="false"], .mf-menu:not([data-open]) { visibility: hidden; }
+.mf-menu__scrim {
+  position: absolute; inset: 0; background: rgba(50, 30, 25, .55);
+  opacity: 0; transition: opacity .3s var(--mf-ease);
+}
+.mf-menu__panel {
+  position: absolute; inset-block: 0; inset-inline-start: 0;
+  width: min(86vw, 360px); display: flex; flex-direction: column;
+  background: var(--molfet-cream); color: var(--molfet-brown);
+  padding: 1.25rem 1.25rem 2rem; overflow-y: auto;
+  transform: translateX(-100%); transition: transform .35s var(--mf-ease);
+}
+html[dir="rtl"] .mf-menu__panel { transform: translateX(100%); }
+.mf-menu[data-open="true"] { visibility: visible; }
+.mf-menu[data-open="true"] .mf-menu__scrim { opacity: 1; }
+.mf-menu[data-open="true"] .mf-menu__panel { transform: translateX(0); }
+.mf-menu__head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.mf-menu__eyebrow { font-size: .625rem; text-transform: uppercase; letter-spacing: .22em; color: var(--mf-brown-muted); }
+.mf-menu__close { width: 40px; height: 40px; display: grid; place-items: center; margin-inline-end: -.5rem; }
+.mf-menu__nav { display: grid; margin-top: 1.5rem; }
+.mf-menu__nav a {
+  padding: .95rem 0; border-bottom: 1px solid var(--mf-hairline);
+  font-size: 1.0625rem; line-height: 1.2;
+}
+.mf-menu__nav a:hover, .mf-menu__nav a[aria-current="true"] { color: var(--molfet-maroon); }
+.mf-menu__foot { margin-top: auto; padding-top: 2rem; display: grid; gap: .5rem; }
+.mf-menu__cta {
+  display: flex; align-items: center; justify-content: space-between; gap: .75rem;
+  min-height: 48px; padding: 0 .9rem;
+  background: var(--molfet-maroon); color: var(--molfet-cream);
+  font-size: .6875rem; text-transform: uppercase; letter-spacing: .14em;
+}
+.mf-menu__cta--ghost { background: transparent; color: var(--molfet-maroon); border: 1px solid var(--molfet-maroon); }
+
+body[data-menu-open="true"] { overflow: hidden; }
 
 /* ---------- brand fallback (before the lockups are uploaded) ---------- */
 .mf-brand-fallback { display: inline-flex; align-items: center; gap: .5rem; color: var(--molfet-maroon); }
@@ -341,7 +403,43 @@ html.mf-lens-on .mf-rack-item__stage:active { cursor: grabbing; }
 .mf-sticky-atc { position: fixed; inset-inline: 0; bottom: 0; z-index: 45; display: none; align-items: center; justify-content: space-between; gap: 1rem; padding: .75rem 1rem; background: color-mix(in srgb, var(--molfet-cream) 96%, transparent); backdrop-filter: blur(10px); border-top: 1px solid var(--mf-hairline-strong); }
 .mf-sticky-atc__title { font-size: .625rem; text-transform: uppercase; margin: 0; }
 .mf-sticky-atc__price { font-size: .6875rem; margin: 0; color: var(--mf-brown-soft); }
-@media (max-width: 989px) { .mf-sticky-atc { display: flex; } }
+/* ---------- small phones (320–430px) ---------- */
+@media (max-width: 479px) {
+  /* Side-by-side buttons become a stack: two 42px targets sharing a 320px line
+     leaves nothing for the labels. */
+  .mf-product__buy { flex-wrap: wrap; }
+  .mf-product__buy .mf-qty { flex: 1 0 100%; justify-content: space-between; }
+  .mf-product__buy .mf-btn { flex: 1 0 100%; }
+  .mf-product__secondary { flex-direction: column; }
+  .mf-product__secondary .mf-btn { min-height: 44px; }
+
+  /* full-bleed imagery reads better on a phone than a 1.25rem gutter */
+  .mf-hero, .mf-featured, .mf-details, .mf-collection, .mf-about { padding-inline: 1rem; }
+  .mf-section-head { flex-wrap: wrap; align-items: flex-start; }
+  .mf-section-head h2 { max-width: 100%; }
+
+  /* the rack needs a narrower hanger or only one piece is visible */
+  .mf-rack-item { width: 152px; }
+  .mf-rack-item__hanger { width: 64px; height: 48px; }
+  .mf-rack-item__stage { height: 226px; }
+  .mf-rack__items { gap: .25rem; }
+
+  /* the collection header buttons must not overflow */
+  .mf-viewswitch { width: 100%; }
+  .mf-viewswitch__btn { flex: 1; justify-content: center; }
+
+  .mf-cart-drawer__panel { width: 100%; }
+  .mf-cart-line { gap: .5rem; }
+  .mf-cart-line img { width: 64px; height: 80px; }
+}
+
+@media (max-width: 989px) {
+  .mf-sticky-atc { display: flex; }
+  /* The bar is fixed, so the last card and the footer would sit under it. The
+     page reserves its height; the footer adds its own breathing room. */
+  .mf-product { padding-bottom: 7rem; }
+  .mf-footer { padding-bottom: 5.5rem; }
+}
 
 .mf-accordion { border-bottom: 1px solid var(--mf-hairline); }
 .mf-accordion summary { display: flex; justify-content: space-between; padding: .9rem 0; font-size: .6875rem; text-transform: uppercase; letter-spacing: .16em; list-style: none; }
@@ -648,6 +746,35 @@ html[dir="rtl"] .mf-cart-drawer__panel { transform: translateX(-100%); }
 
 /* ---------- accessibility ---------- */
 .visually-hidden { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ---------- phone hygiene ---------- */
+/* A size chart is five columns of numbers: it cannot wrap, so it scrolls
+   sideways inside its own box rather than pushing the page wide. */
+.mf-table { width: 100%; border-collapse: collapse; font-size: .75rem; }
+.mf-table th, .mf-table td { padding: .5rem .4rem; text-align: start; border-bottom: 1px solid var(--mf-hairline); }
+.mf-table th { font-size: .625rem; text-transform: uppercase; letter-spacing: .12em; color: var(--mf-brown-muted); }
+.mf-size-guide { max-height: 86dvh; overflow: auto; }
+@media (max-width: 479px) {
+  .mf-size-guide table { display: block; overflow-x: auto; }
+}
+
+/* Long words and URLs in product copy must not widen the viewport. */
+.mf-product__desc, .mf-collection__desc, .mf-rack-item__title, .mf-mix__summary { overflow-wrap: anywhere; }
+
+/* 100vw includes the scrollbar on desktop engines and overlaps a phone's
+   gesture area; the dialogs should use the dynamic viewport instead. */
+@supports (height: 100dvh) {
+  .mf-cart-drawer__panel, .mf-menu__panel { max-height: 100dvh; }
+}
+
+/* iOS zooms the page when a field smaller than 16px takes focus. */
+@media (max-width: 749px) {
+  .mf-newsletter__form input,
+  .mf-gate__field input,
+  .mf-qty input,
+  .mf-filter__price input,
+  .mf-cart-drawer input { font-size: 16px; }
+}
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
