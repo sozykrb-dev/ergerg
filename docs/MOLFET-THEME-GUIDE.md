@@ -436,6 +436,25 @@ The circle hides on `pointerleave`, `pointerout` (no related target), window
 `blur` and tab hide, and is `display:none` at `(hover: none), (pointer: coarse)`
 and under reduced motion.
 
+### The password page
+
+A store that is not open yet shows `templates/password.json` on every URL. It
+uses its own layout (`layout/password.liquid`) — no header, no footer, nowhere
+to go until the password is right — and renders `sections/main-password.liquid`:
+the open-circle mark, the wordmark, the slogan, one field and one button.
+
+Two things it gets right that are easy to miss:
+
+- The **owner link goes to `/admin`**, not `/account/login`. On a
+  password-protected storefront the customer account login is itself behind the
+  gate, so that link would bounce straight back to the password page.
+- The visitor's message is `shop.password_message` (Preferences → Password page
+  message) when the merchant set one, and the theme's own translation otherwise.
+
+**To get in:** the password is the one shown in Shopify admin → **Online Store →
+Preferences → Password protection → Password**. To browse without it, turn
+password protection off in the same panel.
+
 ## 6. Assumptions
 
 - Photography is supplied on solid brand-colour surfaces; the cut-out layer is a

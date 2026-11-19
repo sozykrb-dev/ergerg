@@ -597,6 +597,55 @@ html[dir="rtl"] .mf-cart-drawer__panel { transform: translateX(-100%); }
 .mf-password { max-width: 560px; margin: 0 auto; padding: 5rem 1.25rem; text-align: center; }
 .mf-gift-card__code { font-family: ui-monospace, monospace; font-size: 1.5rem; letter-spacing: .1em; }
 
+/* ---------- password gate (store not open yet) ---------- */
+/* `.mf-password` is the gift-card wrapper and keeps its own rules; the gate
+   fills the viewport from inside it, so the wrapper must not centre or pad. */
+.mf-password:has(> .mf-gate) { max-width: none; margin: 0; padding: 0; }
+.mf-gate {
+  width: 100%; min-height: 100dvh; padding: 3rem 1.25rem 2rem;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 0; text-align: center; background: var(--molfet-cream); color: var(--molfet-brown);
+}
+.mf-gate__inner { width: 100%; max-width: 420px; display: grid; justify-items: center; }
+.mf-gate__mark { color: var(--molfet-maroon); width: 86px; height: 86px; margin-bottom: 1rem; }
+.mf-gate__ring { width: 100%; height: 100%; }
+.mf-gate__wordmark { width: 190px; height: auto; margin-bottom: .75rem; }
+.mf-gate__slogan { margin: 0 0 2rem; }
+.mf-gate__title {
+  font-size: clamp(1.5rem, 4vw, 2.15rem); line-height: 1.1; margin: 0 0 .75rem;
+  max-width: 22ch; text-transform: uppercase; letter-spacing: -.01em;
+}
+.mf-gate__intro {
+  font-size: .8125rem; line-height: 1.75; color: var(--mf-brown-soft);
+  max-width: 34ch; margin: 0 0 2rem;
+}
+.mf-gate__error {
+  font-size: .75rem; color: var(--molfet-maroon); margin: 0 0 1rem;
+  border-bottom: 1px solid var(--molfet-maroon); padding-bottom: .35rem;
+}
+.mf-gate__field {
+  display: flex; align-items: center; width: 100%; max-width: 360px;
+  border-bottom: 1px solid var(--molfet-maroon); padding-bottom: .4rem;
+}
+.mf-gate__field input {
+  flex: 1; min-width: 0; background: transparent; border: 0;
+  font-size: .875rem; color: var(--molfet-brown); padding: .5rem 0;
+}
+.mf-gate__field input::placeholder { color: var(--mf-brown-muted); opacity: 1; }
+.mf-gate__field input:focus { outline: none; }
+.mf-gate__field:focus-within { border-bottom-width: 2px; }
+.mf-gate__submit {
+  flex: 0 0 auto; padding: .3rem .6rem;
+  font-size: .625rem; text-transform: uppercase; letter-spacing: .16em;
+  color: var(--molfet-maroon); transition: opacity .25s var(--mf-ease);
+}
+.mf-gate__submit:hover { opacity: .65; }
+.mf-gate__admin { margin: 2.25rem 0 0; font-size: .625rem; letter-spacing: .1em; }
+.mf-gate__admin a { color: var(--mf-brown-muted); border-bottom: 1px solid currentColor; }
+.mf-gate__admin a:hover { color: var(--molfet-maroon); }
+.mf-gate__foot { margin-top: 3rem; }
+.mf-gate__foot .mf-slogan { font-size: .5625rem; color: var(--mf-brown-muted); }
+
 /* ---------- accessibility ---------- */
 .visually-hidden { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 @media (prefers-reduced-motion: reduce) {

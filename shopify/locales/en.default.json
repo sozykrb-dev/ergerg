@@ -112,5 +112,15 @@
     "turn_around": "Turn %{title} around",
     "hint": "Drag to turn · pull the rail · arrows work too",
     "empty": "The rail is empty in this corner."
+  },
+  "password": {
+    "title": "MOLFET is opening soon",
+    "intro": "The rail is being dressed. Enter the password to come in.",
+    "label": "Store password",
+    "placeholder": "Password",
+    "submit": "Enter",
+    "error": "That password is not right. Try again.",
+    "admin": "Store owner? Log in here",
+    "powered_by": "Powered by"
   }
 }
