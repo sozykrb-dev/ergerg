@@ -47,7 +47,8 @@
     "whatsapp_number": "201012345678",
     "whatsapp_message": "Hello MOLFET, I would like to order",
     "heading_font": "jost",
-    "slogan_ar": "أسلوب بلا حدود"
+    "slogan_ar": "أسلوب بلا حدود",
+    "show_discount_field": true
   },
   "presets": {
     "Default": {

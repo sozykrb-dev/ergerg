@@ -27,7 +27,9 @@
       "quick_add": "Quick add",
       "size_guide": "Size guide",
       "whatsapp": "Order on WhatsApp",
-      "detail": "Detail"
+      "detail": "Detail",
+      "in_stock": "In stock",
+      "low_stock": "Only a few left"
     }
   },
   "collections": {
@@ -53,7 +55,12 @@
     "decrease": "Decrease quantity",
     "increase": "Increase quantity",
     "shipping_bar": "No limits on style. Free shipping from %{threshold}.",
-    "free_unlocked": "Free shipping unlocked."
+    "free_unlocked": "Free shipping unlocked.",
+    "discount_code": "Discount code",
+    "discount_placeholder": "Enter a code",
+    "discount_applied": "Discount applied",
+    "apply": "Apply",
+    "taxes_note": "Shipping, taxes and any automatic discounts are calculated at checkout."
   },
   "mix": {
     "eyebrow": "Limitless Mix",

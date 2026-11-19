@@ -21,12 +21,25 @@ npm run build      # production build
 npm run lint       # tsc --noEmit
 ```
 
-Optional environment (`.env.local`): the app ships with the Supabase project
-already configured in `src/lib/supabaseConfig.ts`. If the database is empty or
-unreachable, the local MOLFET catalogue in `src/data/constants.ts` takes over,
-so the storefront always renders.
+### Run it on Shopify
 
-Set `GEMINI_API_KEY` only if you use the AI Studio helper endpoints.
+Set three variables and the whole storefront runs on your Shopify store —
+catalogue, variants, inventory, cart, discount codes and checkout:
+
+```bash
+SHOPIFY_STORE_DOMAIN=your-shop.myshopify.com
+SHOPIFY_STOREFRONT_TOKEN=shpat_…
+SHOPIFY_API_VERSION=2024-10
+```
+
+Then check `GET /api/shopify/status`. Full walkthrough, metafield mapping and
+troubleshooting: **[`SHOPIFY-SETUP.md`](SHOPIFY-SETUP.md)**. Without these
+variables the storefront keeps its local catalogue and local cart, so nothing
+ever breaks.
+
+Optional: the Supabase project in `src/lib/supabaseConfig.ts` is only used for the
+legacy admin/order tools and for the offline checkout. `GEMINI_API_KEY` is only
+needed by the AI Studio helper endpoints.
 
 ## Routes
 

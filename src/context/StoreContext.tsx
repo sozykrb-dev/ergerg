@@ -25,6 +25,7 @@ import {
 } from '../lib/db';
 import { getSupabaseConfig, saveCustomSupabaseConfig } from '../lib/supabase';
 import { navigate, parseRoute, Route } from '../lib/router';
+import { ShopifyProvider, useShopify } from './ShopifyContext';
 import { 
   notifyAdminNewOrderLocally, 
   sendTelegramOrderNotification, 
@@ -60,6 +61,15 @@ interface StoreContextType {
   setIsCartOpen: (open: boolean) => void;
   cartCount: number;
   cartSubtotal: number;
+  /** hand the basket to Shopify's hosted checkout; false when Shopify is off */
+  redirectToShopifyCheckout: () => Promise<boolean>;
+  shopifyConfigured: boolean;
+  shopifyBusy: boolean;
+  shopifyCheckoutUrl: string | null;
+  /** one request for a whole look (Shopify cartLinesAdd, batched) */
+  shopifyAddLook: (
+    items: { product: Product; size: string; color: string; quantity: number }[]
+  ) => Promise<boolean>;
 
   // Coupons
   coupons: Coupon[];
@@ -131,7 +141,11 @@ const LOCAL_STORAGE_KEYS = {
   LAST_ORDER: 'molfet_last_order_cache_v2',
 };
 
-export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const StoreProviderInner: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  // Shopify (products, cart, checkout). When it is not configured every call
+  // below returns false and this provider behaves exactly as before.
+  const shopify = useShopify();
+
   // Supabase Configuration State
   const [supabaseConfig, setSupabaseConfig] = useState(getSupabaseConfig);
 
@@ -312,6 +326,19 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     loadProducts({ category: activeCategory });
   }, [activeCategory, loadProducts]);
 
+  /* Shopify is the source of truth when it is configured and has products.
+     The local catalogue stays underneath as the fallback for an empty store,
+     a network hiccup or an unconfigured deployment. */
+  const remoteProducts = shopify.configured && shopify.products.length > 0 ? shopify.products : null;
+  useEffect(() => {
+    if (!remoteProducts) return;
+    setProducts(remoteProducts);
+    setProductsError(null);
+    setIsLoadingProducts(false);
+  }, [remoteProducts]);
+
+  const effectiveProducts = remoteProducts || products;
+
   // Load Coupons and Settings from Supabase on mount
   useEffect(() => {
     fetchCouponsDb().then((dbCoupons) => {
@@ -445,6 +472,19 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   // Cart Operations
   const addToCart = (product: Product, size: string, color: string, quantity = 1) => {
+    // Shopify owns the cart when it is configured: one request, real inventory.
+    if (shopify.configured && product.shopifyVariants?.length) {
+      void shopify.addToCart(product, size, color, quantity).then((added) => {
+        if (added) {
+          setIsCartOpen(true);
+          showToast(`تمت إضافة ${product.titleAr || product.titleEn} إلى السلة`);
+        } else {
+          showToast('تعذر إضافة القطعة إلى سلة شوبيفاي، حاول مرة أخرى.');
+        }
+      });
+      return;
+    }
+
     const cartItemId = `${product.id}-${size}-${color}`;
     setCart((prev) => {
       const existing = prev.find((item) => item.id === cartItemId);
@@ -462,10 +502,24 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const removeFromCart = (cartItemId: string) => {
+    if (shopify.configured) {
+      const line = shopify.cartLines.find((item) => item.id === cartItemId || item.lineId === cartItemId);
+      if (line?.lineId) {
+        void shopify.removeLine(line.lineId);
+        return;
+      }
+    }
     setCart((prev) => prev.filter((item) => item.id !== cartItemId));
   };
 
   const updateCartQuantity = (cartItemId: string, delta: number) => {
+    if (shopify.configured) {
+      const line = shopify.cartLines.find((item) => item.id === cartItemId || item.lineId === cartItemId);
+      if (line?.lineId) {
+        void shopify.updateQuantity(line.lineId, line.quantity + delta);
+        return;
+      }
+    }
     setCart((prev) =>
       prev
         .map((item) => {
@@ -480,18 +534,52 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const clearCart = () => {
+    if (shopify.configured) {
+      shopify.cartLines.forEach((line) => {
+        if (line.lineId) void shopify.removeLine(line.lineId);
+      });
+      return;
+    }
     setCart([]);
   };
 
-  const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
-  const cartSubtotal = cart.reduce(
-    (total, item) => total + item.product.price * item.quantity,
-    0
-  );
+  /* The effective cart: Shopify's when configured, the local one otherwise. */
+  const shopifyCartActive = shopify.configured && (shopify.cart?.totalQuantity || 0) >= 0 && Boolean(shopify.cart);
+  const effectiveCart: CartItem[] = shopifyCartActive ? shopify.cartLines : cart;
+  const cartCount = shopifyCartActive
+    ? shopify.cartCount
+    : cart.reduce((total, item) => total + item.quantity, 0);
+  const cartSubtotal = shopifyCartActive
+    ? shopify.cartSubtotal
+    : cart.reduce((total, item) => total + item.product.price * item.quantity, 0);
 
   // Coupon Logic
   const applyCoupon = (code: string) => {
     setCouponError(null);
+    // Shopify validates the code at checkout: pass it to the cart and let
+    // Shopify answer. The local list is only used in the offline mode.
+    if (shopify.configured) {
+      const trimmedCode = code.trim().toUpperCase();
+      if (!trimmedCode) return false;
+      void shopify.applyDiscounts([trimmedCode]).then((applied) => {
+        if (!applied) {
+          setCouponError('كود الخصم غير صحيح أو منتهي الصلاحية');
+          return;
+        }
+        const known = coupons.find((coupon) => coupon.code.toUpperCase() === trimmedCode);
+        setAppliedCoupon(
+          known || {
+            id: `shopify-${trimmedCode}`,
+            code: trimmedCode,
+            discountType: 'percentage',
+            value: 0,
+            minOrder: 0,
+            isActive: true,
+          },
+        );
+      });
+      return true;
+    }
     const trimmed = code.trim().toUpperCase();
     const found = coupons.find(
       (c) => c.code.toUpperCase() === trimmed && c.isActive
@@ -553,6 +641,17 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       ? Math.round((cartSubtotal * appliedCoupon.value) / 100)
       : Math.min(appliedCoupon.value, cartSubtotal)
     : 0;
+
+  /**
+   * Shopify checkout. The whole basket (and any discount code) goes to Shopify's
+   * hosted checkout, which is where COD, InstaPay, wallets and cards are
+   * configured in the admin. Returns false when there is nothing to check out,
+   * so the caller can keep the legacy local checkout.
+   */
+  const redirectToShopifyCheckout = async (): Promise<boolean> => {
+    if (!shopify.configured) return false;
+    return shopify.checkout();
+  };
 
   // Order Operations
   const createOrder = async (orderData: Omit<Order, 'id' | 'orderNumber' | 'createdAt'>): Promise<Order | null> => {
@@ -749,7 +848,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   // Categories Management (derived from settings.categories or DEFAULT CATEGORIES)
-  const categories: Category[] = useMemo(() => {
+  const categoriesCache: Category[] = useMemo(() => {
     if (settings?.categories && Array.isArray(settings.categories) && settings.categories.length > 0) {
       return settings.categories;
     }
@@ -887,10 +986,13 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     showToast('Hero slides updated');
   };
 
+  const shopifyConfiguredCategories =
+    shopify.configured && shopify.products.length > 0 ? shopify.categories : categoriesCache;
+
   return (
     <StoreContext.Provider
       value={{
-        products,
+        products: effectiveProducts,
         isLoadingProducts,
         productsError,
         loadProducts,
@@ -904,15 +1006,20 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setSelectedProduct,
         openProductModal,
         closeProductModal,
-        cart,
         addToCart,
         removeFromCart,
         updateCartQuantity,
         clearCart,
         isCartOpen,
         setIsCartOpen,
+        cart: effectiveCart,
         cartCount,
         cartSubtotal,
+        redirectToShopifyCheckout,
+        shopifyConfigured: shopify.configured,
+        shopifyBusy: shopify.busy,
+        shopifyCheckoutUrl: shopify.cart?.checkoutUrl || null,
+        shopifyAddLook: shopify.addLook,
         coupons,
         appliedCoupon,
         couponError,
@@ -934,7 +1041,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         trackSingleOrder,
         wishlist,
         toggleWishlist,
-        categories,
+        categories: shopifyConfiguredCategories,
         addCategory,
         updateCategory,
         deleteCategory,
@@ -963,6 +1070,12 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     </StoreContext.Provider>
   );
 };
+
+export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <ShopifyProvider>
+    <StoreProviderInner>{children}</StoreProviderInner>
+  </ShopifyProvider>
+);
 
 export const useStore = () => {
   const context = useContext(StoreContext);

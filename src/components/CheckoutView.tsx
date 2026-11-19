@@ -26,9 +26,11 @@ export const CheckoutView: React.FC = () => {
     discountAmount, 
     appliedCoupon, 
     settings, 
-    createOrder, 
+    createOrder,
     setViewMode,
-    showToast 
+    showToast,
+    shopifyConfigured,
+    redirectToShopifyCheckout,
   } = useStore();
 
   const topRef = React.useRef<HTMLDivElement>(null);
@@ -153,9 +155,21 @@ export const CheckoutView: React.FC = () => {
     }
   };
 
-  const handlePlaceOrder = (e: React.FormEvent) => {
+  const handlePlaceOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) return;
+
+    /* Shopify checkout: when the store is connected, the basket is finished on
+       Shopify (payments, COD, wallets, taxes, shipping and order emails all come
+       from the admin). The local order table stays as the offline fallback. */
+    if (shopifyConfigured) {
+      const handedOff = await redirectToShopifyCheckout();
+      if (!handedOff) {
+        showToast('تعذر بدء الدفع على شوبيفاي، جرّب زر واتساب أو حاول مرة أخرى.');
+        return;
+      }
+      return;
+    }
 
     const orderItems = cart.map((c) => ({
       productId: c.product.id,

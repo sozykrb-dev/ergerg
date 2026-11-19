@@ -81,6 +81,7 @@ import {
   deleteAllProductsDb
 } from '../lib/db';
 import { getSupabaseConfig, testSupabaseConnection } from '../lib/supabase';
+import ShopifyConnectionPanel from './ShopifyConnectionPanel';
 
 interface DeleteModalConfig {
   type: 
@@ -1540,7 +1541,7 @@ export const AdminDashboard: React.FC = () => {
           }`}
         >
           <Sliders className="w-4 h-4" />
-          <span>Store & Supabase Settings</span>
+          <span>Store & Integrations</span>
         </button>
       </div>
 
@@ -3767,6 +3768,11 @@ export default SOCIAL_LINKS_CONFIG;
       )}
 
       {/* TAB 5: STORE & SUPABASE SETTINGS */}
+      {/* Shopify connection — the storefront reads products, cart and checkout from here */}
+      {activeTab === 'settings' && (
+        <ShopifyConnectionPanel />
+      )}
+
       {activeTab === 'settings' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Supabase Connection Setup */}

@@ -27,6 +27,9 @@ export const CartDrawer: React.FC = () => {
     applyCoupon,
     removeCoupon,
     discountAmount,
+    shopifyConfigured,
+    shopifyBusy,
+    redirectToShopifyCheckout,
   } = useStore();
   const { t, isAr, money } = useLocale();
   const [code, setCode] = useState('');
@@ -194,7 +197,18 @@ export const CartDrawer: React.FC = () => {
             <button
               type="button"
               className="mf-btn mt-4 w-full"
-              onClick={() => { close(); navigate('#/checkout'); }}
+              disabled={shopifyBusy}
+              onClick={async () => {
+                // Shopify owns checkout when it is configured: the whole basket
+                // goes to its hosted, PCI-compliant checkout in one step.
+                if (shopifyConfigured) {
+                  close();
+                  const handedOff = await redirectToShopifyCheckout();
+                  if (handedOff) return;
+                }
+                close();
+                navigate('#/checkout');
+              }}
             >
               {t('Checkout', 'إتمام الطلب')}
               <ArrowRight className="h-4 w-4 rtl:rotate-180" strokeWidth={1.6} />

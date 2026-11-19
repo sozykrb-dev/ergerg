@@ -53,10 +53,42 @@ export interface Product {
   /** macro photo of the Egyptian fabric (layer B) */
   macroUrl?: string;
   details?: DetailPoint[];
+
+  /* ---- Shopify (present only when the product comes from the Storefront API) ---- */
+  /** the Shopify product gid, e.g. gid://shopify/Product/123 */
+  shopifyId?: string;
+  /** handle used for canonical URLs */
+  handle?: string;
+  /** purchasable variants with their gids, needed for the cart */
+  shopifyVariants?: ShopifyVariant[];
+  /** variant option names, ordered — e.g. ['Size', 'Colour'] */
+  optionNames?: string[];
+  /** the vendor / product type as Shopify reports them */
+  vendor?: string;
+  productType?: string;
+  /** true when the product has no available variant */
+  soldOut?: boolean;
+  /** collection handles the product belongs to */
+  collections?: string[];
+}
+
+/** a minimal Storefront API variant */
+export interface ShopifyVariant {
+  id: string;
+  title: string;
+  availableForSale: boolean;
+  quantityAvailable?: number | null;
+  price: number;
+  compareAtPrice?: number | null;
+  /** selected option values in the order of the product's optionNames */
+  selectedOptions: { name: string; value: string }[];
+  image?: string;
 }
 
 export interface CartItem {
-  id: string; // Unique cart item key (productId + size + color)
+  /** the Shopify cart line id, when the cart lives in Shopify */
+  lineId?: string;
+  id: string; // Unique cart item key (productId + size + color, or the Shopify line id)
   product: Product;
   size: string;
   color: string;
@@ -89,7 +121,7 @@ export interface Order {
   discount: number;
   total: number;
   appliedCoupon?: string;
-  paymentMethod: 'cod' | 'instapay' | 'vodafone_cash' | 'card';
+  paymentMethod: 'cod' | 'instapay' | 'vodafone_cash' | 'card' | 'shopify';
   paymentReceiptUrl?: string;
   status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
   createdAt: string;

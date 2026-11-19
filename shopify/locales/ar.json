@@ -27,7 +27,9 @@
       "quick_add": "إضافة سريعة",
       "size_guide": "دليل المقاسات",
       "whatsapp": "اطلب على واتساب",
-      "detail": "التفاصيل"
+      "detail": "التفاصيل",
+      "in_stock": "متوفر",
+      "low_stock": "آخر القطع"
     }
   },
   "collections": {
@@ -53,7 +55,12 @@
     "decrease": "تقليل الكمية",
     "increase": "زيادة الكمية",
     "shipping_bar": "لا حدود للأناقة. شحن مجاني من %{threshold}.",
-    "free_unlocked": "تم تفعيل الشحن المجاني."
+    "free_unlocked": "تم تفعيل الشحن المجاني.",
+    "discount_code": "كود الخصم",
+    "discount_placeholder": "اكتب الكود",
+    "discount_applied": "الخصم المطبّق",
+    "apply": "تطبيق",
+    "taxes_note": "الشحن والضرائب وأي خصم تلقائي تُحسب عند إتمام الطلب."
   },
   "mix": {
     "eyebrow": "تنسيق بلا حدود",

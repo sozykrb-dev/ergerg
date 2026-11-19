@@ -34,10 +34,31 @@
         </tbody>
       </table>
 
+      {%- if settings.show_discount_field -%}
+        <div class="mf-cart-page__discount">
+          <label for="CartDiscount">{{ 'cart.discount_code' | t }}</label>
+          <div class="mf-cart-page__discount-row">
+            <input id="CartDiscount" type="text" name="discount" autocomplete="off"
+              value="{{ cart.discount_codes | map: 'code' | join: ', ' }}"
+              placeholder="{{ 'cart.discount_placeholder' | t }}">
+            <button type="submit" name="update" class="mf-btn mf-btn--ghost">{{ 'cart.apply' | t }}</button>
+          </div>
+          {%- if cart.discount_codes.size > 0 -%}
+            <p class="mf-muted">{{ 'cart.discount_applied' | t }}: {{ cart.discount_codes | map: 'code' | join: ', ' }}</p>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
       <div class="mf-cart-page__foot">
         <a class="mf-link" href="{{ routes.all_products_collection_url }}">{{ 'cart.continue' | t }}</a>
         <div>
-          <p class="mf-cart-page__total">{{ 'cart.subtotal' | t }} · {{ cart.total_price | money }}</p>
+          <p class="mf-cart-page__total">
+            {{ 'cart.subtotal' | t }} · {{ cart.items_subtotal_price | money }}
+          </p>
+          {%- if cart.total_discount > 0 -%}
+            <p class="mf-muted">{{ 'cart.discount_applied' | t }} · &minus;{{ cart.total_discount | money }}</p>
+          {%- endif -%}
+          <p class="mf-cart-page__note">{{ 'cart.taxes_note' | t }}</p>
           <button type="submit" name="update" class="mf-btn mf-btn--ghost">{{ 'cart.update' | t }}</button>
           <button type="submit" name="checkout" class="mf-btn">{{ 'cart.checkout' | t }}</button>
         </div>

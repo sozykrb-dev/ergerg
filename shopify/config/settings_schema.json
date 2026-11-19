@@ -206,6 +206,12 @@
         "id": "sticky_atc",
         "label": "Sticky add-to-cart on mobile",
         "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_discount_field",
+        "label": "Show the discount-code field in the cart",
+        "default": true
       }
     ]
   },

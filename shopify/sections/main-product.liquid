@@ -71,8 +71,30 @@
 
       <span class="mf-badge-outline">{{ 'brand.made_badge' | t }}</span>
 
+      {%- comment -%} the picker reads this to resolve an option combination to a variant {%- endcomment -%}
+      <script type="application/json" data-variant-json>
+        {
+          "variants": [
+            {%- for variant in product.variants -%}
+              {
+                "id": {{ variant.id }},
+                "available": {{ variant.available | json }},
+                "price": {{ variant.price }},
+                "priceFormatted": {{ variant.price | money | json }},
+                "options": {{ variant.options | json }}
+              }{%- unless forloop.last -%},{%- endunless -%}
+            {%- endfor -%}
+          ],
+          "optionNames": {{ product.options | json }}
+        }
+      </script>
+
       {%- form 'product', product, id: 'ProductForm', class: 'mf-product__form' -%}
-        <input type="hidden" name="id" value="{{ current_variant.id }}">
+        <input type="hidden" name="id" value="{{ current_variant.id }}" data-variant-id>
+
+        {%- if product.compare_at_price > product.price -%}
+          <p class="mf-product__was" data-price-was>{{ current_variant.compare_at_price | money }}</p>
+        {%- endif -%}
 
         {%- unless product.has_only_default_variant -%}
           {%- for option in product.options_with_values -%}
@@ -90,6 +112,15 @@
             </fieldset>
           {%- endfor -%}
         {%- endunless -%}
+
+        <p class="mf-product__stock" data-variant-stock aria-live="polite"
+          data-out="{{ 'products.product.sold_out' | t }}">
+          {%- if current_variant.available -%}
+            {{ 'products.product.in_stock' | t }}
+          {%- else -%}
+            {{ 'products.product.sold_out' | t }}
+          {%- endif -%}
+        </p>
 
         <div class="mf-product__buy">
           <div class="mf-qty" data-line="product">

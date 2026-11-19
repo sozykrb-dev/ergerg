@@ -24,6 +24,109 @@ async function startServer() {
     res.json({ status: 'ok' });
   });
 
+
+  /* ------------------------------------------------------------------ */
+  /* Shopify Storefront API proxy + checkout handoff                     */
+  /*                                                                     */
+  /* The private Storefront token never reaches the browser: the app     */
+  /* posts GraphQL here and this route signs the upstream request.       */
+  /* Configure with env vars (or .env.local):                            */
+  /*   SHOPIFY_STORE_DOMAIN=your-shop.myshopify.com                      */
+  /*   SHOPIFY_STOREFRONT_TOKEN=shpat_…  (or a public shpss_ token)      */
+  /*   SHOPIFY_API_VERSION=2024-10                                       */
+  /* ------------------------------------------------------------------ */
+  const SHOPIFY_DOMAIN = (process.env.SHOPIFY_STORE_DOMAIN || '').replace(/^https?:\/\//, '').replace(/\/$/, '');
+  const SHOPIFY_TOKEN = process.env.SHOPIFY_STOREFRONT_TOKEN || '';
+  const SHOPIFY_API_VERSION = process.env.SHOPIFY_API_VERSION || '2024-10';
+  const SHOPIFY_STOREFRONT_URL = SHOPIFY_DOMAIN
+    ? `https://${SHOPIFY_DOMAIN}/api/${SHOPIFY_API_VERSION}/graphql.json`
+    : '';
+
+  /** the client asks for the public shape of the environment on boot */
+  app.get('/api/shopify/env', (req, res) => {
+    const configured = Boolean(SHOPIFY_STOREFRONT_URL && SHOPIFY_TOKEN);
+    res.json({
+      domain: SHOPIFY_DOMAIN,
+      // a private token must stay on the server; a public one is safe to expose
+      token: configured ? (SHOPIFY_TOKEN.startsWith('shpss_') ? SHOPIFY_TOKEN : '') : '',
+      apiVersion: SHOPIFY_API_VERSION,
+      storefrontUrl: SHOPIFY_STOREFRONT_URL,
+      publicToken: !SHOPIFY_TOKEN || SHOPIFY_TOKEN.startsWith('shpss_'),
+      configured,
+    });
+  });
+
+  /** GraphQL pass-through. Always server-side, so a private token works too. */
+  app.post('/api/shopify', async (req, res) => {
+    if (!SHOPIFY_STOREFRONT_URL || !SHOPIFY_TOKEN) {
+      return res.status(503).json({ errors: [{ message: 'Shopify is not configured on this deployment.' }] });
+    }
+    const { query, variables } = req.body || {};
+    if (!query || typeof query !== 'string') {
+      return res.status(400).json({ errors: [{ message: 'A GraphQL query is required.' }] });
+    }
+    try {
+      const upstream = await fetch(SHOPIFY_STOREFRONT_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          'X-Shopify-Storefront-Access-Token': SHOPIFY_TOKEN,
+        },
+        body: JSON.stringify({ query, variables: variables ?? {} }),
+      });
+      const payload: any = await upstream.json().catch(() => ({}));
+      // pass throttling through untouched so the client can retry politely
+      res.status(upstream.status === 200 ? 200 : upstream.status).json(payload);
+    } catch (error: any) {
+      res.status(502).json({ errors: [{ message: error?.message || 'Storefront API request failed.' }] });
+    }
+  });
+
+  /** A tiny status endpoint for the admin dashboard / QA. */
+  app.get('/api/shopify/status', async (req, res) => {
+    if (!SHOPIFY_STOREFRONT_URL || !SHOPIFY_TOKEN) {
+      return res.json({ configured: false, ok: false, domain: SHOPIFY_DOMAIN || null });
+    }
+    try {
+      const upstream = await fetch(SHOPIFY_STOREFRONT_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          'X-Shopify-Storefront-Access-Token': SHOPIFY_TOKEN,
+        },
+        body: JSON.stringify({ query: '{ shop { name primaryDomain { url } } }' }),
+      });
+      const payload: any = await upstream.json().catch(() => ({}));
+      res.json({
+        configured: true,
+        ok: Boolean(payload?.data?.shop),
+        domain: SHOPIFY_DOMAIN,
+        shop: payload?.data?.shop?.name || null,
+        errors: payload?.errors || null,
+      });
+    } catch (error: any) {
+      res.json({ configured: true, ok: false, domain: SHOPIFY_DOMAIN, error: error?.message });
+    }
+  });
+
+  /** Redirect helper: send the browser to Shopify's hosted checkout. */
+  app.get('/api/shopify/checkout', (req, res) => {
+    const target = String(req.query.url || '');
+    let parsed: URL;
+    try {
+      parsed = new URL(target);
+    } catch {
+      return res.status(400).json({ error: 'A valid checkout URL is required.' });
+    }
+    const host = parsed.hostname;
+    const allowed =
+      SHOPIFY_DOMAIN && (host === SHOPIFY_DOMAIN || host.endsWith('.myshopify.com') || host.endsWith('.shopify.com'));
+    if (!allowed) return res.status(400).json({ error: 'That checkout URL is not this store.' });
+    res.redirect(302, parsed.toString());
+  });
+
   // Telegram Send Notification Proxy Endpoint (Guarantees bypass of client ISP / CORS / adblocker issues)
   app.post('/api/telegram/send', async (req, res) => {
     const { botToken, chatId, message, photoUrl } = req.body;

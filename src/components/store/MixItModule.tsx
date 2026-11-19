@@ -44,7 +44,10 @@ interface MixItModuleProps {
 }
 
 export const MixItModule: React.FC<MixItModuleProps> = ({ anchorProduct, compact = false }) => {
-  const { products, addToCart, setIsCartOpen, showToast, settings } = useStore();
+  const {
+    products, addToCart, setIsCartOpen, showToast, settings,
+    shopifyConfigured, shopifyAddLook,
+  } = useStore();
   const { t, isAr, money } = useLocale();
 
   type Selection = Record<string, { id: string; size?: string; color?: string }>;
@@ -118,8 +121,31 @@ export const MixItModule: React.FC<MixItModuleProps> = ({ anchorProduct, compact
    * Adds every selected variant in one request (Shopify: one /cart/add.js POST
    * with an items array). Here: a single batched store action, one cart update.
    */
-  const addLook = () => {
+  const addLook = async () => {
     if (count === 0) return;
+
+    // Shopify: one request for the whole look (one cartLinesAdd with every line)
+    if (shopifyConfigured) {
+      const lines = chosen.map((entry) => {
+        const p = entry.product as Product;
+        return {
+          product: p,
+          size: entry.value.size || p.sizes?.[0] || 'M',
+          color: entry.value.color || p.colors?.[0]?.name || 'Standard',
+          quantity: 1,
+        };
+      });
+      const addedInShopify = await shopifyAddLook(lines);
+      if (addedInShopify) {
+        setAdded(true);
+        setIsCartOpen(true);
+        showToast?.(t('The whole look is in your cart', 'الإطلالة كاملة في سلتك'));
+        return;
+      }
+      showToast?.(t('Could not add the look, try again.', 'تعذر إضافة الإطلالة، حاول مرة أخرى.'));
+      return;
+    }
+
     chosen.forEach((entry) => {
       const p = entry.product as Product;
       addToCart(p, entry.value.size || p.sizes?.[0] || 'M', entry.value.color || p.colors?.[0]?.name || 'Standard');

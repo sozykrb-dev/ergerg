@@ -663,6 +663,101 @@
     });
   }
 
+
+  /* ------------------------------------------------------------------ */
+  /* 10. VARIANT PICKER — options resolve to the real variant            */
+  /*     Without this, changing a size radio left the hidden id on the    */
+  /*     first variant, which is how a size would silently never change.  */
+  /* ------------------------------------------------------------------ */
+  function initVariantPicker() {
+    var form = document.getElementById('ProductForm');
+    var dataNode = document.querySelector('[data-variant-json]');
+    if (!form || !dataNode) return;
+
+    var data;
+    try {
+      data = JSON.parse(dataNode.textContent);
+    } catch (error) {
+      return;
+    }
+    if (!data || !data.variants || !data.variants.length) return;
+
+    var idInput = form.querySelector('[data-variant-id]');
+    var stockNode = form.querySelector('[data-variant-stock]');
+    var addButton = form.querySelector('[type=submit]');
+    var wasNode = document.querySelector('[data-price-was]');
+    var inStock = stockNode ? stockNode.textContent.trim() : '';
+    var optionFields = form.querySelectorAll('.mf-option');
+
+    function selectedValues() {
+      var values = [];
+      optionFields.forEach(function (field) {
+        var checked = field.querySelector('input[type=radio]:checked');
+        values.push(checked ? checked.value : '');
+      });
+      return values;
+    }
+
+    function findVariant(values) {
+      return data.variants.find(function (variant) {
+        return variant.options.every(function (option, index) {
+          return !values[index] || option === values[index];
+        });
+      });
+    }
+
+    function sync() {
+      var variant = findVariant(selectedValues());
+      if (!variant) return;
+
+      if (idInput) idInput.value = variant.id;
+
+      if (stockNode) {
+        var outLabel = stockNode.getAttribute('data-out') || stockNode.textContent.trim();
+        stockNode.textContent = variant.available ? inStock : outLabel;
+        stockNode.setAttribute('data-available', variant.available ? 'true' : 'false');
+      }
+
+      if (addButton) {
+        addButton.disabled = !variant.available;
+        addButton.textContent = variant.available
+          ? form.getAttribute('data-add-label') || addButton.textContent
+          : form.getAttribute('data-sold-label') || addButton.textContent;
+      }
+
+      if (wasNode && variant.price !== undefined) {
+        if (variant.price >= (variant.compareAtPrice || 0)) wasNode.hidden = true;
+      }
+
+      // let the price blocks know (they re-read the marker, no polling)
+      form.dispatchEvent(new CustomEvent('molfet:variant-change', { detail: variant, bubbles: true }));
+    }
+
+    form.addEventListener('change', function (event) {
+      if (event.target.matches('input[type=radio]')) sync();
+    });
+
+    /* a variant URL (?variant=123) preselects the matching chips */
+    var requested = new URLSearchParams(window.location.search).get('variant');
+    if (requested) {
+      var variant = data.variants.find(function (item) { return String(item.id) === String(requested); });
+      if (variant) {
+        optionFields.forEach(function (field) {
+          var legend = field.querySelector('legend');
+          if (!legend) return;
+          var index = data.optionNames.indexOf(legend.textContent.trim());
+          if (index === -1) return;
+          var value = variant.options[index];
+          field.querySelectorAll('input[type=radio]').forEach(function (input) {
+            input.checked = input.value === value;
+          });
+        });
+      }
+    }
+
+    sync();
+  }
+
   /* ------------------------------------------------------------------ */
   document.addEventListener('DOMContentLoaded', function () {
     initHeader();
@@ -675,5 +770,6 @@
     initFrameBreak();
     initAddToCart();
     initRack();
+    initVariantPicker();
   });
 })();
