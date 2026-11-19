@@ -18,7 +18,7 @@ shopify/
 ├─ config/
 │  ├─ settings_schema.json   slogan, three locked colours, four lockups, Lens on/off,
 │  │                         free-shipping threshold, WhatsApp number, look discount
-│  └─ molfet-metafields.md   metafield + metaobject definitions + setup steps
+│  └─ settings_data.json     the shipped defaults for those settings
 ├─ layout/
 │  ├─ theme.liquid           fonts (swap + preload), CSS, JS, sections, render hooks
 │  └─ password.liquid
@@ -58,6 +58,65 @@ shopify/
                                404, search, list-collections, password)
                                + gift_card.liquid
 ```
+
+---
+
+## 1a. "This branch isn't a valid theme" — why, and how to fix it
+
+If **Online Store → Themes → Add theme → Connect from GitHub** rejects the
+`arena/cc11c532-ergerg` branch, nothing is wrong with the theme. The branch is
+simply not *shaped* the way the integration reads one.
+
+**The rule.** Shopify treats a branch as a theme only when these sit at the
+**root of the branch**:
+
+```
+layout/theme.liquid
+config/settings_schema.json
+config/settings_data.json
+locales/en.default.json
+templates/…
+```
+
+**Why this repository fails it.** The branch root is a React app:
+
+```
+package.json  src/  server.ts  vite.config.ts  shopify/  ← the theme is one level down
+```
+
+Shopify does not look inside subfolders, so it finds no `layout/` and no
+`config/` — hence "not a valid theme". This is expected, and the integration
+cannot be pointed at a subfolder.
+
+### Option A — upload the zip (no repository involved)
+
+1. `Online Store → Themes → Add theme → Upload zip file`
+2. Choose `molfet-shopify-theme.zip`
+
+The zip already has the theme folders at its root, which is exactly what the
+uploader needs. This is the only option that avoids a second repository.
+
+### Option B — a dedicated theme repository
+
+Create an empty repository on GitHub (no README), then run, in this folder:
+
+```bash
+node scripts/export-theme-repo.mjs <your-name>/molfet-theme main
+```
+
+It copies the theme contents, commits them as the root of that repository and
+pushes — theme files only, no app, no docs, no zip. Then connect that repository
+and branch.
+
+### Checking any folder before you push
+
+```bash
+node scripts/check-theme-root.mjs            # checks ./shopify
+node scripts/check-theme-root.mjs <path>     # checks any folder
+```
+
+It exits non-zero and says what is wrong — a missing `config/`, or a theme
+buried one folder too deep.
 
 ---
 
@@ -113,10 +172,19 @@ commit hash in `snippets/molfet-cdn.liquid`.
 
 ## 2. Install
 
-### Option A — zip upload
-1. Zip the **contents** of `shopify/` (so `assets/`, `config/`, … are at the root of the zip).
-2. Shopify admin → **Online Store → Themes → Add theme → Upload zip file**.
+### Option A — zip upload (recommended)
+1. Shopify admin → **Online Store → Themes → Add theme → Upload zip file**.
+2. Choose `molfet-shopify-theme.zip` — its root already holds `assets/`,
+   `config/`, `layout/`, `locales/`, `sections/`, `snippets/`, `templates/`.
 3. **Publish**.
+
+The zip contains the theme only: no app, no docs, no scripts. If you rebuild it
+yourself, zip the **contents** of `shopify/`, never the folder.
+
+### Option A2 — Connect from GitHub
+Needs a repository whose **root** is the theme. See §1a; `node
+scripts/export-theme-repo.mjs <owner/repo>` prepares one for you.
+Connecting *this* repository will keep failing, by design.
 
 ### Option B — Shopify CLI
 ```bash
@@ -129,7 +197,7 @@ shopify theme check                                  # lint (should be clean)
 
 ### Then, in the admin
 1. **Settings → Custom data** — create the three product metafields and the
-   `detail_point` metaobject exactly as in `config/molfet-metafields.md`.
+   `detail_point` metaobject exactly as in `docs/MOLFET-METAFIELDS.md`.
 2. **Theme settings → Brand** — upload the four official lockups (SVG or high-res
    PNG, transparent background). Paste the slogan (default `Style Without Limits`).
 3. **Theme settings → Concept** — the Lens is on by default. Set the lens diameter,
