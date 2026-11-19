@@ -340,6 +340,34 @@ page using the `page.rack` template.
   featured image. No shadows, no gradients — depth comes from the turn alone.
 - Reduced motion: no sway, no drift, the turn still happens when asked for.
 
+#### How the rail is scrolled
+
+The rail is `overflow-x: auto` with no scrollbar, so it needs three ways in and
+it got all three wrong on the first pass:
+
+- **Dragging** used to die because the garment claimed the pointer on
+  `pointerdown` and captured it, so the scroller never saw another
+  `pointermove`. A gesture now becomes ours only after 6px of travel, and only
+  if it is clearly horizontal (`|dy| > 1.5 × |dx|` hands the gesture back to the
+  page). Pointer capture is taken at that moment, not before.
+- **`scroll-behavior: smooth`** re-animated every `scrollLeft` write, so at 60
+  writes a second the rail never caught up and the drag felt dead. `data-dragging`
+  turns it off; the arrow keys keep smooth scrolling by asking for it explicitly.
+- **Touch never panned** because the stage said `touch-action: pan-y` inside a
+  scroller that said `pan-x`, which intersected to "neither". The stage is `auto`
+  now — a tap on the always-visible turn button is enough to spin a piece.
+- **The wheel** did nothing, because the rail has no vertical overflow to
+  consume. A vertical wheel is translated to the rail and released at the ends,
+  so the page still scrolls past the rack.
+- A **progress hairline** under the rail fills as it is pulled — with the
+  scrollbar hidden it is the only sign that there is more to the side. It hides
+  itself when nothing overflows, and it uses `inset-inline-start`, so it grows
+  from the correct edge in Arabic.
+
+`scrollLeft` is signed differently per engine and direction (LTR `0…max`,
+RTL `0…-max` in Chrome/Safari and `0…max` in Firefox); everything reads the
+magnitude and writes back in the engine's own convention.
+
 #### Making the Rack view reachable
 
 The button in the header resolves its link in three steps, so it is never a dead

@@ -614,7 +614,14 @@
     var scroller = root.querySelector('[data-rack-scroller]');
     var rtl = document.documentElement.dir === 'rtl';
 
-    /* --- a garment turns: drag it, press the button, double-click it --- */
+    /* A claim threshold shared by the garments and the rail. A gesture is only
+       ours once it is clearly horizontal: below it we do nothing at all, so the
+       browser pans the rail normally on touch and a click stays a click. */
+    var AXIS_LOCK = 6;
+
+    /* A garment turns when dragged, and pressing the button or double-clicking
+       turns it too. It never claims the pointer on pointerdown — doing that is
+       what used to swallow the pan. */
     root.querySelectorAll('.mf-rack-item').forEach(function (item) {
       var stage = item.querySelector('[data-rack-stage]');
       var turner = item.querySelector('[data-rack-turn]');
@@ -635,24 +642,40 @@
 
       stage.addEventListener('pointerdown', function (event) {
         if (event.target.closest('button, a')) return;
-        drag = { x: event.clientX, base: angle };
-        turner.setAttribute('data-dragging', 'true');
-        if (stage.setPointerCapture) stage.setPointerCapture(event.pointerId);
+        drag = { x: event.clientX, y: event.clientY, base: angle, turning: false };
       });
 
       stage.addEventListener('pointermove', function (event) {
         if (!drag) return;
-        var delta = (event.clientX - drag.x) * (rtl ? -0.8 : 0.8);
-        angle = drag.base + delta;
+        var dx = event.clientX - drag.x;
+        var dy = event.clientY - drag.y;
+
+        if (!drag.turning) {
+          if (Math.abs(dx) < AXIS_LOCK) return;
+          // a mostly-vertical pull belongs to the page, not to the hanger
+          if (Math.abs(dy) > Math.abs(dx) * 1.5) { drag = null; return; }
+          drag.turning = true;
+          turner.setAttribute('data-dragging', 'true');
+          if (stage.setPointerCapture) stage.setPointerCapture(event.pointerId);
+        }
+
+        angle = drag.base + dx * (rtl ? -0.8 : 0.8);
         apply();
       });
 
-      function release() {
+      function release(event) {
+        if (stage.releasePointerCapture && event && stage.hasPointerCapture &&
+            stage.hasPointerCapture(event.pointerId)) {
+          stage.releasePointerCapture(event.pointerId);
+        }
         if (!drag) return;
+        var wasTurning = drag.turning;
         drag = null;
         turner.removeAttribute('data-dragging');
-        angle = Math.round(angle / 360) * 360;
-        apply();
+        if (wasTurning) {
+          angle = Math.round(angle / 360) * 360;
+          apply();
+        }
       }
       stage.addEventListener('pointerup', release);
       stage.addEventListener('pointercancel', release);
@@ -674,28 +697,102 @@
 
     /* --- the rail itself: drag it, or walk it with the arrow keys --- */
     var railDrag = null;
+    var progress = root.querySelector('[data-rack-progress]');
+    var sway = root.querySelector('[data-rack-sway]');
+
+    function paintProgress() {
+      if (!progress) return;
+      var max = scroller.scrollWidth - scroller.clientWidth;
+      var track = progress.parentElement;
+      if (max <= 1) {
+        // nothing to pull: the cue would be a hairline that never moves
+        track.style.display = 'none';
+        return;
+      }
+      track.style.display = '';
+      // RTL reports -max..0 in Chrome/Safari, 0..max in Firefox.
+      var raw = scroller.scrollLeft;
+      var distance = raw < 0 ? -raw : raw;
+      var visible = Math.min(1, scroller.clientWidth / scroller.scrollWidth);
+      var width = Math.max(visible * 100, 8);
+      var ratio = Math.min(1, Math.max(0, distance / max));
+      progress.style.width = width + '%';
+      // inset-inline-start keeps the fill on the correct edge in both
+      // directions, so the hairline grows the way the content moves.
+      progress.style.insetInlineStart = (ratio * (100 - width)) + '%';
+    }
+
+    scroller.addEventListener('scroll', paintProgress, { passive: true });
+    window.addEventListener('resize', paintProgress);
+    // Images arrive after the first paint and change scrollWidth, so the thumb
+    // would otherwise keep the width it measured on an empty rail.
+    scroller.addEventListener('load', paintProgress, true);
+    if (window.ResizeObserver) {
+      new ResizeObserver(paintProgress).observe(scroller.firstElementChild || scroller);
+    }
+    paintProgress();
 
     scroller.addEventListener('pointerdown', function (event) {
       if (event.target.closest('button, a')) return;
-      railDrag = { x: event.clientX, left: scroller.scrollLeft };
-      scroller.setAttribute('data-dragging', 'true');
-      if (scroller.setPointerCapture) scroller.setPointerCapture(event.pointerId);
+      railDrag = { x: event.clientX, y: event.clientY, left: scroller.scrollLeft, moving: false };
     });
 
     scroller.addEventListener('pointermove', function (event) {
       if (!railDrag) return;
-      scroller.scrollLeft = railDrag.left - (event.clientX - railDrag.x);
-      var sway = root.querySelector('[data-rack-sway]');
+      var dx = event.clientX - railDrag.x;
+      var dy = event.clientY - railDrag.y;
+
+      if (!railDrag.moving) {
+        if (Math.abs(dx) < AXIS_LOCK) return;
+        if (Math.abs(dy) > Math.abs(dx) * 1.5) { railDrag = null; return; }
+        railDrag.moving = true;
+        scroller.setAttribute('data-dragging', 'true');
+        if (scroller.setPointerCapture) scroller.setPointerCapture(event.pointerId);
+      }
+
+      // RTL: Chrome and Safari report scrollLeft as 0 / -max, Firefox as 0 / max.
+      scroller.scrollLeft = railDrag.left - dx;
       if (sway) sway.setAttribute('data-moved', 'true');
     });
 
-    function railRelease() {
+    function railRelease(event) {
+      if (scroller.releasePointerCapture && event && scroller.hasPointerCapture &&
+          scroller.hasPointerCapture(event.pointerId)) {
+        scroller.releasePointerCapture(event.pointerId);
+      }
+      if (!railDrag) return;
       railDrag = null;
       scroller.removeAttribute('data-dragging');
     }
     scroller.addEventListener('pointerup', railRelease);
     scroller.addEventListener('pointercancel', railRelease);
     scroller.addEventListener('pointerleave', railRelease);
+
+    /* A mouse has no pan gesture: a vertical wheel over the rail would scroll
+       the page and the rail would look stuck. Translate the wheel to the rail
+       when there is somewhere to go, and let it through at the ends so the page
+       still scrolls past the rack. */
+    scroller.addEventListener('wheel', function (event) {
+      if (event.ctrlKey) return;
+      var max = scroller.scrollWidth - scroller.clientWidth;
+      if (max <= 0) return;
+      var delta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
+      if (!delta) return;
+      /* Assigning scrollLeft already means "scroll forward" in the document
+         direction, which is what the browser does for the wheel too. So the
+         wheel value is used as-is; all that is needed is to normalise how far
+         along the rail we are, because RTL reports -max..0 in Chrome/Safari and
+         0..max in Firefox. */
+      var current = scroller.scrollLeft;
+      var travelled = current < 0 ? -current : current;
+      var next = Math.min(max, Math.max(0, travelled + delta));
+      // At the very end: do not swallow the event, let the page take over so
+      // the visitor is never trapped on the rail.
+      if (next === travelled) return;
+      event.preventDefault();
+      // Keep the engine's own sign convention so RTL keeps working.
+      scroller.scrollLeft = current < 0 ? -next : next;
+    }, { passive: false });
 
     scroller.addEventListener('keydown', function (event) {
       var step = Math.max(220, scroller.clientWidth * 0.6);
