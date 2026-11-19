@@ -369,35 +369,55 @@ opens that page instead. The grid button always stays the catalogue.
 `sections/main-rack.liquid` (the dedicated page) now renders the same snippet,
 so the rail behaves identically in both places.
 
-#### The ring
+#### The rack
 
-The rail is a straight line; this is the same rail bent into a circle.
+A rail with clothes hung around it, seen from standing height: the rail is an
+ellipse, the pieces stand at angles around it, and the one at the front is the
+largest and the only one at full opacity. Scrolling or dragging turns it, and
+the ring comes all the way round.
 
-Pieces stand around a ring, and the one at the front faces the viewer. Two
-things turn it: **scrolling** and **dragging**. One scroll-span equals one
-complete turn, and when the ring has gone all the way round it stops — the page
-carries on to the next section rather than turning forever.
+**It was built in CSS 3D first, and that was wrong.** The pieces were placed
+with `rotateY(angle) translateZ(radius)` inside a stage with `perspective`.
+That reads correctly on paper and is wrong on screen: `perspective` does not
+merely tilt a child, it projects it, so every piece pushed out by `translateZ`
+is *also* magnified by `P/(P−Z)`. The front piece arrived at roughly twice its
+width, the neighbours were clipped by the screen, and the whole thing read as a
+pile of cards rather than a rack. No test caught it because the tests checked
+the arithmetic, and the arithmetic was right.
 
-The maths, which is all of it: each piece sits at
-`rotateY((i - active) × step) translateZ(radius)`, and the ring itself is turned
-by `-active × step`. A piece therefore arrives at 0° — facing the viewer and
-nearest the eye — exactly when it becomes the active one. `translateZ` is what
-makes the front piece bigger; the stage's `perspective` is what makes that read
-as depth rather than as resizing.
+The replacement puts the depth in the numbers:
 
-The rotation is written to the DOM and **CSS animates it** (`.55s` on the ring).
-An earlier version eased the value in a `requestAnimationFrame` loop; it settled
-a degree short and left the ring visibly off-centre, so it was replaced with the
-browser's own easing, which lands exactly and costs no frames.
+    θ     = (i − active) · 360/count
+    x     = sin(θ) · rack-w / 2       where it stands on the rail
+    scale = .70 + .34·cos(θ)          front full size, back smaller
+    alpha = 1 − .70·(1−cos θ)/2       back fainter
+    z     = cos(θ)                    far pieces painted first
 
-**On a phone the panel is pinned.** `position: sticky; top: 0; height: 100dvh`
-holds the ring still while the page scrolls through `.mf-circle__span` — a spacer
-one turn tall. The screen does not move; the clothes do. Landscape phones with
-little height unpin rather than crop the ring.
+The gain is that the rail's on-screen width is a variable, `--rack-w`, rather
+than being locked to 2 × radius — which is the difference between fitting a
+390px phone and spilling off both sides of it.
 
-Accessibility: the individual figures are hidden from the focus order, and a
-single real link in the HUD names the piece at the front. The previous/next
-buttons and the arrow keys work regardless.
+Three things were found by *looking* at it, and are worth remembering:
+
+- **`initRack()` skipped hidden panels.** The collection's rack panel starts
+  `hidden`, so the rack was never built at all — no positions, no dots, nothing.
+  It is now initialised regardless; `measure()` falls back to a width.
+- **`startOf()` cached a zero.** While the panel is hidden the rect is all
+  zeroes; a cached zero makes every scroll position look like the start of the
+  ring. It is re-read each time, and treats a zero-height rect as "not laid out
+  yet".
+- **The pin used `top: 0`.** That slides the panel under the 58px header and
+  eats the count and the buttons. It now pins to `var(--mf-header-h)`, which is
+  set once and read twice.
+
+**On a phone the panel is pinned**: `position: sticky` under the header, a full
+viewport tall, with an inert spacer one turn deep. The screen holds still and
+the clothes are what move; past the turn, the page carries on. A phone held
+sideways unpins rather than crop the rack.
+
+Accessibility: the figures are out of the focus order, and one real link in the
+HUD names the piece at the front. Prev/next and the arrow keys work regardless,
+in both directions of text.
 
 #### White, not cream
 

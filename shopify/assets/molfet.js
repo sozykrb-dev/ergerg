@@ -630,148 +630,164 @@
   /* ------------------------------------------------------------------ */
   var CIRCLE_STEP = 36;      // degrees between two neighbouring pieces
 
+  /* ------------------------------------------------------------------ */
+  /* 9. THE RACK — clothes hung around a rail                           */
+  /* ------------------------------------------------------------------ */
+  /*  The arithmetic, and the whole of it. A piece at index i stands at
+        θ = (i − current) · 360/count
+      and is placed by
+        x     = sin(θ)                   · how far along the rail
+        scale = .70 + .34 · cos(θ)       · how big (front full, back smaller)
+        alpha = 1 − .70 · (1−cos θ)/2    · how solid
+        z     = cos(θ)                   · paint order, far first
+      That is a ring seen in perspective, done with two numbers instead of a 3D
+      context — which is also why it cannot be clipped by one. */
+  var RACK_STEP = 360;
+
   function initRackFor(root) {
     if (!root || rackSeen(root)) return;
     rackMark(root);
 
-    var ring = root.querySelector('[data-circle-ring]');
-    var stage = root.querySelector('[data-circle-stage]');
-    var items = Array.prototype.slice.call(root.querySelectorAll('[data-circle-item]'));
-    var dotsBox = root.querySelector('[data-circle-dots]');
-    var frontLink = root.querySelector('[data-circle-front]');
-    var indexEl = root.querySelector('[data-circle-index]');
-    var totalEl = root.querySelector('[data-circle-total]');
-    var priceEl = root.querySelector('[data-circle-price]');
-    if (!ring || !items.length) return;
-
+    var stage = root.querySelector('[data-rack-stage]');
+    var list = root.querySelector('[data-rack-list]');
+    var items = Array.prototype.slice.call(root.querySelectorAll('[data-rack-item]'));
+    var dotsBox = root.querySelector('[data-rack-dots]');
+    var frontLink = root.querySelector('[data-rack-front]');
+    var indexEl = root.querySelector('[data-rack-index]');
+    var totalEl = root.querySelector('[data-rack-total]');
+    var priceEl = root.querySelector('[data-rack-price]');
     var count = items.length;
-    var active = 0;
-    var current = 0;       // where the ring is, in "items"
-    var target = 0;        // where it was asked to go
+    if (!count) return;
+
     var rtl = document.documentElement.dir === 'rtl';
-
-    // the scroll distance for one full turn: roughly one screen, so a wheel on
-    // a desktop and a finger on a phone both cover the ring in a few gestures
-    var turnSpan = 0;
-
-    function measure() {
-      turnSpan = Math.max(320, window.innerHeight * 0.85);
-      root.style.setProperty('--mf-ring-span', turnSpan + 'px');
-      // step is tighter for a big ring and looser for a small one, so the ends
-      // never overlap and the front never has a gap around it
-      var step = Math.min(CIRCLE_STEP, 320 / Math.max(count, 1));
-      root.style.setProperty('--mf-ring-step', step.toFixed(2) + 'deg');
-      var radius = Math.max(220, (stage && stage.clientWidth ? stage.clientWidth : 720) * 0.42);
-      root.style.setProperty('--mf-ring-radius', radius.toFixed(0) + 'px');
-    }
+    var step = RACK_STEP / count;
+    var active = -1;      // which piece is at the front; -1 forces a first paint
+    var current = 0;      // the rack's position, in pieces (may be fractional)
+    var dragSrc = 0;
 
     function pad(n) { return (n < 10 ? '0' : '') + n; }
 
     function render() {
-      ring.style.transform = 'rotateY(' + (-current * parseFloat(
-        (root.style.getPropertyValue('--mf-ring-step') || '36').replace('deg', ''))) + 'deg)';
+      for (var i = 0; i < count; i++) {
+        var theta = (i - current) * step * Math.PI / 180;
+        var sn = Math.sin(theta);
+        var cs = Math.cos(theta);
+        var depth = (1 - cs) / 2;
+        var item = items[i];
 
-      var nearest = Math.round(current);
-      var wrapped = ((nearest % count) + count) % count;
-      // index `count` is the same piece as index 0: the ring closed the loop
-      if (wrapped !== active) {
-        active = wrapped;
-        var product = items[active];
-        if (frontLink) {
-          var anchor = product.querySelector('a');
-          if (anchor) {
-            frontLink.setAttribute('href', anchor.getAttribute('href'));
-            frontLink.textContent = anchor.querySelector('img')
-              ? anchor.querySelector('img').getAttribute('alt')
-              : frontLink.textContent;
-          }
-        }
-        if (indexEl) indexEl.textContent = pad(active + 1);
-        if (priceEl) {
-          var price = product.getAttribute('data-price');
-          priceEl.textContent = price || '';
-        }
-        dotsBox && Array.prototype.forEach.call(dotsBox.children, function (dot, i) {
-          dot.setAttribute('data-active', i === active ? 'true' : 'false');
-        });
-        items.forEach(function (item, i) {
-          item.setAttribute('data-front', i === active ? 'true' : 'false');
-        });
+        /* rtl turns the other way, so dragging right in Arabic goes back */
+        item.style.setProperty('--x', (rtl ? -sn : sn).toFixed(4));
+        item.style.setProperty('--s', (0.70 + 0.34 * cs).toFixed(4));
+        item.style.setProperty('--o', (1 - 0.70 * depth).toFixed(3));
+        /* the far side is painted first, or the ring looks inside out */
+        item.style.zIndex = String(Math.round((cs + 1) * 50));
       }
 
-      // opacity by depth: the front is solid, the far side fades into the ring
-      items.forEach(function (item, i) {
-        var offset = Math.abs((((i - current) % count) + count * 1.5) % count - count / 2);
-        item.style.opacity = offset > count / 2.2 ? '.25' : '';
-      });
+      /* `current` runs continuously; the nameable front is the nearest whole
+         piece, wrapped so that index count is index 0 again. */
+      var wrapped = ((Math.round(current) % count) + count) % count;
+      if (wrapped !== active) {
+        active = wrapped;
+        var front = items[active];
+
+        items.forEach(function (el, i) {
+          el.setAttribute('data-front', i === active ? 'true' : 'false');
+          var link = el.querySelector('a');
+          if (link) {
+            link.setAttribute('tabindex', i === active ? '0' : '-1');
+            if (i === active) link.removeAttribute('aria-hidden');
+            else link.setAttribute('aria-hidden', 'true');
+          }
+        });
+
+        if (frontLink) {
+          var anchor = front.querySelector('a');
+          var image = front.querySelector('img');
+          if (anchor && anchor.getAttribute('href')) frontLink.setAttribute('href', anchor.getAttribute('href'));
+          frontLink.textContent = image && image.getAttribute('alt')
+            ? image.getAttribute('alt')
+            : (front.getAttribute('data-title') || frontLink.textContent);
+        }
+        if (indexEl) indexEl.textContent = pad(active + 1);
+        if (priceEl) priceEl.textContent = front.getAttribute('data-price') || '';
+        if (dotsBox) {
+          Array.prototype.forEach.call(dotsBox.children, function (dot, n) {
+            dot.setAttribute('data-active', n === active ? 'true' : 'false');
+          });
+        }
+      }
     }
 
-    /* The ring is turned by writing `current`, and CSS animates the change.
-       The browser's easing is smoother than a hand-rolled spring, it costs no
-       frames, and it lands exactly on the target — the frame loop this replaces
-       settled a degree short and left the ring visibly off-centre. */
     function go(n) {
-      target = n;
-      current = n;
+      /* a ring has no ends: past the last piece is the first. Clamping instead
+         would leave a dead stretch of scrolling at both ends. */
+      current = ((n % count) + count) % count;
       render();
     }
 
-    function step(direction) {
-      // snap to the next whole piece from wherever the ring actually is
-      go(Math.round(target) + direction);
+    function stepBy(direction) {
+      go(Math.round(current) + direction);
     }
 
-    /* --- dots: one per piece, so the ring has a length --- */
-    // Built once. A rail that is re-initialised (the collection toggle) would
-    // otherwise stack a second set of dots on top of the first.
+    /* --- dots: one per piece, built once ------------------------------- */
+    /* A rack that is re-initialised (the collection's grid/rack toggle) would
+       otherwise stack a second set of dots on the first. */
     if (dotsBox && !dotsBox.children.length) {
-      for (var dotIndex = 0; dotIndex < count; dotIndex++) {
+      for (var d = 0; d < count; d++) {
         var dot = document.createElement('span');
-        dot.className = 'mf-circle__dot';
-        dot.setAttribute('data-active', dotIndex === 0 ? 'true' : 'false');
+        dot.className = 'mf-rack__dot';
+        dot.setAttribute('data-active', d === 0 ? 'true' : 'false');
         dotsBox.appendChild(dot);
       }
     }
     if (totalEl) totalEl.textContent = pad(count);
-    if (indexEl) indexEl.textContent = pad(1);
 
-    // the first piece faces the viewer before anything turns, so the ring has a
-    // front from the first frame instead of waiting for the first scroll
-    items.forEach(function (item, i) {
-      item.setAttribute('data-front', i === 0 ? 'true' : 'false');
-      if (i === 0) {
-        var anchor = item.querySelector('a');
-        if (frontLink && anchor) {
-          frontLink.setAttribute('href', anchor.getAttribute('href'));
-          var img = anchor.querySelector('img');
-          if (img) frontLink.textContent = img.getAttribute('alt');
-        }
-        if (priceEl) priceEl.textContent = item.getAttribute('data-price') || '';
-      }
-    });
+    /* --- sizing: the rail is as wide as the room it has --------------- */
+    function measure() {
+      var width = (stage && stage.clientWidth) || root.clientWidth || 360;
+      /* The rail has to leave room for the near pieces' shoulders, which hang
+         past the ends of it. 330 of a 390px phone is the fit that looks right;
+         the caps stop a desktop from turning into a frieze. */
+      var rail = Math.min(340, Math.max(240, width * 0.87));
+      root.style.setProperty('--rack-w', rail.toFixed(0) + 'px');
+      root.style.setProperty('--rack-h', Math.round(rail * 0.176) + 'px');
+      root.style.setProperty('--rack-drop', Math.round(rail * 0.103) + 'px');
+      var piece = Math.min(126, Math.max(96, rail * 0.358));
+      root.style.setProperty('--piece-w', piece.toFixed(0) + 'px');
+      root.style.setProperty('--piece-h', (piece * 1.372).toFixed(0) + 'px');
+    }
 
-    /* --- scrolling turns the ring ------------------------------------
-       On a phone the section is pinned and the page's own scroll is the
-       control; on a desktop the wheel over the stage is. Both feed the same
-       target, so the two can never disagree about where the ring is. */
-    function fromScroll() {
-      /* The panel is pinned by CSS: its top is held at 0 while its own height
-         is being scrolled through. `data-ring-start` is where that stretch
-         begins in the document, so the ring turns from 0 to a full loop across
-         exactly that distance and then stops — the page carries on after. */
-      var start = parseFloat(root.getAttribute('data-ring-start'));
-      if (isNaN(start)) {
-        var box = root.getBoundingClientRect();
-        start = (window.scrollY || window.pageYOffset) + box.top;
-        root.setAttribute('data-ring-start', String(start));
-      }
-      var travelled = (window.scrollY || window.pageYOffset) - start;
+    /* --- scrolling: on a phone the page is the control ----------------- */
+    /* The panel is pinned, so the document's own scroll turns the rack: one
+       `--rack-span` of scrolling is one complete turn. A desktop never gets
+       here — the pin does not exist above 989px and the page must not be
+       hijacked. */
+    var span = 0;
+    function measureSpan() {
+      span = Math.max(320, window.innerHeight * 0.9);
+      root.style.setProperty('--rack-span', span + 'px');
+    }
+
+    /* Where the pinned stretch begins, in document coordinates. It has to be
+       re-read every time rather than cached: while the panel is hidden the
+       rect is all zeroes, and a cached zero would make every scroll position
+       look like the very start of the ring. */
+    function startOf() {
+      var box = root.getBoundingClientRect();
+      var top = box.top;
+      /* A rect of exactly zero height means the panel is not laid out yet
+         (hidden, or still being parsed). The pin is only meaningful once it
+         is, so the stretch begins wherever the page is scrolled to then. */
+      if (!box.height) return window.scrollY || window.pageYOffset || 0;
+      return (window.scrollY || window.pageYOffset || 0) + top;
+    }
+
+    function fromScroll(y) {
+      if (window.innerWidth > 989) return;
+      var travelled = y - startOf();
       if (travelled <= 0) { go(0); return; }
-      /* One span = one complete turn. Using `count` rather than `count - 1`
-         makes the ring come back to the piece it started on, so the loop closes
-         instead of stopping one short and looking broken. */
-      if (travelled >= turnSpan) { go(count); return; }
-      go(travelled / turnSpan * count);
+      if (travelled >= span) { go(count); return; }
+      go(travelled / span * count);
     }
 
     var ticking = false;
@@ -780,36 +796,36 @@
       ticking = true;
       window.requestAnimationFrame(function () {
         ticking = false;
-        // a ring inside a hidden panel has no geometry worth reading
-        if (root.closest('[hidden]')) return;
-        fromScroll(window.scrollY || window.pageYOffset);
+        /* A hidden panel has no geometry to read, and no business turning the
+           rack: the user is looking at the grid. `hidden` is the panel's own
+           attribute, so this is the only reliable test. */
+        var panel = root.closest('[data-view-panel]');
+        if (panel && (panel.hasAttribute('hidden') || panel.closest('[hidden]'))) return;
+        fromScroll(window.scrollY || window.pageYOffset || 0);
       });
     }, { passive: true });
 
-    /* --- dragging it ------------------------------------------------ */
-    var drag = null;
+    /* --- dragging, for the hands that expect it ------------------------ */
     if (stage) {
       stage.addEventListener('pointerdown', function (event) {
-        if (event.target.closest('button, a')) return;
-        drag = { x: event.clientX, base: target, moved: false };
-        stage.setPointerCapture && stage.setPointerCapture(event.pointerId);
+        if (event.target.closest('button')) return;
+        dragSrc = { x: event.clientX, base: current, moved: false };
+        /* Claim the gesture only once it is clearly sideways. Capturing on
+           pointerdown swallows the page's own vertical scroll. */
       });
       stage.addEventListener('pointermove', function (event) {
-        if (!drag) return;
-        var dx = event.clientX - drag.x;
-        if (!drag.moved && Math.abs(dx) < 6) return;
-        drag.moved = true;
+        if (!dragSrc) return;
+        var dx = event.clientX - dragSrc.x;
+        if (!dragSrc.moved && Math.abs(dx) < 8) return;
+        dragSrc.moved = true;
         stage.setAttribute('data-dragging', 'true');
-        go(drag.base + (rtl ? dx : -dx) / 90);
+        go(dragSrc.base + (rtl ? dx : -dx) / 70);
       });
-      function release(event) {
-        if (stage.hasPointerCapture && event && stage.hasPointerCapture(event.pointerId)) {
-          stage.releasePointerCapture(event.pointerId);
-        }
-        if (!drag) return;
+      function release() {
+        if (!dragSrc) return;
         stage.removeAttribute('data-dragging');
-        if (drag.moved) go(Math.round(target));
-        drag = null;
+        if (dragSrc.moved) go(Math.round(current));
+        dragSrc = null;
       }
       stage.addEventListener('pointerup', release);
       stage.addEventListener('pointercancel', release);
@@ -817,45 +833,43 @@
 
       stage.addEventListener('wheel', function (event) {
         if (event.ctrlKey) return;
+        if (window.innerWidth <= 989) return;   // the page owns the wheel here
         var delta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
         if (!delta) return;
-        // a wheel over the ring turns it, one notch at a time
         event.preventDefault();
-        go(Math.round(target) + (delta > 0 ? 1 : -1));
+        stepBy(delta > 0 ? 1 : -1);
       }, { passive: false });
     }
 
-    var prev = root.querySelector('[data-circle-prev]');
-    var next = root.querySelector('[data-circle-next]');
-    if (prev) prev.addEventListener('click', function () { step(rtl ? 1 : -1); });
-    if (next) next.addEventListener('click', function () { step(rtl ? -1 : 1); });
+    var prev = root.querySelector('[data-rack-prev]');
+    var next = root.querySelector('[data-rack-next]');
+    if (prev) prev.addEventListener('click', function () { stepBy(rtl ? 1 : -1); });
+    if (next) next.addEventListener('click', function () { stepBy(rtl ? -1 : 1); });
 
     root.addEventListener('keydown', function (event) {
-      if (event.key === 'ArrowRight') { event.preventDefault(); step(rtl ? -1 : 1); }
-      if (event.key === 'ArrowLeft') { event.preventDefault(); step(rtl ? 1 : -1); }
+      if (event.key === 'ArrowRight') { event.preventDefault(); stepBy(rtl ? -1 : 1); }
+      if (event.key === 'ArrowLeft') { event.preventDefault(); stepBy(rtl ? 1 : -1); }
     });
 
-    window.addEventListener('resize', function () { measure(); render(); });
+    function resize() { measure(); measureSpan(); render(); }
+    window.addEventListener('resize', resize);
+    window.addEventListener('orientationchange', resize);
 
     measure();
+    measureSpan();
     render();
   }
 
   function initRack() {
     document.querySelectorAll('[data-rack]').forEach(function (root) {
-      if (root.closest('[hidden]')) return;
+      /* The collection puts the rack in a panel that starts hidden. Skipping
+         it here meant it was never built at all — `render()` never ran, so the
+         first paint had every piece stacked at the front and no dots. Build it
+         regardless of visibility; `measure()` only needs a fallback width,
+         which it has. */
       initRackFor(root);
     });
   }
-
-  function initRack() {
-    document.querySelectorAll('[data-rack]').forEach(function (root) {
-      // a rail inside a hidden panel is initialised when it is revealed, not now
-      if (root.closest('[hidden]')) return;
-      initRackFor(root);
-    });
-  }
-
 
   /* ------------------------------------------------------------------ */
   /* 9a. MOBILE MENU — the only navigation a phone gets                 */

@@ -1,104 +1,106 @@
 {%- comment -%}
-  THE CAROUSEL — the rail, rebuilt as a circle.
+  THE RACK — clothes hung around a rail.
 
-  A rail is a straight line: you pull it sideways and the end arrives. This is
-  the same idea bent into a ring — the garments stand around a circle, the one
-  facing you is the front, and the ring turns. Two things turn it:
+  A rail with clothes on it, seen from standing height: the rail is an ellipse,
+  the pieces stand at angles around it, and the one at the front is the largest
+  and the only one at full opacity. Scrolling or dragging turns it, and the ring
+  comes all the way round.
 
-    · scrolling (the wheel on a desktop, a finger on a phone) — one notch per
-      click, with a spring so it lands rather than stops dead;
-    · dragging it with the pointer, which is the same gesture at a different
-      speed.
+  Why not CSS 3D: an earlier version placed the pieces with
+  `rotateY(angle) translateZ(radius)` inside a stage with `perspective`. That
+  reads correctly on paper and is wrong on screen — `perspective` projects the
+  child, so a piece pushed out by translateZ is magnified by P/(P−Z) as well as
+  turned. The front piece arrived at twice its width and the neighbours were
+  clipped by the screen; it looked like a pile of cards, not a rack. Here the
+  depth is in the numbers: x from sin, size and opacity from cos, and the
+  rail's width is a variable that can simply be made to fit a phone.
 
-  On a phone the whole panel is pinned while the collection is in this view, so
-  the screen holds still and the clothes are what move. `--mf-ring-span` is the
-  scroll distance reserved for a full turn; past it the page carries on.
-
-  The maths. Each piece sits at `angle = (i - active) × step`, and the ring's
-  own rotation is `-active × step`. A piece therefore arrives at 0° — facing the
-  viewer, nearest the eye — exactly when it becomes the active one, and the
-  other pieces stand further back along the circle. `translateZ` is what makes
-  the front one bigger; `perspective` on the stage is what makes that read as
-  depth rather than as resizing.
+  On a phone the panel is pinned under the header for one turn's worth of
+  scrolling, so the screen holds still and the clothes are what move.
 
   Parameters
     products  the array to hang (required)
-    eyebrow   optional small line above the ring
+    eyebrow   optional small line above the rack
     heading   optional heading; omit inside the collection view
 {%- endcomment -%}
-{%- assign ring_garments = products | where: 'available', true -%}
+{%- assign rack_garments = products | where: 'available', true -%}
+{%- assign rack_shown = 0 -%}
 
-<div class="mf-circle" data-rack data-circle>
+<div class="mf-rack" data-rack data-rail>
   {%- if heading != blank or eyebrow != blank -%}
-    <header class="mf-circle__head">
+    <header class="mf-rack__head">
       {%- if eyebrow != blank -%}<p class="mf-eyebrow">{{ eyebrow }}</p>{%- endif -%}
       {%- if heading != blank -%}<h2>{{ heading }}</h2>{%- endif -%}
     </header>
   {%- endif -%}
 
-  <div class="mf-circle__stage" data-circle-stage>
-    {%- comment -%} the ring the pieces stand on, drawn once and turned by JS {%- endcomment -%}
-    <div class="mf-circle__ring" data-circle-ring>
-      <span class="mf-circle__post mf-circle__post--back" aria-hidden="true"></span>
-      <span class="mf-circle__floor" aria-hidden="true"></span>
+  <div class="mf-rack__stage" data-rack-stage>
+    {%- comment -%} the far half of the rail, drawn under the clothes {%- endcomment -%}
+    <span class="mf-rack__rail mf-rack__rail--back" aria-hidden="true"></span>
 
-      {%- capture circle_items -%}
-      {%- for product in ring_garments -%}
+    <ul class="mf-rack__list" data-rack-list>
+      {%- for product in rack_garments -%}
         {%- assign slot = product.metafields.molfet.slot.value | default: 'top' -%}
         {%- if slot == 'accessory' -%}{%- continue -%}{%- endif -%}
-        {%- assign cutout = product.metafields.molfet.cutout -%}
-        <li class="mf-circle__item" data-circle-item data-slot="{{ slot }}"
-          style="--i: {{ forloop.index0 }};">
-          <a class="mf-circle__link" href="{{ product.url }}" tabindex="-1" aria-hidden="true">
-            <span class="mf-circle__figure">
-              {%- if cutout != blank or product.featured_image != blank -%}
-                <img
-                  src="{{ cutout | default: product.featured_image | image_url: width: 700 }}"
-                  alt="{{ product.title | escape }}"
-                  width="320" height="420"
-                  loading="lazy" draggable="false">
-              {%- else -%}
-                {% render 'media-placeholder', class: 'mf-circle__img', ratio: '3/4' %}
-              {%- endif -%}
-              <span class="mf-circle__shine" aria-hidden="true"></span>
-            </span>
+        {%- assign rack_shown = rack_shown | plus: 1 -%}
+        <li class="mf-rack__item" data-rack-item data-slot="{{ slot }}"
+          {%- unless request.design_mode %} style="--x: {{ rack_shown | minus: 1 }}; --s: 1"{% endunless %}>
+          <span class="mf-rack__hang" aria-hidden="true"></span>
+          <a class="mf-rack__figure" href="{{ product.url }}"
+            tabindex="-1" aria-hidden="true">
+            {%- assign cutout = product.metafields.molfet.cutout -%}
+            {%- if cutout != blank -%}
+              <img class="mf-rack__img"
+                src="{{ cutout | image_url: width: 600 }}"
+                alt="{{ product.title | escape }}"
+                width="600" height="800"
+                loading="lazy" draggable="false">
+            {%- elsif product.featured_image != blank -%}
+              <img class="mf-rack__img"
+                src="{{ product.featured_image | image_url: width: 600 }}"
+                alt="{{ product.title | escape }}"
+                width="600" height="800"
+                loading="lazy" draggable="false">
+            {%- else -%}
+              <span class="mf-rack__ghost"><b>{{ rack_shown }}</b></span>
+            {%- endif -%}
           </a>
         </li>
       {%- endfor -%}
-      {%- endcapture -%}
-      {{- circle_items -}}
+    </ul>
 
-      {%- assign circle_check = circle_items | strip -%}
-      {%- if circle_check == blank -%}
-        <p class="mf-circle__empty">{{ 'rack.empty' | t }}</p>
-      {%- endif -%}
-    </div>
+    {%- comment -%} the near half of the rail, drawn over the clothes {%- endcomment -%}
+    <span class="mf-rack__rail" aria-hidden="true"></span>
   </div>
+
+  {%- if rack_shown == 0 -%}
+    <p class="mf-rack__empty">{{ 'rack.empty' | t }}</p>
+  {%- endif -%}
 
   {%- comment -%}
-    The front piece, in words. It is a real link, it is what a screen reader
-    reads, and it is the only thing that can be tapped when the ring is behind
-    it — which is why the individual figures are hidden from the focus order.
+    The front piece, in words. One real link — the figures themselves are out of
+    the focus order, so a screen reader (and the thumb on a phone) gets one
+    target that names the piece rather than a pile of anonymous links.
   {%- endcomment -%}
-  <div class="mf-circle__hud">
-    <p class="mf-circle__count" aria-live="polite">
-      <span data-circle-index>1</span><span class="mf-circle__slash">/</span><span data-circle-total>{{ ring_garments.size }}</span>
+  <div class="mf-rack__hud">
+    <p class="mf-rack__count" aria-live="polite">
+      <span data-rack-index>01</span> / <span data-rack-total>{{ rack_shown }}</span>
     </p>
-    <a class="mf-circle__title" href="#" data-circle-front>{{ 'rack.title' | t }}</a>
-    <p class="mf-circle__price" data-circle-price></p>
+    <a class="mf-rack__title" href="#" data-rack-front>{{ 'rack.title' | t }}</a>
+    <p class="mf-rack__price" data-rack-price></p>
   </div>
 
-  <div class="mf-circle__controls">
-    <button type="button" class="mf-circle__step" data-circle-prev
+  <div class="mf-rack__controls">
+    <button type="button" class="mf-rack__step" data-rack-prev
       aria-label="{{ 'rack.previous' | t }}">
       <svg viewBox="0 0 20 20" width="16" height="16" fill="none" aria-hidden="true">
         <path d="M12 4l-6 6 6 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </button>
 
-    <span class="mf-circle__dots" data-circle-dots aria-hidden="true"></span>
+    <span class="mf-rack__dots" data-rack-dots aria-hidden="true"></span>
 
-    <button type="button" class="mf-circle__step" data-circle-next
+    <button type="button" class="mf-rack__step" data-rack-next
       aria-label="{{ 'rack.next' | t }}">
       <svg viewBox="0 0 20 20" width="16" height="16" fill="none" aria-hidden="true">
         <path d="M8 4l6 6-6 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
@@ -107,6 +109,6 @@
   </div>
 
   {%- unless request.design_mode -%}
-    <div class="mf-circle__span" aria-hidden="true"></div>
+    <div class="mf-rack__span" aria-hidden="true"></div>
   {%- endunless -%}
 </div>

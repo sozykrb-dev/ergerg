@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MOLFET — the rack, built to be seen</title>
+<style>
+  :root {
+    --maroon: #711518;
+    --cream: #FAED99;
+    --brown: #321E19;
+    --white: #fff;
+    --hairline: color-mix(in srgb, #321E19 16%, transparent);
+    --hairline-strong: color-mix(in srgb, #321E19 34%, transparent);
+    --ease: cubic-bezier(.22,.61,.36,1);
+    --header: 58px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--white); color: var(--brown);
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---------- the page around the rack (a stand-in for the theme) ---------- */
+  .d-header {
+    position: sticky; top: 0; z-index: 40; height: var(--header);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 .9rem; background: #fff;
+    border-bottom: 1px solid var(--hairline);
+    font-size: .6rem; text-transform: uppercase; letter-spacing: .16em;
+  }
+  .d-header b { font-size: .95rem; letter-spacing: .2em; }
+  .d-head { padding: .75rem 1rem 0; }
+  .d-head h1 { margin: 0; font-size: 1.15rem; letter-spacing: .02em; }
+  .d-head p { margin: .3rem 0 0; font-size: .62rem; letter-spacing: .16em;
+              text-transform: uppercase; color: color-mix(in srgb, var(--brown) 66%, var(--cream)); }
+  .d-tools { display: flex; gap: .5rem; align-items: center; justify-content: space-between;
+             padding: .75rem 1rem; }
+  .d-switch { display: inline-flex; border: 1px solid var(--hairline-strong); }
+  .d-switch button {
+    font: inherit; font-size: .58rem; text-transform: uppercase; letter-spacing: .14em;
+    padding: .45rem .8rem; background: none; border: 0; color: var(--brown);
+  }
+  .d-switch button[aria-pressed="true"] { background: var(--maroon); color: #fff; }
+  .d-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; padding: 1rem; }
+  .d-card { border: 1px solid var(--hairline); }
+  .d-card i { display: block; aspect-ratio: 4/5; background:
+              color-mix(in srgb, var(--cream) 26%, #fff); }
+
+  /* ================= THE RACK ================= */
+  /* A rail, seen from standing height: a flat ellipse, not a circle in
+     perspective. Pieces sit on it at an angle, and their width and height are
+     scaled by their depth, so the ring reads as a ring while still fitting a
+     phone: the ellipse's width is a variable, not 2 × radius. */
+  .mf-rack {
+    /* fitted to a 390px phone by default; JS raises these on bigger screens */
+    --rack-w: 330px;         /* the rail's on-screen width  */
+    --rack-h: 58px;          /* its foreshortened height    */
+    --piece-w: 118px;        /* the garment's width at the front */
+    --piece-h: 162px;
+    --rack-drop: 34px;       /* rail down to the hanger's shoulders */
+    position: relative;
+    padding: .5rem 0 0;
+    background: var(--white);
+  }
+
+  .mf-rack__stage {
+    position: relative;
+    width: 100%;
+    height: calc(var(--rack-h) + var(--rack-drop) + var(--piece-h) + 34px);
+    perspective: none;                 /* deliberately: 2D placement */
+    touch-action: pan-y;               /* let the page scroll vertically */
+    -webkit-user-select: none; user-select: none;
+  }
+
+  /* the rail itself — one ellipse, drawn once */
+  .mf-rack__rail {
+    position: absolute; left: 50%; top: calc(var(--rack-h) / 2);
+    width: var(--rack-w); height: var(--rack-h);
+    margin-left: calc(var(--rack-w) / -2);
+    margin-top: calc(var(--rack-h) / -2);
+    border: 1px solid color-mix(in srgb, var(--maroon) 26%, transparent);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  /* the far half of the rail is behind the clothes: a second, fainter arc */
+  .mf-rack__rail--back {
+    border-color: color-mix(in srgb, var(--maroon) 13%, transparent);
+    border-left-color: transparent; border-right-color: transparent;
+  }
+
+  .mf-rack__item {
+    position: absolute;
+    left: 50%;
+    top: var(--rack-h);
+    width: var(--piece-w);
+    margin-left: calc(var(--piece-w) / -2);
+    list-style: none;
+    transform-origin: 50% 0;
+    /* `--i` is the piece's index, `--active` the ring's position in pieces.
+       Both are written by the script; without JS every piece stacks at the
+       front, which is a legible (if useless) resting state. */
+    transform: translate3d(calc(var(--x) * var(--rack-w) / 2), 0, 0) scale(var(--s));
+    opacity: var(--o);
+    will-change: transform, opacity;
+    transition: transform .5s var(--ease), opacity .5s var(--ease);
+  }
+
+  .mf-rack__hang {
+    display: block; height: var(--rack-drop);
+    position: relative;
+  }
+  /* the hook over the rail */
+  .mf-rack__hang::before {
+    content: ""; position: absolute; left: 50%; top: -4px;
+    width: 7px; height: 9px; margin-left: -3.5px;
+    border: 1px solid color-mix(in srgb, var(--brown) 62%, transparent);
+    border-bottom-color: transparent;
+    border-radius: 50% 50% 0 0;
+  }
+  /* the shoulder bar */
+  .mf-rack__hang::after {
+    content: ""; position: absolute; left: 6%; right: 6%; top: calc(var(--rack-drop) - 7px);
+    height: 7px;
+    border-top: 2px solid var(--maroon);
+    transform: perspective(40px) rotateX(46deg);
+    transform-origin: 50% 0;
+  }
+
+  .mf-rack__figure {
+    display: block; position: relative;
+    width: 100%; height: var(--piece-h);
+    background: color-mix(in srgb, var(--cream) 26%, #fff);
+    border: 1px solid color-mix(in srgb, var(--maroon) 18%, transparent);
+    overflow: hidden;
+  }
+  .mf-rack__figure img {
+    width: 100%; height: 100%; object-fit: contain; display: block;
+  }
+  /* the placeholder silhouette, for when a piece has no photograph yet */
+  .mf-rack__ghost {
+    position: absolute; inset: 0;
+    border: 0;
+  }
+  .mf-rack__ghost::before {
+    content: ""; position: absolute; left: 50%; top: 8%;
+    width: 74%; height: 84%; margin-left: -37%;
+    background: color-mix(in srgb, var(--cream) 60%, #fff);
+    clip-path: polygon(28% 0, 72% 0, 100% 22%, 86% 44%, 66% 34%, 66% 100%, 34% 100%, 34% 34%, 14% 44%, 0 22%);
+  }
+  .mf-rack__ghost b {
+    position: absolute; left: 0; right: 0; top: 44%;
+    text-align: center; font-size: 1.6rem; font-weight: 400;
+    color: color-mix(in srgb, var(--brown) 55%, transparent);
+  }
+
+  .mf-rack__item[data-front="true"] .mf-rack__figure {
+    border-color: var(--maroon);
+  }
+  .mf-rack__item[data-front="true"] .mf-rack__hang::after {
+    border-top-width: 3px;
+  }
+
+  /* ---------- the words under the rack ---------- */
+  .mf-rack__hud {
+    display: grid; justify-items: center; gap: .15rem;
+    padding: .5rem 1rem 0; text-align: center;
+  }
+  .mf-rack__count {
+    margin: 0; font-size: .6rem; letter-spacing: .18em;
+    font-variant-numeric: tabular-nums;
+    color: color-mix(in srgb, var(--brown) 66%, var(--cream));
+  }
+  .mf-rack__title {
+    font-size: .9rem; text-transform: uppercase; letter-spacing: .06em;
+    color: var(--brown); text-decoration: none;
+    border-bottom: 1px solid transparent; max-width: 24ch;
+  }
+  .mf-rack__title:hover { border-bottom-color: var(--maroon); }
+  .mf-rack__price { margin: 0; font-size: .78rem; }
+
+  .mf-rack__controls {
+    display: flex; align-items: center; justify-content: center;
+    gap: .9rem; padding: .75rem 1rem 1rem;
+  }
+  .mf-rack__step {
+    width: 44px; height: 44px; display: grid; place-items: center;
+    background: none; border: 1px solid var(--hairline-strong);
+    color: var(--brown); cursor: pointer;
+  }
+  .mf-rack__step:hover, .mf-rack__step:focus-visible {
+    background: var(--maroon); color: #fff; border-color: var(--maroon);
+  }
+  .mf-rack__dots { display: flex; gap: .3rem; }
+  .mf-rack__dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: color-mix(in srgb, var(--brown) 30%, transparent);
+    transition: width .3s var(--ease), background-color .3s var(--ease);
+  }
+  .mf-rack__dot[data-active="true"] { width: 16px; border-radius: 3px; background: var(--maroon); }
+
+  /* ================= PHONE: the panel is pinned ================= */
+  /* The screen holds still; the ring turns as the page scrolls through
+     `--rack-span`. Nothing inside needs to scroll, so nothing fights. */
+  @media (max-width: 989px) {
+    .mf-rack {
+      position: sticky; top: var(--header);
+      height: calc(100dvh - var(--header));
+      display: flex; flex-direction: column; justify-content: center;
+      z-index: 1; background: var(--white);
+      padding: 0;
+    }
+    .mf-rack__stage { flex: 0 0 auto; }
+    .mf-rack__span { height: var(--rack-span, 100dvh); }
+  }
+  .mf-rack__span { display: none; }
+  @media (max-width: 989px) { .mf-rack__span { display: block; } }
+  @media (max-width: 989px) and (orientation: landscape) and (max-height: 520px) {
+    .mf-rack { position: static; height: auto; }
+    .mf-rack__span { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="d-header">
+  <span>&#9776;</span><b>MOLFET</b><span>2</span>
+</header>
+
+<section class="d-head">
+  <h1>All pieces</h1>
+  <p>Five pieces &middot; one rack</p>
+</section>
+
+<div class="d-tools">
+  <div class="d-switch">
+    <button type="button">Grid</button>
+    <button type="button" aria-pressed="true">Rack</button>
+  </div>
+  <span style="font-size:.58rem;letter-spacing:.14em;text-transform:uppercase">Filter</span>
+</div>
+
+<section class="mf-rack" data-rack>
+  <div class="mf-rack__stage" data-rack-stage>
+    <span class="mf-rack__rail mf-rack__rail--back" aria-hidden="true"></span>
+
+    <ul style="list-style:none;margin:0;padding:0" data-rack-list>
+      <li class="mf-rack__item" data-rack-item>
+        <span class="mf-rack__hang" aria-hidden="true"></span>
+        <a class="mf-rack__figure" href="#" tabindex="-1">
+          <span class="mf-rack__ghost"><b>1</b></span>
+        </a>
+      </li>
+      <li class="mf-rack__item" data-rack-item>
+        <span class="mf-rack__hang" aria-hidden="true"></span>
+        <a class="mf-rack__figure" href="#" tabindex="-1">
+          <span class="mf-rack__ghost"><b>2</b></span>
+        </a>
+      </li>
+      <li class="mf-rack__item" data-rack-item>
+        <span class="mf-rack__hang" aria-hidden="true"></span>
+        <a class="mf-rack__figure" href="#" tabindex="-1">
+          <span class="mf-rack__ghost"><b>3</b></span>
+        </a>
+      </li>
+      <li class="mf-rack__item" data-rack-item>
+        <span class="mf-rack__hang" aria-hidden="true"></span>
+        <a class="mf-rack__figure" href="#" tabindex="-1">
+          <span class="mf-rack__ghost"><b>4</b></span>
+        </a>
+      </li>
+      <li class="mf-rack__item" data-rack-item>
+        <span class="mf-rack__hang" aria-hidden="true"></span>
+        <a class="mf-rack__figure" href="#" tabindex="-1">
+          <span class="mf-rack__ghost"><b>5</b></span>
+        </a>
+      </li>
+    </ul>
+
+    <span class="mf-rack__rail" aria-hidden="true"></span>
+  </div>
+
+  <div class="mf-rack__hud">
+    <p class="mf-rack__count"><span data-rack-index>01</span> / <span data-rack-total>05</span></p>
+    <a class="mf-rack__title" href="#" data-rack-front>MOLFET piece</a>
+    <p class="mf-rack__price" data-rack-price></p>
+  </div>
+
+  <div class="mf-rack__controls">
+    <button type="button" class="mf-rack__step" data-rack-prev aria-label="Previous">&#8249;</button>
+    <span class="mf-rack__dots" data-rack-dots aria-hidden="true"></span>
+    <button type="button" class="mf-rack__step" data-rack-next aria-label="Next">&#8250;</button>
+  </div>
+
+  <div class="mf-rack__span" aria-hidden="true"></div>
+</section>
+
+<div class="d-grid">
+  <div class="d-card"><i></i></div><div class="d-card"><i></i></div>
+  <div class="d-card"><i></i></div><div class="d-card"><i></i></div>
+</div>
+
+<script>
+(function () {
+  var root = document.querySelector('[data-rack]');
+  if (!root) return;
+  var items = [].slice.call(root.querySelectorAll('[data-rack-item]'));
+  var stage = root.querySelector('[data-rack-stage]');
+  var dots  = root.querySelector('[data-rack-dots]');
+  var count = items.length;
+  if (!count) return;
+
+  var indexEl = root.querySelector('[data-rack-index]');
+  var totalEl = root.querySelector('[data-rack-total]');
+  var titleEl = root.querySelector('[data-rack-front]');
+  var STEP = 360 / count;         // degrees between neighbours
+  var active = -1;
+  var current = 0;                // the ring's position, in pieces
+
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+
+  /* The one piece of maths that matters. A piece at index i stands at angle
+     (i - current)·STEP. Its horizontal place on the rail is sin of that angle;
+     its depth is cos. Front (cos = 1) is full size and solid, the back
+     (cos = −1) is smaller and faint. Everything else follows. */
+  function render() {
+    for (var i = 0; i < count; i++) {
+      var theta = (i - current) * STEP * Math.PI / 180;
+      var sn = Math.sin(theta), cs = Math.cos(theta);
+      var depth = (1 - cs) / 2;                     // 0 front · 1 back
+      var item = items[i];
+
+      item.style.setProperty('--x', sn.toFixed(4));
+      item.style.setProperty('--s', (0.70 + 0.34 * cs).toFixed(4));
+      item.style.setProperty('--o', (1 - 0.62 * depth).toFixed(3));
+      /* paint order: the far side first. A ring where the back is drawn over
+         the front looks inside-out. */
+      item.style.zIndex = String(Math.round((cs + 1) * 50));
+    }
+
+    var nearest = Math.round(current);
+    var wrapped = ((nearest % count) + count) % count;
+    if (wrapped !== active) {
+      active = wrapped;
+      var front = items[active];
+      items.forEach(function (el, i) {
+        el.setAttribute('data-front', i === active ? 'true' : 'false');
+        var link = el.querySelector('a');
+        if (link) link.setAttribute('tabindex', i === active ? '0' : '-1');
+      });
+      if (titleEl) {
+        var a = front && front.querySelector('a');
+        var alt = front && front.querySelector('img');
+        titleEl.textContent = alt ? alt.getAttribute('alt') : 'Piece ' + (active + 1);
+        if (a) titleEl.setAttribute('href', a.getAttribute('href'));
+      }
+      if (indexEl) indexEl.textContent = pad(active + 1);
+      if (dots) [].forEach.call(dots.children, function (d, i) {
+        d.setAttribute('data-active', i === active ? 'true' : 'false');
+      });
+    }
+  }
+
+  function go(n) {
+    /* the ring is a circle: turning past the end is turning onto the start.
+       Clamping instead would leave a dead zone at both ends of the scroll. */
+    current = ((n % count) + count) % count;
+    render();
+  }
+
+  if (dots && !dots.children.length) {
+    for (var d = 0; d < count; d++) {
+      var dot = document.createElement('span');
+      dot.className = 'mf-rack__dot';
+      dot.setAttribute('data-active', d === 0 ? 'true' : 'false');
+      dots.appendChild(dot);
+    }
+  }
+  if (totalEl) totalEl.textContent = pad(count);
+  render();
+
+  /* --- scrolling turns it ------------------------------------------------ */
+  /* On a phone the panel is pinned, so the page's own scroll is the control:
+     one `--rack-span` of scrolling is one complete turn. On a desktop the
+     wheel over the stage steps it, and the page is never hijacked. */
+  var span = 0, start = 0, ticking = false;
+  function measure() {
+    span = Math.max(320, window.innerHeight * 0.9);
+    root.style.setProperty('--rack-span', span + 'px');
+    var box = root.getBoundingClientRect();
+    start = (window.scrollY || window.pageYOffset || 0) + box.top;
+  }
+
+  function fromScroll(y) {
+    if (window.innerWidth > 989) return;      // the pin only exists on a phone
+    var travelled = y - start;
+    if (travelled <= 0) { go(0); return; }
+    if (travelled >= span) { go(count); return; }
+    go(travelled / span * count);
+  }
+
+  window.addEventListener('scroll', function () {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function () {
+      ticking = false;
+      if (root.closest('[hidden]')) return;
+      fromScroll(window.scrollY || window.pageYOffset || 0);
+    });
+  }, { passive: true });
+
+  /* --- dragging, for the hands that expect it ---------------------------- */
+  var drag = null;
+  stage.addEventListener('pointerdown', function (e) {
+    if (e.target.closest('button')) return;
+    drag = { x: e.clientX, base: current, moved: false };
+  });
+  stage.addEventListener('pointermove', function (e) {
+    if (!drag) return;
+    var dx = e.clientX - drag.x;
+    if (!drag.moved && Math.abs(dx) < 8) return;
+    drag.moved = true;
+    stage.setAttribute('data-dragging', 'true');
+    go(drag.base - dx / 70);
+  });
+  function release() {
+    if (!drag) return;
+    stage.removeAttribute('data-dragging');
+    if (drag.moved) go(Math.round(current));
+    drag = null;
+  }
+  stage.addEventListener('pointerup', release);
+  stage.addEventListener('pointercancel', release);
+
+  var prev = root.querySelector('[data-rack-prev]');
+  var next = root.querySelector('[data-rack-next]');
+  if (prev) prev.addEventListener('click', function () { go(Math.round(current) - 1); });
+  if (next) next.addEventListener('click', function () { go(Math.round(current) + 1); });
+
+  window.addEventListener('resize', function () { measure(); render(); });
+  window.addEventListener('load', function () { measure(); render(); });
+  measure();
+})();
+</script>
+</body>
+</html>

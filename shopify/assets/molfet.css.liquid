@@ -27,6 +27,9 @@
      inside the brief's 8–16px range */
   --mf-break: {{ settings.frame_break_px | default: 12 }}px;
   --mf-ease: cubic-bezier(.22, .61, .36, 1);
+  /* The header's own height, in one place, because the rack pins itself
+     directly under it on a phone. Two media queries set it, two read it. */
+  --mf-header-h: 68px;
   --mf-font: "Jost", "Josefin Sans", system-ui, sans-serif;
   --mf-font-ar: "Cairo", "Tajawal", var(--mf-font);
 }
@@ -155,6 +158,8 @@ html[dir="rtl"] .mf-slogan { letter-spacing: .08em; }
   /* Four controls now share a 58px bar with the wordmark, so the grid gives the
      actions cluster its own column instead of letting it push the logo. */
   .mf-header__inner { height: 58px; padding: 0 .75rem; gap: .5rem; }
+  /* the bar is 58px on a phone, and the rack pins below it */
+  :root { --mf-header-h: 58px; }
   .mf-header__wordmark { height: 19px; }
   .mf-header__actions { gap: 0; }
   .mf-header__icon, .mf-header__rack { width: 36px; height: 36px; }
@@ -252,10 +257,10 @@ body[data-menu-open="true"] { overflow: hidden; }
 }
 .mf-placeholder .mf-brand-fallback { color: inherit; }
 .mf-placeholder .mf-brand-fallback__mark { height: 34px; width: 34px; }
-.mf-cart-thumb.mf-placeholder, .mf-circle__img.mf-placeholder { height: auto; }
+.mf-cart-thumb.mf-placeholder, .mf-rack__img.mf-placeholder { height: auto; }
 .mf-cart-thumb { width: 80px; }
 .mf-cart-line .mf-cart-thumb { width: 74px; height: 92px; }
-.mf-circle__img { max-width: 100%; max-height: 100%; }
+.mf-rack__img { max-width: 100%; max-height: 100%; }
 .mf-card__media-link { position: relative; display: block; aspect-ratio: 4 / 5; overflow: hidden; background: var(--mf-surface-tint); }
 .mf-card__photo { width: 100%; height: 100%; object-fit: cover; transition: transform .9s var(--mf-ease); }
 .mf-card:hover .mf-card__photo { transform: scale(1.03); }
@@ -306,8 +311,8 @@ html.mf-lens-on input,
 html.mf-lens-on textarea,
 html.mf-lens-on select,
 html.mf-lens-on [contenteditable="true"] { cursor: auto; }
-html.mf-lens-on .mf-circle__stage { cursor: grab; }
-html.mf-lens-on .mf-circle__stage[data-dragging="true"] { cursor: grabbing; }
+html.mf-lens-on .mf-rack__stage { cursor: grab; }
+html.mf-lens-on .mf-rack__stage[data-dragging="true"] { cursor: grabbing; }
 
 .mf-lens {
   /* Parked off-viewport until the first pointermove writes left/top. A fixed
@@ -424,7 +429,8 @@ html.mf-lens-on .mf-circle__stage[data-dragging="true"] { cursor: grabbing; }
   .mf-section-head h2 { max-width: 100%; }
 
   /* the rack needs a narrower hanger or only one piece is visible */
-  .mf-circle { --mf-ring-size: clamp(150px, 54vw, 220px); padding-inline: 1rem; }
+  /* a narrow phone: a narrower rail, and a shorter drop */
+  .mf-rack { --rack-w: 288px; --rack-h: 52px; --piece-w: 102px; --piece-h: 140px; --rack-drop: 28px; }
 
   /* the collection header buttons must not overflow */
   .mf-viewswitch { width: 100%; }
@@ -504,232 +510,210 @@ html[dir="rtl"] .mf-cart-drawer__panel { transform: translateX(-100%); }
 .mf-back-to-top { width: 40px; height: 40px; display: grid; place-items: center; border: 1px solid color-mix(in srgb, var(--molfet-cream) 25%, transparent); }
 
 /* ==========================================================================
-   THE RING — the rail, bent into a circle
+   THE RACK — a rail with clothes hung around it
    ==========================================================================
-   One stage, one ring, N pieces. Every piece is placed at its angle on the
-   circle by `--i` and turned back by the ring's own rotation, so the piece at
-   `i = active` always faces the viewer. Depth comes from `translateZ` and the
-   stage's `perspective` — no shadows, no gradients, no faked 3D.
+   This started as a ring in CSS 3D: rotateY(angle) translateZ(radius) inside a
+   stage with `perspective`. It was wrong, and watching it rather than testing
+   it is what showed why. `perspective` does not merely tilt a child — it
+   projects it, so every piece pushed out by translateZ is also magnified by
+   P/(P−Z). The front piece arrived at about twice its width, the neighbours
+   were clipped by the screen, and the whole thing read as a pile of cards
+   rather than a rack.
+
+   So the rail is drawn as what a circular rail actually looks like from
+   standing height: an ellipse. The pieces are placed on it in 2D, and their
+   size and opacity come from their depth:
+
+       θ     = (i − active) · 360/count
+       x     = sin(θ) · rack-w / 2      (where it stands on the rail)
+       scale = .70 + .34·cos(θ)         (front full size, back smaller)
+       alpha = 1 − .70·(1−cos θ)/2      (back fainter)
+       z     = cos(θ)                   (far pieces painted first)
+
+   The gain: the rail's on-screen width is a variable, `--rack-w`, instead of
+   being locked to 2 × radius. That is the difference between fitting a 390px
+   phone and spilling off both sides of it.
    ========================================================================== */
-.mf-circle {
-  --mf-ring-step: 36deg;
-  --mf-ring-radius: 420px;
-  --mf-ring-span: 640px;
-  --mf-ring-size: clamp(180px, 46vw, 300px);
+.mf-rack {
+  --rack-w: 330px;       /* the rail's on-screen width, set by JS */
+  --rack-h: 58px;        /* how much the rail is foreshortened */
+  --piece-w: 118px;      /* a garment's width at the front */
+  --piece-h: 162px;
+  --rack-drop: 34px;     /* the rail down to the hanger's shoulders */
+  --rack-span: 640px;    /* scroll distance reserved for one turn */
   position: relative;
-  padding: 1.5rem 1.25rem 2rem;
+  padding: .5rem 0 0;
+  background: var(--mf-surface);
 }
 
-.mf-circle__head { margin-bottom: 1rem; }
-.mf-circle__head h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); }
-
-.mf-circle__stage {
+.mf-rack__stage {
   position: relative;
-  height: calc(var(--mf-ring-size) * 1.9);
-  perspective: 1100px;
-  perspective-origin: 50% 46%;
+  width: 100%;
+  height: calc(var(--rack-h) + var(--rack-drop) + var(--piece-h) + 28px);
+  /* No perspective. The depth is in the numbers, not in a projection — which
+     is also why nothing here can be clipped by a 3D context. */
   touch-action: pan-y;
   cursor: grab;
-  user-select: none;
-  -webkit-user-select: none;
+  -webkit-user-select: none; user-select: none;
 }
-.mf-circle__stage[data-dragging="true"] { cursor: grabbing; }
+.mf-rack__stage[data-dragging="true"] { cursor: grabbing; }
 
-.mf-circle__ring {
+/* the rail: one ellipse, drawn once. Turning a circle about its own axis
+   leaves it looking identical, so it never has to move. */
+.mf-rack__rail {
   position: absolute;
-  inset: 0;
-  transform-style: preserve-3d;
-  /* the JS writes rotateY here; this is the resting state before it boots.
-     The transition is what makes the turn read as an animation rather than a
-     jump — it is long enough to see, short enough to keep up with a scroll. */
-  transform: rotateY(0deg);
-  transition: transform .55s cubic-bezier(.22, .61, .36, 1);
-  will-change: transform;
-}
-@media (prefers-reduced-motion: reduce) { .mf-circle__ring { transition: none; } }
-
-/* the circle's back wall and floor: two strokes, the only drawing allowed */
-.mf-circle__post--back {
-  position: absolute; left: 50%; top: 50%;
-  width: calc(var(--mf-ring-radius) * 1.75);
-  height: calc(var(--mf-ring-radius) * 1.75);
-  transform: translate(-50%, -50%) rotateX(72deg);
-  border: 1px solid color-mix(in srgb, var(--molfet-maroon) 18%, transparent);
+  left: 50%; top: calc(var(--rack-h) / 2);
+  width: var(--rack-w); height: var(--rack-h);
+  margin-left: calc(var(--rack-w) / -2);
+  margin-top: calc(var(--rack-h) / -2);
+  border: 1px solid color-mix(in srgb, var(--molfet-maroon) 24%, transparent);
   border-radius: 50%;
   pointer-events: none;
 }
-.mf-circle__floor {
-  position: absolute; left: 50%; bottom: 4%;
-  width: 44%; height: 1px;
-  transform: translateX(-50%);
-  background: color-mix(in srgb, var(--molfet-maroon) 22%, transparent);
-  pointer-events: none;
+/* the far half is behind the clothes, so it is drawn first and fainter */
+.mf-rack__rail--back {
+  border-color: color-mix(in srgb, var(--molfet-maroon) 12%, transparent);
+  /* The near arc crosses the garments' shoulders, where a full ellipse reads
+     as a line struck through the clothes. Only the ends are drawn. */
+  border-left-color: transparent;
+  border-right-color: transparent;
 }
 
-/* --- a piece on the ring --- */
-.mf-circle__item {
+/* --- one piece, hanging --- */
+.mf-rack__item {
   position: absolute;
-  left: 50%;
-  top: 50%;
-  width: var(--mf-ring-size);
-  margin-left: calc(var(--mf-ring-size) / -2);
-  margin-top: calc(var(--mf-ring-size) * -0.66);
+  left: 50%; top: var(--rack-h);
+  width: var(--piece-w);
+  margin-left: calc(var(--piece-w) / -2);
   list-style: none;
-  transform:
-    rotateY(calc(var(--i) * var(--mf-ring-step)))
-    translateZ(var(--mf-ring-radius));
-  transform-style: preserve-3d;
-  transition: opacity .35s var(--mf-ease), filter .35s var(--mf-ease);
-  opacity: .55;
-  filter: saturate(.85);
-}
-.mf-circle__item[data-front="true"] {
-  opacity: 1;
-  filter: none;
-  z-index: 2;
+  transform-origin: 50% 0;
+  /* --x and --s are written by the script; these defaults stack every piece at
+     the front, which is a legible resting state before JS boots. */
+  transform: translateX(calc(var(--x, 0) * var(--rack-w) / 2)) scale(var(--s, 1));
+  opacity: var(--o, 1);
+  transition: transform .5s var(--mf-ease), opacity .5s var(--mf-ease);
+  will-change: transform, opacity;
 }
 
-.mf-circle__link { display: block; pointer-events: none; }
-.mf-circle__item[data-front="true"] .mf-circle__link { pointer-events: auto; }
+/* the hanger: a hook over the rail and a bar across the shoulders */
+.mf-rack__hang { display: block; height: var(--rack-drop); position: relative; }
+.mf-rack__hang::before {
+  content: ""; position: absolute; left: 50%; top: -4px;
+  width: 7px; height: 9px; margin-left: -3.5px;
+  border: 1px solid color-mix(in srgb, var(--molfet-brown) 60%, transparent);
+  border-bottom-color: transparent;
+  border-radius: 50% 50% 0 0;
+}
+.mf-rack__hang::after {
+  content: ""; position: absolute; left: 4%; right: 4%; top: calc(var(--rack-drop) - 6px);
+  height: 6px;
+  border-top: 2px solid var(--molfet-maroon);
+  /* a shallow tent: the shape of a coat hanger, not a flat line */
+  transform: perspective(40px) rotateX(46deg);
+  transform-origin: 50% 0;
+}
+.mf-rack__item[data-front="true"] .mf-rack__hang::after { border-top-width: 3px; }
 
-.mf-circle__figure {
-  position: relative;
-  display: block;
-  aspect-ratio: 4 / 5;
+.mf-rack__figure {
+  display: block; position: relative; height: var(--piece-h);
+  background: var(--mf-surface-tint);
+  border: 1px solid color-mix(in srgb, var(--molfet-maroon) 15%, transparent);
   overflow: hidden;
-  background: var(--mf-surface);
+  transition: border-color .3s var(--mf-ease);
 }
-.mf-circle__figure img,
-.mf-circle__img {
-  width: 100%; height: 100%;
-  object-fit: contain;
-  object-position: center bottom;
-  pointer-events: none;
-  -webkit-user-drag: none;
-}
+.mf-rack__item[data-front="true"] .mf-rack__figure { border-color: var(--molfet-maroon); }
+.mf-rack__figure img { width: 100%; height: 100%; object-fit: contain; display: block; }
 
-/* the front piece lifts a hair off the ring — the only motion beyond the turn */
-.mf-circle__item[data-front="true"] .mf-circle__figure {
-  animation: mf-ring-lift 4.5s var(--mf-ease) infinite;
+/* the garment's own silhouette while a piece has no photograph: a tee, drawn
+   with clip-path. No image, no gradient, no second request. */
+.mf-rack__ghost { position: absolute; inset: 0; }
+.mf-rack__ghost::before {
+  content: ""; position: absolute; left: 50%; top: 8%;
+  width: 76%; height: 84%; margin-left: -38%;
+  background: color-mix(in srgb, var(--molfet-cream) 55%, #fff);
+  clip-path: polygon(28% 0, 72% 0, 100% 22%, 86% 44%, 66% 34%, 66% 100%, 34% 100%, 34% 34%, 14% 44%, 0 22%);
 }
-@keyframes mf-ring-lift {
-  0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(-6px); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .mf-circle__item[data-front="true"] .mf-circle__figure { animation: none; }
-}
-
-/* The brand has no gradients. The lift above is the only ambient motion on a
-   piece, and the cream appears as a solid line under the front piece instead —
-   a hairline, the same one the frames use. */
-.mf-circle__shine {
-  position: absolute;
-  inset-inline: 18%;
-  bottom: 0;
-  height: 2px;
-  background: var(--molfet-cream);
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity .35s var(--mf-ease);
-}
-.mf-circle__item[data-front="true"] .mf-circle__shine { opacity: 1; }
-
-/* --- the front piece in words --- */
-.mf-circle__hud {
-  display: grid;
-  justify-items: center;
-  gap: .25rem;
-  text-align: center;
-  margin-top: .5rem;
-  min-height: 4.5rem;
-}
-.mf-circle__count {
-  margin: 0;
-  font-size: .625rem;
-  letter-spacing: .18em;
-  color: var(--mf-brown-muted);
+.mf-rack__ghost b {
+  position: absolute; left: 0; right: 0; top: 42%;
+  text-align: center; font-size: 1.6rem; font-weight: 400;
   font-variant-numeric: tabular-nums;
+  color: color-mix(in srgb, var(--molfet-brown) 55%, transparent);
 }
-.mf-circle__slash { margin: 0 .3em; opacity: .5; }
-.mf-circle__title {
-  font-size: .9375rem;
-  line-height: 1.3;
-  text-transform: uppercase;
-  letter-spacing: .06em;
-  text-align: center;
-  max-width: 22ch;
-  border-bottom: 1px solid transparent;
-}
-.mf-circle__title:hover { border-bottom-color: var(--molfet-maroon); }
-.mf-circle__price { margin: 0; font-size: .8125rem; color: var(--mf-brown-soft); }
 
-/* --- controls --- */
-.mf-circle__controls {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  margin-top: 1rem;
+/* --- the words under the rack --- */
+.mf-rack__hud {
+  display: grid; justify-items: center; gap: .15rem;
+  padding: .5rem 1rem 0; text-align: center;
 }
-.mf-circle__step {
-  display: grid;
-  place-items: center;
+.mf-rack__count {
+  margin: 0; font-size: .625rem; letter-spacing: .18em;
+  font-variant-numeric: tabular-nums; color: var(--mf-brown-muted);
+}
+.mf-rack__title {
+  font-size: .9375rem; line-height: 1.3;
+  text-transform: uppercase; letter-spacing: .06em;
+  text-align: center; max-width: 24ch;
+  border-bottom: 1px solid transparent;
+  overflow-wrap: anywhere;
+}
+.mf-rack__title:hover { border-bottom-color: var(--molfet-maroon); }
+.mf-rack__price { margin: 0; font-size: .8125rem; color: var(--mf-brown-soft); }
+
+/* --- controls: 44px, because a thumb is not a mouse --- */
+.mf-rack__controls {
+  display: flex; align-items: center; justify-content: center;
+  gap: 1rem; padding: .75rem 1rem 1rem;
+}
+.mf-rack__step {
+  display: grid; place-items: center;
   width: 44px; height: 44px;
-  border: 1px solid var(--mf-hairline-strong);
-  color: var(--molfet-brown);
-  transition: background-color .25s var(--mf-ease), color .25s var(--mf-ease);
+  background: none; border: 1px solid var(--mf-hairline-strong);
+  color: var(--molfet-brown); cursor: pointer;
+  transition: background-color .25s var(--mf-ease), color .25s var(--mf-ease), border-color .25s var(--mf-ease);
 }
-.mf-circle__step:hover { background: var(--molfet-maroon); color: #fff; border-color: var(--molfet-maroon); }
-.mf-circle__dots { display: flex; align-items: center; gap: .35rem; flex-wrap: wrap; justify-content: center; max-width: 14rem; }
-.mf-circle__dot {
+.mf-rack__step:hover, .mf-rack__step:focus-visible {
+  background: var(--molfet-maroon); border-color: var(--molfet-maroon); color: #fff;
+}
+.mf-rack__dots {
+  display: flex; align-items: center; gap: .35rem;
+  flex-wrap: wrap; justify-content: center; max-width: 14rem;
+}
+.mf-rack__dot {
   width: 5px; height: 5px; border-radius: 50%;
   background: color-mix(in srgb, var(--molfet-brown) 28%, transparent);
   transition: width .3s var(--mf-ease), background-color .3s var(--mf-ease);
 }
-.mf-circle__dot[data-active="true"] { width: 18px; border-radius: 3px; background: var(--molfet-maroon); }
+.mf-rack__dot[data-active="true"] { width: 16px; border-radius: 3px; background: var(--molfet-maroon); }
 
-.mf-circle__empty { padding: 4rem 1rem; font-size: .8125rem; color: var(--mf-brown-soft); }
+.mf-rack__empty { padding: 4rem 1rem; font-size: .8125rem; color: var(--mf-brown-soft); }
 
-/* --- the pinned stretch on a phone -------------------------------------
-   The screen holds still and the clothes turn. The circle inside the
-   collection is pinned for one turn's worth of scroll; once the ring has gone
-   all the way round, the page continues to the next section. The standalone
-   rack page is not pinned — it has nothing to scroll past. */
-.mf-circle__span { display: none; }
+/* --- pinned on a phone ---------------------------------------------------
+   The screen holds still and the clothes turn. `top` is the header's height,
+   not 0: at 0 the panel slides under the sticky header and the count and the
+   buttons are eaten by it. `--rack-span` is one turn's worth of scrolling,
+   reserved by an inert spacer; past it the page carries on. */
+.mf-rack__span { display: none; }
 
 @media (max-width: 989px) {
-  [data-view-panel="rack"] .mf-circle {
+  [data-view-panel="rack"] .mf-rack {
     position: sticky;
-    top: 0;
-    height: 100dvh;
-    display: grid;
-    grid-template-rows: 1fr auto auto;
-    align-content: center;
-    padding: .5rem 1rem 1rem;
-    background: var(--mf-surface);
-    z-index: 1;
+    top: var(--mf-header-h, 58px);
+    height: calc(100dvh - var(--mf-header-h, 58px));
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 0; z-index: 1; background: var(--mf-surface);
   }
-  [data-view-panel="rack"] .mf-circle__stage {
-    height: auto;
-    align-self: stretch;
-    min-height: 0;
-    perspective: 820px;
+  [data-view-panel="rack"] .mf-rack__stage { flex: 0 0 auto; }
+  [data-view-panel="rack"] .mf-rack__span {
+    display: block; height: var(--rack-span); pointer-events: none;
   }
-  /* the spacer is what the page scrolls through while the circle is pinned */
-  [data-view-panel="rack"] .mf-circle__span {
-    display: block;
-    height: var(--mf-ring-span);
-    pointer-events: none;
-  }
-  [data-view-panel="rack"] .mf-circle__hud { min-height: 0; }
-  [data-view-panel="rack"] .mf-circle__title { font-size: .875rem; }
+  [data-view-panel="rack"] .mf-rack__hud { padding-top: .25rem; }
+  [data-view-panel="rack"] .mf-rack__title { font-size: .875rem; }
 }
 
-/* a phone in landscape has almost no height: unpin rather than crop the ring */
+/* a phone on its side has almost no height: unpin rather than crop the rack */
 @media (max-width: 989px) and (orientation: landscape) and (max-height: 520px) {
-  [data-view-panel="rack"] .mf-circle { position: static; height: auto; }
-  [data-view-panel="rack"] .mf-circle__span { display: none; }
+  [data-view-panel="rack"] .mf-rack { position: static; height: auto; }
+  [data-view-panel="rack"] .mf-rack__span { display: none; }
 }
 
 /* header button */
@@ -743,7 +727,7 @@ html[dir="rtl"] .mf-cart-drawer__panel { transform: translateX(-100%); }
 @media (max-width: 749px) { .mf-header__rack span { display: none; } .mf-header__rack { padding: 0; width: 34px; justify-content: center; } }
 
 @media (prefers-reduced-motion: reduce) {
-  .mf-circle__ring, .mf-circle__item { transition-duration: .001ms; }
+  .mf-rack__item { transition-duration: .001ms; }
 }
 
 /* ---------- collection ---------- */
@@ -866,7 +850,7 @@ html[dir="rtl"] .mf-cart-drawer__panel { transform: translateX(-100%); }
 }
 
 /* Long words and URLs in product copy must not widen the viewport. */
-.mf-product__desc, .mf-collection__desc, .mf-circle__title, .mf-mix__summary { overflow-wrap: anywhere; }
+.mf-product__desc, .mf-collection__desc, .mf-rack__title, .mf-mix__summary { overflow-wrap: anywhere; }
 
 /* 100vw includes the scrollbar on desktop engines and overlaps a phone's
    gesture area; the dialogs should use the dynamic viewport instead. */
