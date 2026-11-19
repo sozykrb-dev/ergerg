@@ -1,9 +1,12 @@
+{%- capture cdn_base -%}{% render 'molfet-cdn' %}{%- endcapture -%}
 {%- comment -%}
   404: "You found the edge of the map. Style doesn't have one."
 {%- endcomment -%}
 <section class="mf-404">
   {%- if settings.icon_on_cream != blank -%}
     <img src="{{ settings.icon_on_cream | image_url: width: 128 }}" alt="" width="64" height="64" loading="eager">
+  {%- else -%}
+    <img src="{{ cdn_base }}img/brand/icon-mark.png" alt="" width="64" height="64" loading="eager" decoding="async">
   {%- endif -%}
   <p class="mf-404__code">404</p>
   <h1>{{ 'general.404.title' | t }}</h1>

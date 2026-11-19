@@ -1,8 +1,15 @@
+{%- comment -%}
+  The cream lockup sits on the dark brown footer. Until the merchant uploads
+  their own, the real cream wordmark is fetched from the repository.
+{%- endcomment -%}
+{%- capture cdn_base -%}{% render 'molfet-cdn' %}{%- endcapture -%}
 <footer class="mf-footer" data-tone="dark">
   <div class="mf-footer__inner">
     <div class="mf-footer__brand">
       {%- if settings.wordmark_on_brown != blank -%}
         <img src="{{ settings.wordmark_on_brown | image_url: width: 460 }}" alt="{{ shop.name }}" width="230" height="46" loading="lazy">
+      {%- else -%}
+        <img src="{{ cdn_base }}brand/molfet-wordmark-cream.png" alt="{{ shop.name }}" width="148" height="40" loading="lazy" decoding="async">
       {%- endif -%}
       <p class="mf-slogan">{% render 'slogan' %}</p>
       <p class="mf-footer__note">{{ section.settings.note }}</p>
@@ -36,7 +43,7 @@
       {%- if settings.icon_on_cream != blank -%}
         <img src="{{ settings.icon_on_cream | image_url: width: 64 }}" alt="" width="18" height="18" loading="lazy">
       {%- else -%}
-        {% render 'brand-fallback', type: 'mark' %}
+        <img src="{{ cdn_base }}img/brand/icon-mark-cream.png" alt="" aria-hidden="true" width="18" height="18" loading="lazy" decoding="async">
       {%- endif -%}
     </button>
   </div>

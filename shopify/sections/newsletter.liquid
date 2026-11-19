@@ -1,7 +1,10 @@
+{%- capture cdn_base -%}{% render 'molfet-cdn' %}{%- endcapture -%}
 <section class="mf-newsletter" data-tone="dark">
   <div class="mf-newsletter__inner">
     {%- if settings.icon_on_cream != blank -%}
       <img class="mf-newsletter__mark" src="{{ settings.icon_on_cream | image_url: width: 96 }}" alt="" width="36" height="36" loading="lazy">
+    {%- else -%}
+      <img class="mf-newsletter__mark" src="{{ cdn_base }}img/brand/icon-mark-cream.png" alt="" width="36" height="36" loading="lazy" decoding="async">
     {%- endif -%}
     <h2>{{ section.settings.heading }}</h2>
     <p>{{ section.settings.text }}</p>

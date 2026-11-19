@@ -1,6 +1,10 @@
 {%- comment -%}
   Details strip — three macro images (fabric, cut, finish).
+
+  Falls back to the concept macros in the same order the default blocks use.
 {%- endcomment -%}
+{%- capture cdn_base -%}{% render 'molfet-cdn' %}{%- endcapture -%}
+{%- assign concept_macros = 'img/detail/fabric.webp,img/detail/cut.webp,img/detail/finish.webp' | split: ',' -%}
 <section class="mf-details">
   <header class="mf-section-head">
     <div>
@@ -10,11 +14,33 @@
   </header>
 
   <div class="mf-details__grid">
+    {%- if section.blocks.size == 0 -%}
+      {%- comment -%} no blocks yet: show the three concept macros with their captions {%- endcomment -%}
+      {%- assign concept_labels = 'Fabric,Cut,Finish' | split: ',' -%}
+      {%- assign concept_lines_raw = 'Egyptian cotton, 270 gsm;Boxy shoulders, dropped sleeve;Raw hem, single-needle stitching' -%}
+      {%- assign concept_lines = concept_lines_raw | split: ';' -%}
+      {%- for path in concept_macros -%}
+        {%- assign i = forloop.index0 -%}
+        <figure class="mf-details__item">
+          <div class="mf-details__media">
+            <img src="{{ cdn_base }}{{ path }}" width="760" height="414"
+              alt="{{ concept_labels[i] | escape }}" loading="lazy" decoding="async">
+            <figcaption class="mf-details__label"><span>{{ forloop.index | prepend: '0' }}</span>{{ concept_labels[i] }}</figcaption>
+          </div>
+          <p class="mf-details__line">{{ concept_lines[i] }}</p>
+        </figure>
+      {%- endfor -%}
+    {%- endif -%}
     {%- for block in section.blocks -%}
       <figure class="mf-details__item" {{ block.shopify_attributes }}>
         <div class="mf-details__media">
           {%- if block.settings.image != blank -%}
             {{ block.settings.image | image_url: width: 800 | image_tag: loading: 'lazy', widths: '400,800', sizes: '(min-width: 900px) 32vw, 92vw', alt: block.settings.label }}
+          {%- else -%}
+            {%- assign macro_idx = forloop.index0 -%}
+            <img src="{{ cdn_base }}{{ concept_macros[macro_idx] }}"
+              width="760" height="414"
+              alt="{{ block.settings.label | escape }}" loading="lazy" decoding="async">
           {%- endif -%}
           <figcaption class="mf-details__label"><span>{{ forloop.index | prepend: '0' }}</span>{{ block.settings.label }}</figcaption>
         </div>

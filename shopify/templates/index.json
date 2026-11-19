@@ -1,14 +1,102 @@
 {
   "sections": {
-    "announcement": { "type": "announcement-bar" },
-    "header": { "type": "header" },
-    "hero": { "type": "hero-frame" },
-    "statement": { "type": "statement-split" },
-    "mix_teaser": { "type": "mix-teaser" },
-    "featured": { "type": "featured-collection" },
-    "details": { "type": "details-strip" },
-    "newsletter": { "type": "newsletter" },
-    "footer": { "type": "footer" }
+    "announcement": {
+      "type": "announcement-bar"
+    },
+    "header": {
+      "type": "header"
+    },
+    "hero": {
+      "type": "hero-frame"
+    },
+    "statement": {
+      "type": "statement-split"
+    },
+    "mix_teaser": {
+      "type": "mix-teaser",
+      "blocks": {
+        "top": {
+          "type": "piece",
+          "settings": {
+            "alt": "Top"
+          }
+        },
+        "bottom": {
+          "type": "piece",
+          "settings": {
+            "alt": "Bottom"
+          }
+        },
+        "outer": {
+          "type": "piece",
+          "settings": {
+            "alt": "Outerwear"
+          }
+        },
+        "accessory": {
+          "type": "piece",
+          "settings": {
+            "alt": "Accessory"
+          }
+        }
+      },
+      "block_order": [
+        "top",
+        "bottom",
+        "outer",
+        "accessory"
+      ]
+    },
+    "featured": {
+      "type": "featured-collection"
+    },
+    "details": {
+      "type": "details-strip",
+      "blocks": {
+        "fabric": {
+          "type": "detail",
+          "settings": {
+            "label": "Fabric",
+            "line": "Egyptian cotton, 270 gsm"
+          }
+        },
+        "cut": {
+          "type": "detail",
+          "settings": {
+            "label": "Cut",
+            "line": "Boxy shoulders, dropped sleeve"
+          }
+        },
+        "finish": {
+          "type": "detail",
+          "settings": {
+            "label": "Finish",
+            "line": "Raw hem, single-needle stitching"
+          }
+        }
+      },
+      "block_order": [
+        "fabric",
+        "cut",
+        "finish"
+      ]
+    },
+    "newsletter": {
+      "type": "newsletter"
+    },
+    "footer": {
+      "type": "footer"
+    }
   },
-  "order": ["announcement", "header", "hero", "statement", "mix_teaser", "featured", "details", "newsletter", "footer"]
+  "order": [
+    "announcement",
+    "header",
+    "hero",
+    "statement",
+    "mix_teaser",
+    "featured",
+    "details",
+    "newsletter",
+    "footer"
+  ]
 }

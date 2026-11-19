@@ -1,6 +1,14 @@
 {%- comment -%}
   Featured collection with Lens-enabled cards.
+
+  When the merchant has not built a collection yet, the four cards show the
+  concept garments that ship with the theme, fetched from the repository, so
+  the home page is never a row of grey boxes.
 {%- endcomment -%}
+{%- capture cdn_base -%}{% render 'molfet-cdn' %}{%- endcapture -%}
+{%- assign concept_photos = 'img/products/overshirt-maroon.webp,img/products/shirt-baby-blue.webp,img/products/tee-black.webp,img/products/pants-gray.webp' | split: ',' -%}
+{%- assign concept_cutouts = 'img/products/overshirt-maroon-cut.webp,img/products/shirt-baby-blue-cut.webp,img/products/tee-black-cut.webp,img/products/pants-gray-cut.webp' | split: ',' -%}
+{%- assign concept_titles = 'Overshirt,Shirt,Tee,Pants' | split: ',' -%}
 <section class="mf-featured">
   <header class="mf-section-head">
     <div>
@@ -14,15 +22,38 @@
 
   <div class="mf-product-grid">
     {%- assign collection = section.settings.collection -%}
-    {%- for product in collection.products limit: section.settings.count -%}
-      {% render 'molfet-product-card', product: product %}
-    {%- else -%}
-      {%- for i in (1..4) -%}
-        <div class="mf-card mf-card--placeholder">
-          <div class="mf-card__media-link">{{ 'product-' | append: i | placeholder_svg_tag: 'mf-placeholder' }}</div>
-        </div>
+    {%- comment -%}
+      An empty collection still counts as a loop, so `for ... else` would skip
+      the fallback and leave the grid blank. Check the size explicitly.
+    {%- endcomment -%}
+    {%- if collection.products.size > 0 -%}
+      {%- for product in collection.products limit: section.settings.count -%}
+        {% render 'molfet-product-card', product: product %}
       {%- endfor -%}
-    {%- endfor -%}
+    {%- else -%}
+      {%- comment -%}
+        No collection picked, or it is empty: show the concept garments, linked
+        to the all-products page so a shopper can still get to the shop.
+      {%- endcomment -%}
+      {%- for i in (1..4) -%}
+        {%- assign idx = forloop.index0 -%}
+        <article class="mf-card mf-card--concept">
+          <a href="{{ routes.all_products_collection_url }}" class="mf-card__media-link mf-frame" aria-label="{{ concept_titles[idx] }}">
+            <img class="mf-card__photo"
+              src="{{ cdn_base }}{{ concept_photos[idx] }}"
+              width="848" height="1264"
+              alt="{{ concept_titles[idx] }}"
+              loading="lazy" decoding="async">
+            <img class="mf-card__cutout mf-break"
+              src="{{ cdn_base }}{{ concept_cutouts[idx] }}"
+              alt="" aria-hidden="true" loading="lazy" decoding="async">
+          </a>
+          <div class="mf-card__meta">
+            <p class="mf-card__title">{{ concept_titles[idx] }}</p>
+          </div>
+        </article>
+      {%- endfor -%}
+    {%- endif -%}
   </div>
 </section>
 

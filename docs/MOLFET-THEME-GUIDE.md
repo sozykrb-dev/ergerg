@@ -61,6 +61,56 @@ shopify/
 
 ---
 
+## 1b. Where the images come from
+
+A fresh install is **never an empty page**. The theme's concept photography ships
+in this repository and is served over a CDN, so the hero, the four home-page
+cards, the Mix stack, the detail macros and both logo lockups all appear before
+the merchant uploads anything.
+
+**The order of precedence, in every slot:**
+
+1. **What the merchant uploaded** in *Theme settings → Brand*, or a section's own
+   image picker. Served from Shopify's CDN. This always wins — your photography,
+   your store.
+2. **The built-in concept image**, fetched from the repository at a **pinned
+   commit**:
+
+   ```
+   https://cdn.jsdelivr.net/gh/sozykrb-dev/ergerg@<commit>/public/…
+   ```
+
+3. If that CDN is unreachable, `molfet.js` retries the same file from
+   `raw.githubusercontent.com` — once, then it stops. A blocked network never
+   leaves a broken image icon.
+
+**Where the base URL lives:** one place only, `snippets/molfet-cdn.liquid`. It is
+captured into `cdn_base` by each section that needs it, and the audit fails the
+build if a file uses `cdn_base` without capturing it, or hardcodes a host.
+
+**Why a pinned commit, not a branch.** A branch moves. If the live storefront
+pointed at `main`, any later commit to the repository would silently change the
+photos on a live store. Pin the commit, and what you tested is what ships.
+
+**Swapping in your own photography.** Upload it in the theme editor and it wins
+automatically — no code change. If you would rather change the built-in set,
+replace the files under `public/` in the repository, commit, and update the
+commit hash in `snippets/molfet-cdn.liquid`.
+
+**File notes.**
+
+| File | Used for | Notes |
+| --- | --- | --- |
+| `img/products/*-cut.webp` | cards, Mix stack, rack | **must stay transparent** — this is the layer that steps out of the frame |
+| `img/products/*.webp` | card photo, rack fallback | full shot on cream |
+| `img/hero/model-hero.webp` | home hero | `model-hero-cut.webp` is a **crop, not a cut-out** — it has no alpha, so the theme does not use it as one |
+| `img/detail/*.webp` | details strip | fabric, cut, finish |
+| `brand/molfet-wordmark.png` / `-cream.png` | header / footer | 3.70:1; the intrinsic `width`/`height` in the markup match it to avoid layout shift |
+| `img/brand/icon-mark.png` / `-cream.png` | header collapse, 404, newsletter | the open brush circle |
+| `img/brand/favicon-32.png`, `apple-touch-icon.png` | browser tab, home screen | |
+
+---
+
 ## 2. Install
 
 ### Option A — zip upload

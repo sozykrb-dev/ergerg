@@ -1,6 +1,11 @@
 {%- comment -%}
   Limitless Mix teaser: four stacked cut-outs inside a frame.
+
+  With no images uploaded it stacks the four concept cut-outs, so the module
+  keeps its meaning instead of collapsing to an empty frame.
 {%- endcomment -%}
+{%- capture cdn_base -%}{% render 'molfet-cdn' %}{%- endcapture -%}
+{%- assign concept_cutouts = 'img/products/overshirt-maroon-cut.webp,img/products/tee-black-cut.webp,img/products/pants-gray-cut.webp,img/products/tote-cream-cut.webp' | split: ',' -%}
 <section class="mf-mix-teaser" data-tone="dark">
   <div class="mf-mix-teaser__inner">
     <div>
@@ -15,11 +20,25 @@
     <div class="mf-mix-teaser__media">
       {%- capture mix_media -%}
         <span class="mf-mix-teaser__stack">
-          {%- for block in section.blocks -%}
-            {%- if block.settings.image != blank -%}
-              <img src="{{ block.settings.image | image_url: width: 600 }}" alt="{{ block.settings.alt | escape }}" loading="lazy">
-            {%- endif -%}
-          {%- endfor -%}
+          {%- comment -%}
+            Each block may carry its own cut-out. When it does not, the matching
+            concept cut-out fills the same slot, so a fresh install still stacks
+            four pieces rather than collapsing to an empty frame.
+          {%- endcomment -%}
+          {%- if section.blocks.size > 0 -%}
+            {%- for block in section.blocks -%}
+              {%- if block.settings.image != blank -%}
+                <img src="{{ block.settings.image | image_url: width: 600 }}" alt="{{ block.settings.alt | escape }}" loading="lazy">
+              {%- else -%}
+                {%- assign slot = forloop.index0 -%}
+                <img src="{{ cdn_base }}{{ concept_cutouts[slot] }}" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              {%- endif -%}
+            {%- endfor -%}
+          {%- else -%}
+            {%- for path in concept_cutouts limit: 4 -%}
+              <img src="{{ cdn_base }}{{ path }}" alt="" aria-hidden="true" loading="lazy" decoding="async">
+            {%- endfor -%}
+          {%- endif -%}
         </span>
       {%- endcapture -%}
       {% render 'molfet-frame', content: mix_media, tone: 'dark' %}

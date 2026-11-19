@@ -1,0 +1,17 @@
+{%- comment -%}
+  The single source of truth for where the theme's concept imagery lives.
+
+  Usage — capture it once per section, because render has an isolated scope:
+
+    {%- capture cdn_base -%}{% render 'molfet-cdn' %}{%- endcapture -%}
+
+  Why two hosts: jsDelivr is a real CDN in front of the repository, so it sends
+  the correct content type, caches at the edge and survives a traffic spike.
+  raw.githubusercontent.com is the fallback — GitHub serves images from there
+  perfectly well, it is just not meant to be a storefront's CDN. molfet.js
+  swaps to it automatically if the first request fails, so a missing or slow
+  edge never leaves a broken image.
+
+  The commit is pinned on purpose. Pointing at a branch would let any later
+  commit silently change what a live store shows.
+{%- endcomment -%}{%- assign base = 'https://cdn.jsdelivr.net/gh/sozykrb-dev/ergerg@fc6ca6497ae4a4799dd98e49ddb20c514197a28b/public/' -%}{{ base | strip -}}

@@ -775,6 +775,33 @@
   }
 
   /* ------------------------------------------------------------------ */
+  /* 11. Concept imagery: one retry, then a different host                */
+  /*     The theme's built-in photography is served from a CDN in front   */
+  /*     of the repository. If that edge is unreachable — a blocked       */
+  /*     network, an outage — the same file is fetched from GitHub's raw  */
+  /*     host instead, so a garment never silently disappears.            */
+  /* ------------------------------------------------------------------ */
+  function initCdnFallback() {
+    var CDN = 'https://cdn.jsdelivr.net/gh/sozykrb-dev/ergerg@';
+    var RAW = 'https://raw.githubusercontent.com/sozykrb-dev/ergerg/';
+    var SHA = 'fc6ca6497ae4a4799dd98e49ddb20c514197a28b';
+    if (!document.querySelector('img[src*="jsdelivr"]')) return;
+
+    document.addEventListener('error', function (event) {
+      var img = event.target;
+      if (!(img instanceof HTMLImageElement)) return;
+      if (img.getAttribute('data-cdn-retried')) return;
+      var src = img.getAttribute('src') || '';
+      var swap = src
+        .replace(CDN + SHA + '/public/', RAW + SHA + '/public/')
+        .replace(CDN.replace(/\/$/, '') + '@' + SHA + '/public/', RAW + SHA + '/public/');
+      if (swap === src) return;
+      img.setAttribute('data-cdn-retried', 'true');
+      img.setAttribute('src', swap);
+    }, true);
+  }
+
+  /* ------------------------------------------------------------------ */
   /* Guard: if this file is ever evaluated twice (a duplicated asset tag, a
      cached copy, a section re-render), the second pass must not double-bind
      every handler — double listeners make the Mix toggle select then clear. */
@@ -792,6 +819,7 @@
     initAddToCart();
     initRack();
     initVariantPicker();
+    initCdnFallback();
   }
 
   if (document.readyState === 'loading') {

@@ -1,4 +1,4 @@
-<!doctype html>
+{%- capture cdn_base -%}{% render 'molfet-cdn' %}{%- endcapture -%}<!doctype html>
 <html lang="{{ request.locale.iso_code }}" dir="{% if request.locale.iso_code == 'ar' %}rtl{% else %}ltr{% endif %}">
   <head>
     <meta charset="utf-8">
@@ -13,6 +13,9 @@
     <link rel="canonical" href="{{ canonical_url }}">
     {%- if settings.icon_on_cream != blank -%}
       <link rel="icon" type="image/png" href="{{ settings.icon_on_cream | image_url: width: 96 }}">
+    {%- else -%}
+      <link rel="icon" type="image/png" href="{{ cdn_base }}img/brand/favicon-32.png">
+      <link rel="apple-touch-icon" href="{{ cdn_base }}img/brand/apple-touch-icon.png">
     {%- endif -%}
 
     {%- comment -%} Typography: font-display: swap, heading face preloaded {%- endcomment -%}
