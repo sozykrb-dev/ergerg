@@ -18,7 +18,8 @@
     "refresh_page": "Choosing a selection results in a full page refresh."
   },
   "brand": {
-    "made_badge": "Designed with an Italian mindset. Crafted in Egypt."
+    "made_badge": "Designed with an Italian mindset. Crafted in Egypt.",
+    "slogan": "Style Without Limits"
   },
   "products": {
     "product": {
@@ -42,25 +43,26 @@
     "empty": "Nothing in this corner yet."
   },
   "cart": {
-    "title": "Cart",
-    "empty": "Your look has no limits yet. Start building it.",
-    "start_building": "Start building it",
-    "product": "Product",
-    "quantity": "Quantity",
-    "total": "Total",
-    "subtotal": "Subtotal",
-    "update": "Update",
-    "continue": "Continue shopping",
+    "apply": "Apply",
     "checkout": "Checkout",
+    "continue": "Continue shopping",
     "decrease": "Decrease quantity",
-    "increase": "Increase quantity",
-    "shipping_bar": "No limits on style. Free shipping from %{threshold}.",
-    "free_unlocked": "Free shipping unlocked.",
+    "discount_applied": "Discount applied",
     "discount_code": "Discount code",
     "discount_placeholder": "Enter a code",
-    "discount_applied": "Discount applied",
-    "apply": "Apply",
-    "taxes_note": "Shipping, taxes and any automatic discounts are calculated at checkout."
+    "empty": "Your look has no limits yet. Start building it.",
+    "free_unlocked": "Free shipping unlocked.",
+    "increase": "Increase quantity",
+    "product": "Product",
+    "quantity": "Quantity",
+    "remove": "Remove {title}",
+    "shipping_bar": "No limits on style. Free shipping from %{threshold}.",
+    "start_building": "Start building it",
+    "subtotal": "Subtotal",
+    "taxes_note": "Shipping, taxes and any automatic discounts are calculated at checkout.",
+    "title": "Cart",
+    "total": "Total",
+    "update": "Update"
   },
   "mix": {
     "eyebrow": "Limitless Mix",

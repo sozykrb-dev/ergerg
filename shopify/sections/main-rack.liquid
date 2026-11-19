@@ -50,12 +50,16 @@
               <div class="mf-rack-item__stage" data-rack-stage
                 role="group" aria-label="{{ 'rack.turn' | t: title: product.title }}">
                 <div class="mf-rack-item__turn" data-rack-turn>
-                  <img
-                    src="{{ cutout | default: product.featured_image | image_url: width: 600 }}"
-                    alt="{{ product.title | escape }}"
-                    width="300" height="400"
-                    loading="{% if forloop.index <= 4 %}eager{% else %}lazy{% endif %}"
-                    draggable="false">
+                  {%- if cutout != blank or product.featured_image != blank -%}
+                    <img
+                      src="{{ cutout | default: product.featured_image | image_url: width: 600 }}"
+                      alt="{{ product.title | escape }}"
+                      width="300" height="400"
+                      loading="{% if forloop.index <= 4 %}eager{% else %}lazy{% endif %}"
+                      draggable="false">
+                  {%- else -%}
+                    {% render 'media-placeholder', class: 'mf-rack-item__img', ratio: '3/4' %}
+                  {%- endif -%}
                 </div>
               </div>
 

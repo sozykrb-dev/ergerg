@@ -12,6 +12,11 @@
     <div class="mf-product__gallery">
       {%- capture gallery_media -%}
         <div class="mf-product__slides" data-gallery>
+          {%- if product.images.size == 0 -%}
+            <button type="button" class="mf-product__slide is-active" data-index="0" aria-label="{{ product.title | escape }}">
+              {% render 'media-placeholder', class: 'mf-product__photo', ratio: '4/5' %}
+            </button>
+          {%- endif -%}
           {%- for image in product.images -%}
             <button type="button" class="mf-product__slide{% if forloop.first %} is-active{% endif %}" data-index="{{ forloop.index0 }}" aria-label="{{ image.alt | escape }}">
               {{
@@ -89,7 +94,10 @@
         }
       </script>
 
-      {%- form 'product', product, id: 'ProductForm', class: 'mf-product__form' -%}
+      <form action="{{ routes.cart_add_url }}" method="post" enctype="multipart/form-data"
+        id="ProductForm" class="mf-product__form" accept-charset="UTF-8">
+        <input type="hidden" name="form_type" value="product">
+        <input type="hidden" name="utf8" value="&#10003;">
         <input type="hidden" name="id" value="{{ current_variant.id }}" data-variant-id>
 
         {%- if product.compare_at_price > product.price -%}
@@ -132,7 +140,7 @@
             {%- if product.available -%}{{ 'products.product.add_to_cart' | t }}{%- else -%}{{ 'products.product.sold_out' | t }}{%- endif -%}
           </button>
         </div>
-      {%- endform -%}
+      </form>
 
       <div class="mf-product__secondary">
         <button type="button" class="mf-btn mf-btn--ghost" data-open-size-guide>{{ 'products.product.size_guide' | t }}</button>
@@ -161,6 +169,7 @@
     </div>
   </div>
 
+  {%- if settings.sticky_atc -%}
   <div class="mf-sticky-atc" data-sticky-atc>
     <div>
       <p class="mf-sticky-atc__title">{{ product.title }}</p>
@@ -168,6 +177,7 @@
     </div>
     <button type="button" class="mf-btn" data-sticky-add>{{ 'products.product.add_to_cart' | t }}</button>
   </div>
+  {%- endif -%}
 </section>
 
 {% schema %}

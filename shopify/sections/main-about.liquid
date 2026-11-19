@@ -2,7 +2,7 @@
   <header class="mf-about__head">
     <p class="mf-eyebrow">{{ section.settings.eyebrow }}</p>
     <h1>{{ section.settings.heading }}</h1>
-    <p class="mf-slogan">{{ settings.slogan | default: 'Style Without Limits' }}</p>
+    <p class="mf-slogan">{% render 'slogan' %}</p>
     <div class="mf-about__statement">{{ section.settings.statement }}</div>
   </header>
 

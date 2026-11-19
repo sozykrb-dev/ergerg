@@ -6,8 +6,24 @@
 (function () {
   'use strict';
 
-  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var isTouch = window.matchMedia('(hover: none), (pointer: coarse)').matches;
+  // Feature-detect matchMedia: an older WebView without it must still get the
+  // cart, the forms and the rail, so never let this line throw.
+  function media(query) {
+    try {
+      return !!(window.matchMedia && window.matchMedia(query).matches);
+    } catch (err) {
+      return false;
+    }
+  }
+
+  var reduceMotion = media('(prefers-reduced-motion: reduce)');
+  var isTouch = media('(hover: none), (pointer: coarse)');
+
+  // Shopify always injects window.Shopify; fall back to the site root so a
+  // cached or embedded copy can never throw on an undefined object.
+  function rootUrl() {
+    return (window.Shopify && window.Shopify.routes && window.Shopify.routes.root) || '/';
+  }
 
   /* ------------------------------------------------------------------ */
   /* 1. THE LENS — brush-circle cursor, growing to 160px over a product */
@@ -257,20 +273,20 @@
 
     function changeLine(line, quantity) {
       if (!line) return;
-      fetch(window.Shopify.routes.root + 'cart/change.js', {
+      fetch(rootUrl() + 'cart/change.js', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify({ line: line, quantity: quantity })
       })
         .then(function (response) { return response.json(); })
         .then(function () { refreshDrawer(); })
-        .catch(function () { window.location.href = window.Shopify.routes.root + 'cart'; });
+        .catch(function () { window.location.href = rootUrl() + 'cart'; });
     }
 
     /* Fetch the cart-drawer *section* (sections/cart-drawer.liquid) and swap
        its content in, keeping this element and its listeners. */
     function refreshDrawer() {
-      return fetch(window.Shopify.routes.root + '?sections=cart-drawer')
+      return fetch(rootUrl() + '?sections=cart-drawer')
         .then(function (response) { return response.json(); })
         .then(function (sections) {
           var html = sections['cart-drawer'];
@@ -381,7 +397,7 @@
         if (!items.length) return;
 
         addButton.disabled = true;
-        fetch(window.Shopify.routes.root + 'cart/add.js', {
+        fetch(rootUrl() + 'cart/add.js', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
           body: JSON.stringify({ items: items })
@@ -391,10 +407,10 @@
             if (window.MOLFET && window.MOLFET.openCart) {
               window.MOLFET.openCart();
             } else {
-              window.location.href = window.Shopify.routes.root + 'cart';
+              window.location.href = rootUrl() + 'cart';
             }
           })
-          .catch(function () { window.location.href = window.Shopify.routes.root + 'cart'; })
+          .catch(function () { window.location.href = rootUrl() + 'cart'; })
           .finally(function () { addButton.disabled = false; });
       });
     }
@@ -525,7 +541,7 @@
         button.setAttribute('aria-busy', 'true');
       }
 
-      fetch(window.Shopify.routes.root + 'cart/add.js', {
+      fetch(rootUrl() + 'cart/add.js', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify({ items: [{ id: parseInt(id, 10), quantity: quantity }] })
@@ -759,7 +775,12 @@
   }
 
   /* ------------------------------------------------------------------ */
-  document.addEventListener('DOMContentLoaded', function () {
+  /* Guard: if this file is ever evaluated twice (a duplicated asset tag, a
+     cached copy, a section re-render), the second pass must not double-bind
+     every handler — double listeners make the Mix toggle select then clear. */
+  function boot() {
+    if (window.MOLFET_BOUND) return;
+    window.MOLFET_BOUND = true;
     initHeader();
     initCart();
     initLens();
@@ -771,5 +792,11 @@
     initAddToCart();
     initRack();
     initVariantPicker();
-  });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
 })();

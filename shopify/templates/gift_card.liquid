@@ -9,7 +9,7 @@
   </head>
   <body class="mf-body">
     <main class="mf-page">
-      <p class="mf-slogan">{{ settings.slogan | default: 'Style Without Limits' }}</p>
+      <p class="mf-slogan">{% render 'slogan' %}</p>
       <h1>{{ 'gift_cards.issued.title' | t }}</h1>
       <p>{{ 'gift_cards.issued.subtext' | t }}</p>
       <p class="mf-gift-card__code">{{ gift_card.code | format_code }}</p>

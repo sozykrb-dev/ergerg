@@ -12,12 +12,21 @@
     </nav>
 
     <a href="{{ routes.root_url }}" class="mf-header__logo" aria-label="{{ shop.name }}">
-      <img class="mf-header__wordmark"
-        src="{{ settings.wordmark_on_cream | image_url: width: 420 }}"
-        alt="{{ shop.name }}" width="210" height="42" loading="eager">
-      <img class="mf-header__mark"
-        src="{{ settings.icon_on_cream | image_url: width: 96 }}"
-        alt="" aria-hidden="true" width="36" height="36" loading="eager">
+      {%- if settings.wordmark_on_cream != blank -%}
+        <img class="mf-header__wordmark"
+          src="{{ settings.wordmark_on_cream | image_url: width: 420 }}"
+          alt="{{ shop.name }}" width="210" height="42" loading="eager">
+      {%- else -%}
+        {% render 'brand-fallback', type: 'wordmark' %}
+      {%- endif -%}
+
+      {%- if settings.icon_on_cream != blank -%}
+        <img class="mf-header__mark"
+          src="{{ settings.icon_on_cream | image_url: width: 96 }}"
+          alt="" aria-hidden="true" width="36" height="36" loading="eager">
+      {%- else -%}
+        <span class="mf-header__mark">{% render 'brand-fallback', type: 'mark' %}</span>
+      {%- endif -%}
     </a>
 
     <div class="mf-header__actions">

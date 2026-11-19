@@ -7,5 +7,5 @@
       stroke="currentColor" stroke-width="6" stroke-linecap="round"
       pathLength="300" stroke-dasharray="300" stroke-dashoffset="300"/>
   </svg>
-  <p class="mf-slogan">{{ settings.slogan | default: 'Style Without Limits' }}</p>
+  <p class="mf-slogan">{% render 'slogan' %}</p>
 </div>

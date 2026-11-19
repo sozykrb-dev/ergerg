@@ -1,0 +1,11 @@
+{%- comment -%}
+  The slogan, respecting the language: Arabic uses settings.slogan_ar when the
+  merchant filled it, otherwise the storefront's own translation of brand.slogan.
+  params: class (optional extra classes)
+{%- endcomment -%}
+{%- if request.locale.iso_code == 'ar' and settings.slogan_ar != blank -%}
+  <span class="mf-slogan{% if class %} {{ class }}{% endif %}" lang="ar" dir="rtl">{{ settings.slogan_ar }}</span>
+{%- else -%}
+  {%- assign fallback = 'brand.slogan' | t -%}
+  <span class="mf-slogan{% if class %} {{ class }}{% endif %}">{{ settings.slogan | default: fallback | default: 'Style Without Limits' }}</span>
+{%- endif -%}

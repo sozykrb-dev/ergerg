@@ -11,7 +11,7 @@
     <p class="mf-eyebrow">{{ 'mix.eyebrow' | t }}</p>
     <h1>{{ 'mix.heading' | t }}</h1>
     <p>{{ 'mix.body' | t }}</p>
-    <p class="mf-slogan">{{ settings.slogan | default: 'Style Without Limits' }}</p>
+    <p class="mf-slogan">{% render 'slogan' %}</p>
   </header>
 
   <div class="mf-mix__layout">
@@ -34,10 +34,14 @@
                   data-variant="{{ product.selected_or_first_available_variant.id }}"
                   data-price="{{ product.price }}"
                   data-title="{{ product.title | escape }}"
-                  data-cutout="{{ cutout | default: product.featured_image | image_url: width: 500 }}"
+                  data-cutout="{% if cutout != blank or product.featured_image != blank %}{{ cutout | default: product.featured_image | image_url: width: 500 }}{% endif %}"
                   data-options='{{ product.variants | json }}'
                   aria-pressed="false">
-                  <img src="{{ cutout | default: product.featured_image | image_url: width: 400 }}" alt="{{ product.title | escape }}" loading="lazy">
+                  {%- if cutout != blank or product.featured_image != blank -%}
+                    <img src="{{ cutout | default: product.featured_image | image_url: width: 400 }}" alt="{{ product.title | escape }}" loading="lazy">
+                  {%- else -%}
+                    {% render 'media-placeholder', class: 'mf-mix__piece-img', ratio: '4/5' %}
+                  {%- endif -%}
                   <span class="mf-mix__piece-title">{{ product.title }}</span>
                   <span class="mf-mix__piece-price">{{ product.price | money }}</span>
                 </button>

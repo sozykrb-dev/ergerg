@@ -7,7 +7,7 @@
       <p class="mf-eyebrow">{{ section.settings.eyebrow }}</p>
       <h2>{{ section.settings.heading }}</h2>
     </div>
-    {%- if section.settings.show_link -%}
+    {%- if section.settings.show_link and section.settings.collection != blank -%}
       <a class="mf-link mf-section-head__link" href="{{ section.settings.collection.url }}">{{ 'collections.view_all' | t }}</a>
     {%- endif -%}
   </header>

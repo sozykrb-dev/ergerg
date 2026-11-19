@@ -11,7 +11,9 @@
     {% if page_description %}<meta name="description" content="{{ page_description | escape }}">{% endif %}
 
     <link rel="canonical" href="{{ canonical_url }}">
-    <link rel="icon" type="image/png" href="{{ settings.icon_on_cream | image_url: width: 96 }}">
+    {%- if settings.icon_on_cream != blank -%}
+      <link rel="icon" type="image/png" href="{{ settings.icon_on_cream | image_url: width: 96 }}">
+    {%- endif -%}
 
     {%- comment -%} Typography: font-display: swap, heading face preloaded {%- endcomment -%}
     <link rel="preconnect" href="https://fonts.googleapis.com">

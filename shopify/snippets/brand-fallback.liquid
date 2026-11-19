@@ -1,0 +1,21 @@
+{%- comment -%}
+  Inline brand mark, used until the four official lockup files are uploaded in
+  Theme settings → Brand. It is drawn with the theme's own tokens (never a
+  recolour of the real logo), so a fresh install never shows a broken image.
+  type: 'wordmark' (mark + MOLFET) or 'mark' (the circle alone)
+{%- endcomment -%}
+{%- assign fallback_type = type | default: 'mark' -%}
+{%- if fallback_type == 'wordmark' -%}
+  <span class="mf-brand-fallback mf-brand-fallback--wordmark" aria-hidden="true">
+    <svg viewBox="0 0 48 48" class="mf-brand-fallback__mark" fill="none" aria-hidden="true">
+      <path d="M30.6 9.6a17 17 0 1 0 2.9 20.5" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/>
+    </svg>
+    <span class="mf-brand-fallback__name">{{ shop.name | default: 'MOLFET' }}</span>
+  </span>
+{%- else -%}
+  <span class="mf-brand-fallback" aria-hidden="true">
+    <svg viewBox="0 0 48 48" class="mf-brand-fallback__mark" fill="none" aria-hidden="true">
+      <path d="M30.6 9.6a17 17 0 1 0 2.9 20.5" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/>
+    </svg>
+  </span>
+{%- endif -%}

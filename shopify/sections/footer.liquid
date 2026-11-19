@@ -4,7 +4,7 @@
       {%- if settings.wordmark_on_brown != blank -%}
         <img src="{{ settings.wordmark_on_brown | image_url: width: 460 }}" alt="{{ shop.name }}" width="230" height="46" loading="lazy">
       {%- endif -%}
-      <p class="mf-slogan">{{ settings.slogan | default: 'Style Without Limits' }}</p>
+      <p class="mf-slogan">{% render 'slogan' %}</p>
       <p class="mf-footer__note">{{ section.settings.note }}</p>
     </div>
 
@@ -33,7 +33,11 @@
   <div class="mf-footer__bottom">
     <p>&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}</p>
     <button type="button" class="mf-back-to-top" data-back-to-top aria-label="{{ 'accessibility.back_to_top' | t }}">
-      <img src="{{ settings.icon_on_cream | image_url: width: 64 }}" alt="" width="18" height="18" loading="lazy">
+      {%- if settings.icon_on_cream != blank -%}
+        <img src="{{ settings.icon_on_cream | image_url: width: 64 }}" alt="" width="18" height="18" loading="lazy">
+      {%- else -%}
+        {% render 'brand-fallback', type: 'mark' %}
+      {%- endif -%}
     </button>
   </div>
 </footer>

@@ -39,7 +39,7 @@
 
     {%- if cart.item_count == 0 -%}
       <div class="mf-cart-drawer__empty">
-        <p class="mf-slogan">{{ settings.slogan | default: 'Style Without Limits' }}</p>
+        <p class="mf-slogan">{% render 'slogan' %}</p>
         <p>{{ 'cart.empty' | t }}</p>
         <a class="mf-btn" href="{{ routes.all_products_collection_url }}">{{ 'cart.start_building' | t }}</a>
       </div>
@@ -48,7 +48,11 @@
         <ul class="mf-cart-lines">
           {%- for item in cart.items -%}
             <li class="mf-cart-line" data-line="{{ forloop.index }}">
-              <img src="{{ item.image | image_url: width: 160 }}" width="80" height="100" alt="{{ item.title | escape }}" loading="lazy">
+              {%- if item.image != blank -%}
+                <img src="{{ item.image | image_url: width: 160 }}" width="80" height="100" alt="{{ item.title | escape }}" loading="lazy">
+              {%- else -%}
+                {% render 'media-placeholder', class: 'mf-cart-thumb', ratio: '4/5' %}
+              {%- endif -%}
               <div>
                 <p class="mf-cart-line__title">{{ item.product.title }}</p>
                 <p class="mf-cart-line__meta">{{ item.variant.title }}</p>
@@ -59,6 +63,10 @@
                 </div>
               </div>
               <span class="mf-cart-line__price">{{ item.final_line_price | money }}</span>
+              <button type="button" class="mf-cart-line__remove" data-remove-line="{{ forloop.index }}"
+                aria-label="{{ 'cart.remove' | t: title: item.product.title }}">
+                {% render 'icon-close' %}
+              </button>
             </li>
           {%- endfor -%}
         </ul>

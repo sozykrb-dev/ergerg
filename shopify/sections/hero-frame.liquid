@@ -8,11 +8,11 @@
     <div class="mf-hero__copy">
       <p class="mf-eyebrow">{{ section.settings.eyebrow }}</p>
       <h1 class="mf-hero__title">{{ section.settings.heading }}</h1>
-      <p class="mf-slogan mf-hero__slogan">{{ settings.slogan | default: 'Style Without Limits' }}</p>
+      <p class="mf-slogan mf-hero__slogan">{% render 'slogan' %}</p>
       <p class="mf-hero__text">{{ section.settings.text }}</p>
 
       {%- if section.settings.cta_label != blank -%}
-        <a href="{{ section.settings.cta_link }}" class="mf-btn">{{ section.settings.cta_label }}{% render 'icon-arrow' %}</a>
+        <a href="{{ section.settings.cta_link | default: routes.all_products_collection_url }}" class="mf-btn">{{ section.settings.cta_label }}{% render 'icon-arrow' %}</a>
       {%- endif -%}
     </div>
 

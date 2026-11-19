@@ -1,0 +1,9 @@
+{%- comment -%}
+  Stand-in for a missing photo. A product saved without media, or a metafield
+  image that is still empty, must never render an empty <img src="">.
+  params: class (optional extra class), ratio (optional, e.g. '4/5')
+{%- endcomment -%}
+<span class="mf-placeholder{% if class %} {{ class }}{% endif %}"
+  {%- if ratio %} style="aspect-ratio: {{ ratio }};"{% endif %} aria-hidden="true">
+  {% render 'brand-fallback', type: 'mark' %}
+</span>
